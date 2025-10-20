@@ -1,0 +1,87 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url('bg.jpg') no-repeat center center/cover;
+}
+
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.left h1 {
+  color: white;
+  font-size: 50px;
+  font-weight: bold;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+}
+
+.login-box {
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 15px;
+  padding: 40px;
+  width: 320px;
+  text-align: center;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.login-box .logo {
+  width: 100px;
+  margin-bottom: 20px;
+}
+
+.login-box input,
+.login-box select {
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  border: none;
+  border-radius: 20px;
+  background: #e8eeff;
+  outline: none;
+}
+
+.password-box {
+  position: relative;
+}
+
+.password-box span {
+  position: absolute;
+  right: 15px;
+  top: 12px;
+  cursor: pointer;
+}
+
+.login-box button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(90deg, #8a00ff, #ff0099);
+  border: none;
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-box button:hover {
+  opacity: 0.8;
+}
+
+.login-box .error {
+  color: red;
+  margin-top: 10px;
+  font-size: 14px;
+}
