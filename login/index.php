@@ -25,7 +25,7 @@ session_start();
 
             <div class="password-box">
                 <input type="password" name="password" id="password" placeholder="Password" required>
-                <span id="togglePassword">👁️</span>
+                <span id="togglePassword"></span>
             </div>
 
             <button type="submit">Masuk</button>
