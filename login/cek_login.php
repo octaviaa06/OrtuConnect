@@ -46,7 +46,7 @@ if ($result && isset($result['success']) && $result['success'] === true) {
 
     // Arahkan user berdasarkan role
     if ($_SESSION['role'] === 'admin') {
-        header("Location: home_admin.php");
+        header("Location: dashboard_admin/admin.php");
     } elseif ($_SESSION['role'] === 'guru') {
         header("Location: home_guru.php");
     } else {
