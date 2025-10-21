@@ -22,16 +22,11 @@ session_start();
             <img src="assets/logo.png" alt="Logo OrtuConnect" class="logo">
 
             <input type="text" name="username" placeholder="Username" required>
+
             <div class="password-box">
                 <input type="password" name="password" id="password" placeholder="Password" required>
                 <span id="togglePassword">👁️</span>
             </div>
-
-            <select name="role" required>
-                <option value="">Pilih Role</option>
-                <option value="admin">Admin</option>
-                <option value="guru">Guru</option>
-            </select>
 
             <button type="submit">Masuk</button>
 
