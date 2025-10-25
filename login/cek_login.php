@@ -44,14 +44,13 @@ if ($result && isset($result['success']) && $result['success'] === true) {
     $_SESSION['role']     = $user['role'];
 
     if ($_SESSION['role'] === 'admin') {
-        // Path Admin: Keluar dari folder 'login/' (../) ke dashboard_admin/home_admin.php
+ 
         header("Location: ../dashboard_admin/home_admin.php");
     } elseif ($_SESSION['role'] === 'guru') {
-        // Path Guru: Keluar dari folder 'login/' (../) ke dashboard_guru/home_guru.php
+
         header("Location: ../dashboard_guru/home_guru.php");
     } else {
         
-        // Redirect ke index.php di folder yang sama (login/)
         header("Location: index.php?error=Role tidak dikenali!");
     }
 
@@ -60,7 +59,7 @@ if ($result && isset($result['success']) && $result['success'] === true) {
 } else {
     
     $error_msg = isset($result['message']) ? $result['message'] : "Login gagal, periksa koneksi API!";
-    // Redirect ke index.php di folder yang sama (login/)
+ 
     header("Location: index.php?error=" . urlencode($error_msg));
     exit;
 }

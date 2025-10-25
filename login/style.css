@@ -1,4 +1,4 @@
-/* FILE: ORTUCONNECT/login/style.css */
+
 
 * {
     margin: 0;
@@ -23,7 +23,7 @@ body {
     align-items: center;
 }
 
-/* --- Bagian Kiri: Selamat Datang --- */
+
 .left {
     padding-right: 50px;
 }
@@ -35,34 +35,32 @@ body {
     text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
 }
 
-/* --- Bagian Kanan: Kotak Login --- */
+
 .login-box {
     background: rgba(255, 255, 255, 0.15); 
     backdrop-filter: blur(10px); 
     -webkit-backdrop-filter: blur(10px); 
     border-radius: 15px;
     padding: 40px;
-    /* Lebar kotak login ke 420px */
+    
     width: 420px; 
     text-align: center;
     box-shadow: 0 5px 20px rgba(0,0,0,0.2);
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Logo Gambar (sekarang diasumsikan logo.png adalah gambar utuh "OC OrtuConnect") */
+
 .logo-img {
-    /* Ukuran logo diubah menjadi 180px */
+
     width: 180px; 
     height: auto;
     display: block;
-    margin: 0 auto 20px; /* Margin bawah default */
+    margin: 0 auto 20px; 
 }
 
-/* **Teks Logo "OrtuConnect" dihilangkan karena gambar sudah menyertakannya** */
-/* Anda bisa menghapus bagian <h2 class="logo-text">OrtuConnect</h2> dari HTML jika memang gambar sudah mengandung teks ini. */
 
 
-/* Input Fields */
+
 .login-box input,
 .login-box select {
     width: 100%;
@@ -77,7 +75,7 @@ body {
     font-weight: 500;
 }
 
-/* Tombol Masuk */
+
 .login-box button {
     width: 100%;
     padding: 12px;
