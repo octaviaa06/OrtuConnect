@@ -44,8 +44,12 @@ if ($result && isset($result['success']) && $result['success'] === true) {
     $_SESSION['role']     = $user['role'];
 
     if ($_SESSION['role'] === 'admin') {
+
  
         header("Location: ../dashboard_admin/home_admin.php");
+
+        header("Location: /dashboard_admin/admin.php");
+
     } elseif ($_SESSION['role'] === 'guru') {
 
         header("Location: ../dashboard_guru/home_guru.php");
