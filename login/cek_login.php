@@ -1,6 +1,6 @@
 <?php
-session_start();
 
+session_start();
 
 if (!isset($_POST['username']) || !isset($_POST['password'])) {
     header("Location: index.php?error=Data login tidak lengkap!");
@@ -39,16 +39,19 @@ if ($result && isset($result['success']) && $result['success'] === true) {
     $user = $result['user']; 
 
 
-    $_SESSION['id_akun']  = $user['id_akun'];
+    $_SESSION['id_akun']    = $user['id_akun'];
     $_SESSION['username'] = $user['username'];
     $_SESSION['role']     = $user['role'];
 
     if ($_SESSION['role'] === 'admin') {
-        header("Location: dashboard_admin/admin.php");
+        // Path Admin: Keluar dari folder 'login/' (../) ke dashboard_admin/home_admin.php
+        header("Location: ../dashboard_admin/home_admin.php");
     } elseif ($_SESSION['role'] === 'guru') {
-        header("Location: home_guru.php");
+        // Path Guru: Keluar dari folder 'login/' (../) ke dashboard_guru/home_guru.php
+        header("Location: ../dashboard_guru/home_guru.php");
     } else {
         
+        // Redirect ke index.php di folder yang sama (login/)
         header("Location: index.php?error=Role tidak dikenali!");
     }
 
@@ -57,6 +60,7 @@ if ($result && isset($result['success']) && $result['success'] === true) {
 } else {
     
     $error_msg = isset($result['message']) ? $result['message'] : "Login gagal, periksa koneksi API!";
+    // Redirect ke index.php di folder yang sama (login/)
     header("Location: index.php?error=" . urlencode($error_msg));
     exit;
 }

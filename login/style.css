@@ -1,94 +1,105 @@
+/* FILE: ORTUCONNECT/login/style.css */
+
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
 body {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: url('/assets/background.png') no-repeat center center/cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url('../assets/background.png') no-repeat center center/cover;
 }
 
 .container {
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
+    width: 90%; 
+    max-width: 1200px; 
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+/* --- Bagian Kiri: Selamat Datang --- */
+.left {
+    padding-right: 50px;
 }
 
 .left h1 {
-  color: white;
-  font-size: 50px;
-  font-weight: bold;
-  text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+    color: white;
+    font-size: 72px; 
+    font-weight: bold;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
 }
 
+/* --- Bagian Kanan: Kotak Login --- */
 .login-box {
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 15px;
-  padding: 40px;
-  width: 320px;
-  text-align: center;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    background: rgba(255, 255, 255, 0.15); 
+    backdrop-filter: blur(10px); 
+    -webkit-backdrop-filter: blur(10px); 
+    border-radius: 15px;
+    padding: 40px;
+    /* Lebar kotak login ke 420px */
+    width: 420px; 
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.login-box .logo {
-  width: 100px;
-  margin-bottom: 20px;
+/* Logo Gambar (sekarang diasumsikan logo.png adalah gambar utuh "OC OrtuConnect") */
+.logo-img {
+    /* Ukuran logo diubah menjadi 180px */
+    width: 180px; 
+    height: auto;
+    display: block;
+    margin: 0 auto 20px; /* Margin bawah default */
 }
 
+/* **Teks Logo "OrtuConnect" dihilangkan karena gambar sudah menyertakannya** */
+/* Anda bisa menghapus bagian <h2 class="logo-text">OrtuConnect</h2> dari HTML jika memang gambar sudah mengandung teks ini. */
+
+
+/* Input Fields */
 .login-box input,
 .login-box select {
-  width: 100%;
-  margin: 10px 0;
-  padding: 12px;
-  border: none;
-  border-radius: 20px;
-  background: #e8eeff;
-  outline: none;
+    width: 100%;
+    margin: 15px 0; 
+    padding: 12px;
+    border: none;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2); 
+    color: white; 
+    outline: none;
+    font-size: 16px;
+    font-weight: 500;
 }
 
-.password-box {
-  position: relative;
-}
-
-.password-box span {
-  position: absolute;
-  right: 15px;
-  top: 12px;
-  cursor: pointer;
-}
-
+/* Tombol Masuk */
 .login-box button {
-  width: 100%;
-  padding: 12px;
-  background: linear-gradient(90deg, #8a00ff, #ff0099);
-  border: none;
-  border-radius: 20px;
-  color: white;
-  font-weight: bold;
-  margin-top: 10px;
-  cursor: pointer;
-  transition: 0.3s;
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(90deg, #8a00ff, #ff0099);
+    border: none;
+    border-radius: 20px;
+    color: white;
+    font-weight: bold;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
 .login-box button:hover {
-  opacity: 0.8;
+    opacity: 0.9;
 }
 
 .login-box .error {
-  color: red;
-  margin-top: 10px;
-  font-size: 14px;
+    color: #fceae9; 
+    margin-bottom: 15px;
+    font-size: 14px;
+    background: rgba(255, 0, 0, 0.4);
+    padding: 8px;
+    border-radius: 5px;
 }
-.logo {
-  width: 120px;
-  height: auto;
-  display: block;
-  margin: 0 auto 20px;
-}
-
