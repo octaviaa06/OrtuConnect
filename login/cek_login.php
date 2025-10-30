@@ -48,7 +48,6 @@ if ($result && isset($result['success']) && $result['success'] === true) {
  
         header("Location: ../dashboard_admin/home_admin.php");
 
-        header("Location: /dashboard_admin/admin.php");
 
     } elseif ($_SESSION['role'] === 'guru') {
 
