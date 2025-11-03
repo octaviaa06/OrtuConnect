@@ -1,11 +1,16 @@
 <?php
 session_start();
 
-// Jika tombol "Ya, Logout" ditekan → hapus sesi dan arahkan ke login
+
 if (isset($_POST['confirm_logout'])) {
     session_unset();
     session_destroy();
     header("Location: ../login/index.php");
+    exit;
+}
+
+if (isset($_POST['cancel_logout'])) {
+    header("Location: ../dashboard_admin/home_admin.php");
     exit;
 }
 ?>
@@ -23,7 +28,7 @@ if (isset($_POST['confirm_logout'])) {
     <p>Apakah Anda yakin ingin keluar dari akun ini?</p>
     <form method="POST">
       <button type="submit" name="confirm_logout" class="btn btn-danger w-100 mb-2">Ya, Logout</button>
-      <a href="home_admin.php" class="btn btn-secondary w-100">Batal</a>
+      <button type="submit" name="cancel_logout" class="btn btn-secondary w-100">Batal</button>
     </form>
   </div>
 </body>

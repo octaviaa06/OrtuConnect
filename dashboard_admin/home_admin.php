@@ -2,9 +2,10 @@
 session_start();
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-  header("Location: ../index.php?error=Harap login sebagai admin!");
+  header("Location: ../login/index.php?error=Harap login sebagai admin!");
   exit;
 }
+
 
 $api_url = "http://ortuconnect.atwebpages.com/api/admin/dashboard_admin.php";
 $ch = curl_init();
@@ -32,7 +33,6 @@ $agenda = $data['agenda_terdekat'] ?? [];
 <body>
   <div class="d-flex">
 
-    <!-- SIDEBAR -->
     <div id="sidebar" class="sidebar bg-primary text-white p-3 expanded">
       <div class="text-center mb-4">
         <img src="../assets/slide.png" id="toggleSidebar" alt="Slide" class="slide-btn">
@@ -47,11 +47,9 @@ $agenda = $data['agenda_terdekat'] ?? [];
       </ul>
     </div>
 
-    <!-- KONTEN UTAMA -->
     <div class="flex-grow-1 main-content" style="background-image: url('../assets/background/Dashboard Admin.png'); background-size: cover;">
       <div class="container-fluid py-3">
 
-        <!-- HEADER -->
         <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
           <h4 class="fw-bold text-primary m-0">Dashboard</h4>
           <div class="profile-btn" id="profileToggle">
@@ -70,7 +68,6 @@ $agenda = $data['agenda_terdekat'] ?? [];
           </div>
         </div>
 
-        <!-- CARD JUMLAH -->
         <div class="row g-3 mb-4 mt-3">
           <div class="col-md-4">
             <div class="card text-center shadow-sm border-primary dashboard-card">
@@ -97,8 +94,34 @@ $agenda = $data['agenda_terdekat'] ?? [];
             </div>
           </div>
         </div>
-
-        <!-- IZIN & AGENDA -->
+        
+        <h5 class="fw-bold text-primary mb-3 mt-4">Akses Cepat</h5>
+        <div class="row g-3 mb-4">
+          <div class="col-md-4">
+            <a href="../admin data guru/DataGuru.php?action=generate" class="card text-center shadow-sm access-card link-underline-opacity-0">
+              <div class="card-body">
+                <img src="../assets/Akun Guru.png" class="access-icon mb-2" alt="Generate Akun Guru">
+                <p class="mb-0 text-dark fw-semibold">Generate Akun Guru</p>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-4">
+            <a href="../admin data siswa/DataSiswa.php?action=generate" class="card text-center shadow-sm access-card link-underline-opacity-0">
+              <div class="card-body">
+                <img src="../assets/Akun Siswa.png" class="access-icon mb-2" alt="Generate Akun Siswa">
+                <p class="mb-0 text-dark fw-semibold">Generate Akun Siswa</p>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-4">
+            <a href="../admin kalender/Kalender.php" class="card text-center shadow-sm access-card link-underline-opacity-0">
+              <div class="card-body">
+                <img src="../assets/CRUD Kalender.png" class="access-icon mb-2" alt="CRUD Kalender">
+                <p class="mb-0 text-dark fw-semibold">CRUD Kalender</p>
+              </div>
+            </a>
+          </div>
+        </div>
         <div class="row g-3">
           <div class="col-md-6">
             <div class="card border-primary shadow-sm">
