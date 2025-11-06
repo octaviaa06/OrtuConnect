@@ -1,0 +1,124 @@
+/* ======================================= */
+/* ====== STRUKTUR UMUM (TETAP SAMA) ===== */
+/* ======================================= */
+.sidebar {
+    width: 240px;
+    background-color: #0d6efd;
+    transition: width 0.35s ease;
+    overflow: hidden;
+    height: 100vh;
+    padding-top: 50px;
+    border-radius: 0 20px 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+/* ... (CSS Sidebar, Nav, Icons, Header, Profile, Notifikasi, dll. tetap sama) */
+
+.main-content {
+    margin-left: 240px;
+    flex-grow: 1;
+    padding: 20px 40px;
+    transition: margin-left 0.35s ease;
+    background-color: transparent;
+    position: relative;
+    min-height: 100vh;
+}
+
+.sidebar.collapsed ~ .main-content {
+    margin-left: 90px;
+}
+
+/* ======================================= */
+/* ====== CUSTOM STYLE ABSENSI =========== */
+/* ======================================= */
+
+/* Kontrol Tanggal dan Kelas */
+.custom-control-absensi {
+    border-radius: 12px;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    font-weight: 500;
+}
+
+/* Tombol Simpan Absensi */
+.btn-simpan-absensi {
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: bold;
+}
+
+/* Item Daftar Absensi */
+.absensi-item {
+    padding-left: 10px;
+    padding-right: 10px;
+    border-color: #eee !important;
+}
+
+.absensi-item:last-child {
+    border-bottom: none !important;
+}
+
+/* Status Dropdown */
+.status-absensi-select {
+    width: 150px; /* Lebar sesuai screenshot */
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+    padding: 8px 12px;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    appearance: none; /* Menyembunyikan panah default */
+    /* Ikon panah ke bawah */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 10px 10px;
+}
+
+/* Warna Dropdown Berdasarkan Status Pilihan */
+.status-hadir {
+    background-color: #e6f7eb; /* Hijau muda */
+    color: #28a745;            /* Hijau teks */
+}
+
+.status-izin {
+    background-color: #e6f7fb; /* Biru muda */
+    color: #0d6efd;            /* Biru teks */
+}
+
+.status-sakit {
+    background-color: #fcf8e3; /* Kuning muda */
+    color: #ffc107;            /* Kuning teks */
+}
+
+.status-alpa {
+    background-color: #f8d7da; /* Merah muda */
+    color: #dc3545;            /* Merah teks */
+}
+
+/* Warna option di dropdown sesuai status (opsional, tergantung browser) */
+.status-absensi-select option.status-hadir { 
+    color: #28a745; 
+    font-weight: bold; 
+}
+
+.status-absensi-select option.status-izin { 
+    color: #0d6efd; 
+    font-weight: bold; 
+}
+
+.status-absensi-select option.status-sakit { 
+    color: #ffc107; 
+    font-weight: bold; 
+}
+
+.status-absensi-select option.status-alpa { 
+    color: #dc3545; 
+    font-weight: bold; 
+}
