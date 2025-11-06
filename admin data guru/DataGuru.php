@@ -192,7 +192,6 @@ $guruList = $data['data'] ?? [];
 
 <!-- Notifikasi -->
 <div id="notifBox" class="notif"></div>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -263,7 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // === EDIT DATA
   window.editGuru = async (id) => {
     try {
-      const res = await fetch(apiURL + `?id_guru=${id}`);
+      const res = await fetch(apiURL + ?id_guru=${id});
       const data = await res.json();
       if (!data.data) return alert("Data tidak ditemukan!");
       const g = data.data;

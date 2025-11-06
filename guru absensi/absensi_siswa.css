@@ -1,0 +1,157 @@
+/* ===============================
+   STYLE UNTUK HALAMAN ABSENSI
+   =============================== */
+
+body {
+    background-color: #f8f9fc;
+    font-family: "Poppins", sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar {
+    background-color: #3b5bdb;
+    min-height: 100vh;
+    width: 80px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.sidebar i {
+    color: white;
+    font-size: 22px;
+    margin: 25px 0;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.sidebar i:hover {
+    transform: scale(1.15);
+    color: #ced4f9;
+}
+
+/* KONTEN UTAMA */
+.main-content {
+    margin-left: 100px;
+    padding: 25px;
+}
+
+/* HEADER ATAS */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.header .judul {
+    color: #3b5bdb;
+    font-weight: 600;
+    font-size: 1.6rem;
+}
+
+.admin-badge {
+    background-color: #e9ecef;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #3b5bdb;
+    font-size: 1.1rem;
+}
+
+.admin-name {
+    color: #3b5bdb;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+/* FILTER ATAS (Tanggal & Kelas) */
+.filter-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.filter-section input,
+.filter-section select {
+    width: 200px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 8px 10px;
+}
+
+.filter-section button {
+    background-color: #3b5bdb;
+    border: none;
+    color: white;
+    font-weight: 500;
+    padding: 8px 20px;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.filter-section button:hover {
+    background-color: #3048b0;
+}
+
+/* KARTU ABSENSI */
+.card-absensi-wrapper {
+    background: #fff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+}
+
+.card-absensi-wrapper h6 {
+    color: #3b5bdb;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.card-absensi {
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.card-absensi:hover {
+    background-color: #f1f3fe;
+}
+
+.card-absensi strong {
+    font-size: 1rem;
+    margin-right: 10px;
+}
+
+.card-absensi select {
+    width: 120px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+}
+
+.card-absensi option[value="Hadir"] {
+    color: green;
+}
+
+.card-absensi option[value="Tidak Hadir"] {
+    color: red;
+}
+
+.card-absensi option[value="Izin"] {
+    color: orange;
+}
