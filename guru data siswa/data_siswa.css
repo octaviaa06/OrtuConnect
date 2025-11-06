@@ -1,0 +1,53 @@
+/* Sidebar styling */
+.sidebar {
+  width: 240px;
+  height: 100vh;
+  background-color: #007bff; /* warna primer biru */
+  transition: width 0.3s;
+  overflow-x: hidden;
+}
+
+.sidebar.collapsed {
+  width: 80px;
+}
+
+/* Tombol garis 3 */
+.slide-btn {
+  width: 28px;
+  cursor: pointer;
+  margin: 10px auto;
+  display: block;
+}
+
+/* Icon menu */
+.icon {
+  width: 38px;      /* samakan ukuran dengan dashboard */
+  height: 38px;
+  margin-right: 12px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Link menu */
+.nav-link {
+  display: flex;
+  align-items: center;
+  color: white;
+  font-weight: 500;
+  padding: 10px 12px;
+  border-radius: 10px;
+  transition: background 0.3s;
+}
+
+.nav-link:hover {
+  background-color: rgba(255,255,255,0.15);
+}
+
+.nav-link.active {
+  background-color: rgba(255,255,255,0.25);
+}
+
+/* Ketika sidebar di-collapse, sembunyikan tulisan */
+.sidebar.collapsed .nav-link span {
+  display: none;
+}
