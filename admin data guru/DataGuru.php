@@ -66,9 +66,11 @@ $guruList = $data['data'] ?? [];
             <h6><?= ucfirst($_SESSION['role']) ?></h6>
             <p><?= htmlspecialchars($_SESSION['username']) ?>@gmail.com</p>
             <hr>
-            <a href="../logout/logout.php" class="logout-btn">
-              <img src="../assets/keluar.png" alt="Logout"> Logout
-            </a>
+<a href="../logout/logout.php?from=dataguru" class="logout-btn">
+  <img src="../assets/keluar.png" alt="Logout"> Logout
+</a>
+
+
           </div>
         </div>
       </div>
