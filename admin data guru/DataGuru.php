@@ -8,7 +8,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 
 // Ambil data guru dari API
-$api_url = "https://ortuconnect.atwebpages.com/api/admin/data_guru.php";
+$api_url = "http://ortuconnect.atwebpages.com/api/admin/data_guru.php";
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -221,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const idGuruInput = document.getElementById('id_guru');
   const judulModal = document.getElementById('judulModalGuru');
   const tombolSimpan = document.getElementById('btnSimpanGuru');
-  const apiURL = "https://ortuconnect.atwebpages.com/api/admin/data_guru.php";
+  const apiURL = "http://ortuconnect.atwebpages.com/api/admin/data_guru.php";
 
   document.getElementById('btnTambahGuru').addEventListener('click', () => {
     judulModal.textContent = "Tambah Guru Baru";
