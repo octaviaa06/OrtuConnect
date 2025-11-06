@@ -8,7 +8,7 @@ if (!isset($_POST['username']) || !isset($_POST['password'])) {
 }
 
 $username = $_POST['username'];
-$password = $_POST['password'];
+$password = $_POST['password']; 
  
 $api_url = "http://ortuconnect.atwebpages.com/api/login.php"; 
 
