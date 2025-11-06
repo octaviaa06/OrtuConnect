@@ -262,7 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // === EDIT DATA
   window.editGuru = async (id) => {
     try {
-      const res = await fetch(apiURL + `?id_guru=${id}`);
+      const res = await fetch(apiURL + ?id_guru=${id});
       const data = await res.json();
       if (!data.data) return alert("Data tidak ditemukan!");
       const g = data.data;
