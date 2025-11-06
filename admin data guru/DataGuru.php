@@ -262,7 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // === EDIT DATA
   window.editGuru = async (id) => {
     try {
-      const res = await fetch(apiURL + ?id_guru=${id});
+      const res = await fetch(apiURL + `?id_guru=${id}`);
       const data = await res.json();
       if (!data.data) return alert("Data tidak ditemukan!");
       const g = data.data;
@@ -298,7 +298,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // === GENERATE AKUN (dengan modal & notif)
   window.generateAkun = async (id) => {
     try {
-      const res = await fetch(`https://ortuconnect.atwebpages.com/api/admin/generate_akun.php?tipe=guru&id=${id}`, { cache: "no-store" });
+      const res = await fetch(`http://ortuconnect.atwebpages.com/api/admin/generate_akun.php?tipe=guru&id=${id}`, { cache: "no-store" });
       const data = await res.json();
       if (data.status === "success") {
         const d = data.data;
