@@ -8,7 +8,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 
 // Ambil data murid dari API
-$api_url = "https://ortuconnect.atwebpages.com/api/admin/data_siswa.php";
+$api_url = "http://ortuconnect.atwebpages.com/api/admin/data_siswa.php";
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -44,7 +44,7 @@ $siswaList = $data['data'] ?? [];
         <ul class="nav flex-column">
             <li class="nav-item"><a href="../dashboard_admin/home_admin.php" class="nav-link"><img src="../assets/Dashboard.png" class="icon"><span>Dashboard</span></a></li>
             <li class="nav-item"><a href="../admin data guru/DataGuru.php" class="nav-link"><img src="../assets/Data Guru.png" class="icon"><span>Data Guru</span></a></li>
-            <li class="nav-item"><a href="DataSiswa.php" class="nav-link active"><img src="../assets/Data Siswa.png" class="icon"><span>Data Murid</span></a></li>
+            <li class="nav-item"><a href="../admin data siswa/DataSiswa.php" class="nav-link active"><img src="../assets/Data Siswa.png" class="icon"><span>Data Murid</span></a></li>
             <li class="nav-item"><a href="../admin absensi/Absensi.php" class="nav-link"><img src="../assets/absensi.png" class="icon"><span>Absensi</span></a></li>
             <li class="nav-item"><a href="../admin perizinan/Perizinan.php" class="nav-link"><img src="../assets/Perizinan.png" class="icon"><span>Perizinan</span></a></li>
             <li class="nav-item"><a href="../admin kalender/Kalender.php" class="nav-link"><img src="../assets/Kalender.png" class="icon"><span>Kalender</span></a></li>
