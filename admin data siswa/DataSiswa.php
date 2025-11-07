@@ -304,7 +304,7 @@ window.generateAkun = async function(id) {
   }
 }
 });
-
+ 
 </script>
 </body>
 </html>
