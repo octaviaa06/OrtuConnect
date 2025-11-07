@@ -9,13 +9,18 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
 // Ambil kelas dari API nyata
 function getDaftarKelas() {
-    $api_kelas_url = "https://ortuconnect.atwebpages.com/api/admin/absensi.php"; // misal endpoint daftar kelas
+    $api_kelas_url = "https://ortuconnect.atwebpages.com/api/admin/absensi.php"; 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $api_kelas_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
     $response = curl_exec($ch);
+    if (curl_errno($ch)) {
+        error_log("cURL Error for Kelas: " . curl_error($ch));
+        curl_close($ch);
+        return [];
+    }
     curl_close($ch);
     $data = json_decode($response, true);
     return $data['data'] ?? [];
@@ -31,8 +36,7 @@ $kelasList = getDaftarKelas();
 // Ambil daftar absensi dari API
 $absensiList = [];
 if ($selected_class) {
-    $api_absensi_url = "https://ortuconnect.atwebpages.com/api/admin/absensi.php" . urlencode($selected_class) . "&tanggal=" . urlencode($selected_date);
-
+    $api_absensi_url = "https://ortuconnect.atwebpages.com/api/admin/absensi.php?kelas=" . urlencode($selected_class) . "&tanggal=" . urlencode($selected_date);
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $api_absensi_url);
@@ -65,7 +69,6 @@ if ($selected_class) {
 </head>
 <body>
 <div class="d-flex">
-    <!-- Sidebar -->
     <div id="sidebar" class="sidebar bg-primary text-white p-3 expanded">
         <div class="text-center mb-4">
             <img src="../assets/slide.png" id="toggleSidebar" alt="Slide" class="slide-btn">
@@ -80,24 +83,29 @@ if ($selected_class) {
         </ul>
     </div>
 
-    <!-- Main Content -->
     <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">
     <div class="container-fluid py-3">
         <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
             <h4 class="fw-bold text-primary m-0">Absensi</h4>
-            <div class="profile-btn" id="profileToggle">
+            
+            <div class="profile-container" id="profileToggle">
                 <div class="profile-avatar"><?= strtoupper(substr($_SESSION['username'], 0, 1)) ?></div>
-                <span class="fw-semibold text-primary"><?= htmlspecialchars($_SESSION['username']) ?></span>
-                <div class="profile-card" id="profileCard">
-                    <h6><?= ucfirst($_SESSION['role']) ?></h6>
-                    <p><?= htmlspecialchars($_SESSION['username']) ?>@gmail.com</p>
-                    <hr>
-                    <a href="../logout/logout.php?from=absensi" class="logout-btn"><img src="../assets/keluar.png" alt="Logout"> Logout</a>
+                <div class="profile-name"><?= htmlspecialchars($_SESSION['username']) ?></div>
+                
+                <div class="card profile-popup" id="profilePopup">
+                    <h6 class="fw-bold text-primary m-0"><?= ucfirst($_SESSION['role']) ?></h6>
+                    <p class="text-muted mb-2" style="font-size: 0.9rem;"><?= htmlspecialchars($_SESSION['username']) ?>@gmail.com</p>
+                    <hr style="border-color: rgba(0,0,0,0.1); margin: 8px 0;">
+                    <a href="../logout/logout.php?from=absensi" class="logout-link">
+                        <svg class="logout-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                            <path d="M160 96c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32V416c0 17.7-14.3 32-32 32H192c-17.7 0-32-14.3-32-32V384h32v32H416V96H192v32H160V96zM96 256c0 17.7 14.3 32 32 32H320v-64H128c-17.7 0-32 14.3-32 32zm80 80v64H320V336H176zm16-80V96H320v144H192zm-16-16H320v-64H176v64zm16 80v64H320V336H192zM128 256h192v64H128V256zM48 256a208 208 0 1 1 416 0A208 208 0 1 1 48 256z"/>
+                        </svg>
+                        Logout
+                    </a>
                 </div>
             </div>
-        </div>
+            </div>
 
-        <!-- Filter Form -->
         <form id="filterForm" class="d-flex gap-3 align-items-center mb-5" action="Absensi.php" method="GET">
             <input type="date" name="tanggal" class="form-control" value="<?= htmlspecialchars($selected_date) ?>" onchange="this.form.submit()">
             <select name="kelas" class="form-select" onchange="this.form.submit()">
@@ -106,10 +114,9 @@ if ($selected_class) {
                     <option value="<?= htmlspecialchars($kelas) ?>" <?= $selected_class === $kelas ? 'selected' : '' ?>>Kelas <?= htmlspecialchars($kelas) ?></option>
                 <?php endforeach; ?>
             </select>
-            <button type="button" class="btn btn-primary" onclick="simpanAbsensi()">Simpan</button>
+            <button type="button" class="btn btn-primary" onclick="showSaveOptions()">Simpan</button>
         </form>
 
-        <!-- Absensi List -->
         <div class="card shadow-sm border-0 p-4" style="border-radius:16px;">
             <h5 class="fw-bold mb-4 text-primary">Daftar Absensi</h5>
             <form id="formAbsensi">
@@ -142,6 +149,15 @@ if ($selected_class) {
 </div>
 
 <div id="notifBox" class="notif"></div>
+<div id="overlay"></div>
+
+<div id="saveOptions">
+    <h5 class="mb-3 text-primary fw-bold">Pilih Aksi</h5>
+    <button class="btn btn-success w-100" onclick="simpanAbsensi()">💾 Simpan Saja</button>
+    <button class="btn btn-danger w-100" onclick="exportAbsensi('pdf')">📄 Ekspor ke PDF</button>
+    <button class="btn btn-warning w-100" onclick="exportAbsensi('excel')">📊 Ekspor ke Excel</button>
+    <button class="btn btn-secondary w-100 mt-2" onclick="closeSaveOptions()">Batal</button>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
@@ -153,27 +169,53 @@ function showNotif(message, isSuccess = true) {
     setTimeout(() => notifBox.style.display = 'none', 3000);
 }
 
+// Sidebar dan Profil Toggle
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('.status-absensi-select').forEach(updateStatusColor);
+    
+    const sidebar = document.getElementById('sidebar');
+    const toggleSidebar = document.getElementById('toggleSidebar');
+    toggleSidebar.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+    });
+
+    const profileToggle = document.getElementById('profileToggle');
+    const profilePopup = document.getElementById('profilePopup'); // ID disesuaikan
+    
+    if (profileToggle && profilePopup) {
+        profileToggle.addEventListener('click', e => { 
+            e.stopPropagation(); 
+            profilePopup.classList.toggle('show'); 
+        });
+        
+        document.addEventListener('click', e => { 
+            const profileContainer = document.getElementById('profileToggle'); 
+            if (profileContainer && !profileContainer.contains(e.target)) {
+                profilePopup.classList.remove('show');
+            }
+        });
+    }
+});
+
+// Warna status
 function updateStatusColor(select) {
     select.className = 'form-select status-absensi-select';
     select.classList.add('status-' + select.value.toLowerCase());
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll('.status-absensi-select').forEach(updateStatusColor);
-    const sidebar = document.getElementById('sidebar');
-    document.getElementById('toggleSidebar').addEventListener('click', () => sidebar.classList.toggle('collapsed'));
-    const profileBtn = document.getElementById('profileToggle');
-    const profileCard = document.getElementById('profileCard');
-    profileBtn.addEventListener('click', e => { e.stopPropagation(); profileCard.classList.toggle('show'); });
-    document.addEventListener('click', e => { if (!profileBtn.contains(e.target)) profileCard.classList.remove('show'); });
-});
+// Popup save options
+function showSaveOptions() {
+    document.getElementById("saveOptions").classList.add("active");
+    document.getElementById("overlay").classList.add("active");
+}
+function closeSaveOptions() {
+    document.getElementById("saveOptions").classList.remove("active");
+    document.getElementById("overlay").classList.remove("active");
+}
 
 async function simpanAbsensi() {
+    closeSaveOptions();
     const form = document.getElementById('formAbsensi');
-    const tombolSimpan = document.querySelector('.btn.btn-primary');
-    tombolSimpan.disabled = true;
-    tombolSimpan.textContent = "Menyimpan...";
-
     const formData = new FormData(form);
     const absensiUpdates = [];
     const regex = /absensi\[(\d+)\]\[status\]/;
@@ -191,8 +233,6 @@ async function simpanAbsensi() {
 
     if(absensiUpdates.length === 0){
         showNotif("Tidak ada perubahan status absensi.", false);
-        tombolSimpan.disabled = false;
-        tombolSimpan.textContent = "Simpan";
         return;
     }
 
@@ -203,24 +243,30 @@ async function simpanAbsensi() {
     };
 
     try {
-        const res = await fetch("https://ortuconnect.atwebpages.com/api/admin/absensi.php ", {
+        const res = await fetch("https://ortuconnect.atwebpages.com/api/admin/absensi.php", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(payload)
         });
         const data = await res.json();
         if(data.status === "success"){
-            showNotif(data.message || "Absensi berhasil disimpan.", true);
+            showNotif("Absensi berhasil disimpan!", true);
             location.reload();
         } else {
-            showNotif(data.message || "Gagal menyimpan absensi.", false);
+            showNotif("Gagal menyimpan absensi.", false);
         }
     } catch(err){
-        showNotif("Terjadi kesalahan koneksi atau server.", false);
-    } finally {
-        tombolSimpan.disabled = false;
-        tombolSimpan.textContent = "Simpan";
+        showNotif("Terjadi kesalahan koneksi.", false);
     }
+}
+
+// Ekspor PDF / Excel (dummy link)
+function exportAbsensi(type) {
+    closeSaveOptions();
+    const kelas = document.querySelector('input[name="kelas"]').value;
+    const tanggal = document.querySelector('input[name="tanggal"]').value;
+    const url = `export_absensi.php?kelas=${kelas}&tanggal=${tanggal}&type=${type}`;
+    window.location.href = url;
 }
 </script>
 </body>

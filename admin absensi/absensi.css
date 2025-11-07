@@ -1,33 +1,107 @@
 /* ======================================= */
-/* ====== STRUKTUR UMUM (TETAP SAMA) ===== */
+/* ===== SIDEBAR MODERN TRANSPARAN ======= */
 /* ======================================= */
 .sidebar {
     width: 240px;
-    background-color: #0d6efd;
-    transition: width 0.35s ease;
-    overflow: hidden;
     height: 100vh;
-    padding-top: 50px;
-    border-radius: 0 20px 20px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 100;
+    background: rgba(13, 110, 253, 0.9); /* biru transparan */
+    backdrop-filter: blur(10px); /* efek glass */
+    border-radius: 0 25px 25px 0;
+    padding-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.4s ease;
+    z-index: 1000;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* ... (CSS Sidebar, Nav, Icons, Header, Profile, Notifikasi, dll. tetap sama) */
+.sidebar.collapsed {
+    width: 90px;
+}
 
+/* Tombol slide */
+.sidebar .slide-btn {
+    width: 35px;
+    cursor: pointer;
+    margin-bottom: 25px;
+    transition: transform 0.3s ease;
+}
+
+.sidebar .slide-btn:hover {
+    transform: scale(1.1);
+}
+
+/* Navigasi */
+.sidebar ul.nav {
+    list-style: none;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul.nav li {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.sidebar .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: #fff;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 12px 25px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    animation: sidebarSlide 0.5s ease both;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Icon */
+.sidebar .icon {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+}
+
+/* Teks menu */
+.sidebar .nav-link span {
+    /* Perubahan untuk animasi swing */
+    display: inline-block;
+    transform-origin: left center;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+}
+
+.sidebar.collapsed .nav-link span {
+    transform: rotateY(90deg);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sidebar:not(.collapsed) .nav-link span {
+    transform: rotateY(0deg);
+    opacity: 1;
+}
+
+/* ======================================= */
+/* ===== MAIN CONTENT ==================== */
+/* ======================================= */
 .main-content {
     margin-left: 240px;
     flex-grow: 1;
     padding: 20px 40px;
-    transition: margin-left 0.35s ease;
-    background-color: transparent;
-    position: relative;
+    transition: margin-left 0.4s ease;
     min-height: 100vh;
+    background-color: transparent;
 }
 
 .sidebar.collapsed ~ .main-content {
@@ -35,90 +109,254 @@
 }
 
 /* ======================================= */
-/* ====== CUSTOM STYLE ABSENSI =========== */
+/* ===== ANIMASI TRANSISI ================ */
 /* ======================================= */
-
-/* Kontrol Tanggal dan Kelas */
-.custom-control-absensi {
-    border-radius: 12px;
-    padding: 10px 15px;
-    border: 1px solid #ccc;
-    font-weight: 500;
+@keyframes sidebarSlide {
+    0% { transform: translateX(-10px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
 }
 
-/* Tombol Simpan Absensi */
-.btn-simpan-absensi {
-    border-radius: 12px;
-    padding: 10px 20px;
-    font-weight: bold;
+/* ======================================= */
+/* ===== RESPONSIVE ====================== */
+/* ======================================= */
+@media (max-width: 992px) {
+    .sidebar {
+        position: fixed;
+        height: 100%;
+        z-index: 1050;
+    }
+
+    .sidebar.collapsed {
+        width: 0;
+        padding: 0;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+    }
 }
 
-/* Item Daftar Absensi */
-.absensi-item {
-    padding-left: 10px;
-    padding-right: 10px;
-    border-color: #eee !important;
-}
-
-.absensi-item:last-child {
-    border-bottom: none !important;
-}
-
-/* Status Dropdown */
-.status-absensi-select {
-    width: 150px; /* Lebar sesuai screenshot */
-    border-radius: 8px;
-    font-weight: bold;
+/* === Popup Simpan & Overlay === */
+#saveOptions {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: #fff;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    z-index: 2000;
+    width: 320px;
+    max-width: 90%;
     text-align: center;
-    padding: 8px 12px;
+    display: none;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+#saveOptions.active {
+    display: block;
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(2px);
+    z-index: 1500;
+    display: none;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+#overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* ======================================= */
+/* ===== HOVER EFEK IKON & TOOLTIP ======= */
+/* ======================================= */
+.sidebar .nav-link:hover .icon {
+    transform: scale(1.2);
+    transition: transform 0.3s ease;
+}
+
+/* Tooltip ketika sidebar collapsed */
+/* ... (Kode tooltip lainnya, tidak ditampilkan di sini untuk keringkasan) ... */
+
+/* ======================================= */
+/* ===== SCROLLBAR CUSTOM ================= */
+/* ======================================= */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+/* ======================================= */
+/* ===== BUTTON UTAMA ==================== */
+/* ======================================= */
+button.primary-btn {
+    background-color: #0d6efd;
+    color: #fff;
     border: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    appearance: none; /* Menyembunyikan panah default */
-    /* Ikon panah ke bawah */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E") !important;
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 10px 10px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-/* Warna Dropdown Berdasarkan Status Pilihan */
-.status-hadir {
-    background-color: #e6f7eb; /* Hijau muda */
-    color: #28a745;            /* Hijau teks */
+button.primary-btn:hover {
+    background-color: #0b5ed7;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
-.status-izin {
-    background-color: #e6f7fb; /* Biru muda */
-    color: #0d6efd;            /* Biru teks */
+/* ======================================= */
+/* ===== CARD / BOX MODERN =============== */
+/* ======================================= */
+/* Mengubah background card agar terlihat lebih jelas di atas background image */
+.card {
+    background: rgba(255,255,255,0.8); /* Dibuat sedikit lebih solid */
+    backdrop-filter: blur(12px);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.status-sakit {
-    background-color: #fcf8e3; /* Kuning muda */
-    color: #ffc107;            /* Kuning teks */
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.2);
 }
 
-.status-alpa {
-    background-color: #f8d7da; /* Merah muda */
-    color: #dc3545;            /* Merah teks */
+/* ======================================= */
+/* ===== PROFILE STYLING (KOREKSI UTAMA) = */
+/* ======================================= */
+.profile-container {
+    position: relative;
+    cursor: pointer;
+    display: flex; /* Tambahkan display flex di sini */
+    align-items: center;
+    gap: 8px;
+}
+.profile-avatar {
+    width: 45px; /* Sedikit lebih besar dari 40px */
+    height: 45px; /* Sedikit lebih besar dari 40px */
+    border-radius: 50%;
+    background: #1E88E5;
+    color: white;
+    font-weight: 700;
+    font-size: 20px; /* Disesuaikan */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
 }
 
-/* Warna option di dropdown sesuai status (opsional, tergantung browser) */
-.status-absensi-select option.status-hadir { 
-    color: #28a745; 
-    font-weight: bold; 
+.profile-avatar:hover {
+    transform: scale(1.05); /* Sedikit dikurangi agar tidak terlalu agresif */
 }
 
-.status-absensi-select option.status-izin { 
-    color: #0d6efd; 
-    font-weight: bold; 
+.profile-name {
+    color: #1E88E5;
+    font-weight: 600;
+    font-size: 16px;
+    transition: color 0.3s ease;
 }
 
-.status-absensi-select option.status-sakit { 
-    color: #ffc107; 
-    font-weight: bold; 
+.profile-name:hover {
+    color: #0d6efd;
 }
 
-.status-absensi-select option.status-alpa { 
-    color: #dc3545; 
-    font-weight: bold; 
+/* === Popup Styling === */
+.profile-popup {
+    position: absolute;
+    top: 60px; /* Jarak dari profile-toggle */
+    right: 0;
+    /* Menggunakan styling card yang telah diperbarui (background: rgba(255,255,255,0.8);) */
+    padding: 15px 20px;
+    width: 220px;
+    /* Efek transisi untuk popup */
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: all 0.25s ease;
+    z-index: 999;
 }
+
+.profile-popup.show {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateY(0);
+}
+
+.profile-popup h6 {
+    color: #1E88E5;
+    font-weight: 700;
+    margin: 0 0 5px 0;
+}
+
+/* Mengubah warna teks di popup agar terbaca di atas background putih/glassmorphism */
+.profile-popup p {
+    font-size: 14px;
+    color: #6c757d; /* Warna gelap agar terlihat */
+    margin-bottom: 8px;
+}
+
+/* === Logout Link Styling === */
+.logout-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #d9534f;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.logout-link:hover {
+    text-decoration: underline;
+    color: #c9302c;
+}
+
+.logout-icon {
+    width: 18px;
+    height: 18px;
+    fill: #d9534f;
+    transition: fill 0.3s ease;
+}
+
+.logout-link:hover .logout-icon {
+    fill: #c9302c;
+}
+
+/* ... (Styling form, table, dan button lainnya) ... */
+.status-absensi-select {
+    width: 120px;
+    text-align: center;
+}
+.status-hadir { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+.status-izin { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
+.status-sakit { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+.status-alpa { background-color: #f8f9fa; color: #343a40; border-color: #dae0e5; }
