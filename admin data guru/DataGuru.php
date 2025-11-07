@@ -1,14 +1,14 @@
 <?php
 session_start();
 
-// Pastikan admin login
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   header("Location: ../login/index.php?error=Harap login sebagai admin!");
   exit;
 }
 
 // Ambil data guru dari API
-$api_url = "http://ortuconnect.atwebpages.com/api/admin/data_guru.php";
+$api_url = "https://ortuconnect.atwebpages.com/api/admin/data_guru.php";
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -221,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const idGuruInput = document.getElementById('id_guru');
   const judulModal = document.getElementById('judulModalGuru');
   const tombolSimpan = document.getElementById('btnSimpanGuru');
-  const apiURL = "http://ortuconnect.atwebpages.com/api/admin/data_guru.php";
+  const apiURL = "https://ortuconnect.atwebpages.com/api/admin/data_guru.php";
 
   document.getElementById('btnTambahGuru').addEventListener('click', () => {
     judulModal.textContent = "Tambah Guru Baru";
@@ -262,7 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // === EDIT DATA
   window.editGuru = async (id) => {
     try {
-      const res = await fetch(apiURL + `?id_guru=${id}`);
+      const res = await fetch(apiURL + ?id_guru=${id});
       const data = await res.json();
       if (!data.data) return alert("Data tidak ditemukan!");
       const g = data.data;
@@ -298,7 +298,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // === GENERATE AKUN (dengan modal & notif)
   window.generateAkun = async (id) => {
     try {
-      const res = await fetch(`http://ortuconnect.atwebpages.com/api/admin/generate_akun.php?tipe=guru&id=${id}`, { cache: "no-store" });
+      const res = await fetch(`https://ortuconnect.atwebpages.com/api/admin/generate_akun.php?tipe=guru&id=${id}`, { cache: "no-store" });
       const data = await res.json();
       if (data.status === "success") {
         const d = data.data;
