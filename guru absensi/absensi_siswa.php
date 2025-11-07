@@ -24,46 +24,29 @@ $halaman_aktif = 'absensi';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        /* ===============================
-           BODY & BACKGROUND UTAMA
-           =============================== */
         body {
-            margin: 0;
+            background-color: #f8f9fc;
             font-family: "Poppins", sans-serif;
-            background-color: #f8f9fc; /* putih lembut */
-            color: #222;
+            margin: 0;
+            transition: all 0.3s ease;
         }
 
-        /* ===============================
-           SIDEBAR BIRU TRANSPARAN
-           =============================== */
+        /* ===== SIDEBAR ===== */
         .sidebar {
-            width: 240px;
-            background: linear-gradient(180deg, rgba(59, 91, 219, 0.95), rgba(30, 42, 120, 0.9));
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background-color: #3B5CCC;
             min-height: 100vh;
+            width: 240px;
             position: fixed;
-            top: 0;
             left: 0;
+            top: 0;
             padding-top: 25px;
-            border-radius: 0 16px 16px 0;
+            border-radius: 0 12px 12px 0;
             transition: width 0.3s ease;
             overflow: hidden;
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
         }
 
         .sidebar.collapsed {
             width: 80px;
-        }
-
-        .sidebar-toggle {
-            text-align: center;
-            color: white;
-            font-size: 26px;
-            cursor: pointer;
-            margin-bottom: 25px;
         }
 
         .sidebar ul {
@@ -85,35 +68,44 @@ $halaman_aktif = 'absensi';
             color: white;
             font-weight: 600;
             padding: 12px 20px;
-            border-radius: 10px;
+            border-radius: 8px;
             transition: all 0.2s ease-in-out;
             white-space: nowrap;
         }
 
+        .sidebar ul li a i {
+            font-size: 22px;
+            margin-right: 14px;
+            min-width: 24px;
+            text-align: center;
+        }
+
         .sidebar ul li a:hover {
-            background-color: rgba(255, 255, 255, 0.15);
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
         .sidebar ul li a.active {
-            background-color: rgba(255, 255, 255, 0.3);
-            color: #fff;
+            background-color: #ffffff;
+            color: #3B5CCC;
         }
 
-        .sidebar ul li a img.icon {
-            width: 22px;
-            height: 22px;
-            margin-right: 14px;
-            object-fit: contain;
-            filter: brightness(0) invert(1);
+        .sidebar ul li a.active i {
+            color: #3B5CCC;
         }
 
         .sidebar.collapsed a span {
             display: none;
         }
 
-        /* ===============================
-           MAIN CONTENT
-           =============================== */
+        .sidebar-toggle {
+            text-align: center;
+            color: white;
+            font-size: 26px;
+            cursor: pointer;
+            margin-bottom: 25px;
+        }
+
+        /* ===== MAIN CONTENT ===== */
         .main-content {
             margin-left: 260px;
             padding: 30px;
@@ -141,9 +133,7 @@ $halaman_aktif = 'absensi';
             color: #3B5CCC;
         }
 
-        /* ===============================
-           FILTER SECTION
-           =============================== */
+        /* ===== FILTER SECTION ===== */
         .filter-section {
             display: flex;
             align-items: center;
@@ -173,19 +163,10 @@ $halaman_aktif = 'absensi';
         }
 
         .btn-simpan:hover {
-            background-color: #324ab2;
+            background-color: #334FBA;
         }
 
-        /* ===============================
-           CARD ABSENSI
-           =============================== */
-        .card {
-            background-color: white;
-            border: none;
-            border-radius: 14px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-        }
-
+        /* ===== CARD ABSENSI ===== */
         .card-absensi {
             border: 1px solid #e5e5e5;
             border-radius: 10px;
@@ -211,41 +192,21 @@ $halaman_aktif = 'absensi';
         </div>
 
         <ul>
-            <li class="nav-item">
-                <a href="../dashboard_guru/home_guru.php" class="nav-link <?= $halaman_aktif == 'dashboard' ? 'active' : '' ?>">
-                    <img src="../assets/Dashboard.png" class="icon"><span>Dashboard</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="DataSiswa.php" class="nav-link <?= $halaman_aktif == 'datasiswa' ? 'active' : '' ?>">
-                    <img src="../assets/Data Siswa.png" class="icon"><span>Data Murid</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="../guru absensi/Absensi.php" class="nav-link <?= $halaman_aktif == 'absensi' ? 'active' : '' ?>">
-                    <img src="../assets/absensi.png" class="icon"><span>Absensi</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="../guru perizinan/Perizinan.php" class="nav-link <?= $halaman_aktif == 'perizinan' ? 'active' : '' ?>">
-                    <img src="../assets/Perizinan.png" class="icon"><span>Perizinan</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="../guru kalender/Kalender.php" class="nav-link <?= $halaman_aktif == 'kalender' ? 'active' : '' ?>">
-                    <img src="../assets/Kalender.png" class="icon"><span>Kalender</span>
-                </a>
-            </li>
+            <li><a href="dashboard.php" class="<?= $halaman_aktif == 'dashboard' ? 'active' : '' ?>"><i class="bi bi-grid-fill"></i><span>Dashboard</span></a></li>
+            <li><a href="murid.php" class="<?= $halaman_aktif == 'murid' ? 'active' : '' ?>"><i class="bi bi-people-fill"></i><span>Data Murid</span></a></li>
+            <li><a href="absensi.php" class="<?= $halaman_aktif == 'absensi' ? 'active' : '' ?>"><i class="bi bi-person-check-fill"></i><span>Absensi</span></a></li>
+            <li><a href="izin.php" class="<?= $halaman_aktif == 'izin' ? 'active' : '' ?>"><i class="bi bi-clipboard2-fill"></i><span>Perizinan</span></a></li>
+            <li><a href="kalender.php" class="<?= $halaman_aktif == 'kalender' ? 'active' : '' ?>"><i class="bi bi-calendar3-event-fill"></i><span>Kalender</span></a></li>
         </ul>
     </div>
 
     <!-- MAIN CONTENT -->
     <div class="main-content" id="mainContent">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="judul">Absensi</h3>
+            <h3 class="judul"><i class="bi bi-person-check-fill me-2"></i>Absensi</h3>
             <div class="d-flex align-items-center">
-                <div class="admin-badge me-2">G</div>
-                <span class="fw-bold text-primary">Guru</span>
+                <div class="admin-badge me-2">A</div>
+                <span class="fw-bold text-primary">Admin</span>
             </div>
         </div>
 
@@ -259,12 +220,14 @@ $halaman_aktif = 'absensi';
                     <option>Kelas C</option>
                 </select>
             </div>
-            <button class="btn-simpan">Simpan</button>
+            <button class="btn-simpan"><i class="bi bi-save me-1"></i> Simpan</button>
         </div>
 
         <!-- CARD ABSENSI -->
         <div class="card p-4">
-            <h6 class="text-primary fw-bold mb-3">Daftar Absensi</h6>
+            <h6 class="text-primary fw-bold mb-3">
+                <i class="bi bi-person-check me-2"></i>Daftar Absensi
+            </h6>
 
             <?php foreach ($daftar_siswa as $siswa): ?>
                 <div class="card-absensi">
