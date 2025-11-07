@@ -1,14 +1,14 @@
 <?php
 session_start();
 
-// Pastikan admin login
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   header("Location: ../login/index.php?error=Harap login sebagai admin!");
   exit;
 }
 
-// Ambil data guru dari API
-$api_url = "http://ortuconnect.atwebpages.com/api/admin/data_guru.php";
+
+$api_url = "https://ortuconnect.atwebpages.com/api/admin/data_guru.php";
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
