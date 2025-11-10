@@ -1,268 +1,345 @@
-/* ===== SIDEBAR ===== */
+
+/* ======================================================= */
+/* ===== 1. SIDEBAR & ANIMASI (Dari Inline Style Asli) ===== */
+/* ======================================================= */
+
 .sidebar {
-  width: 200px; /* dikurangi agar lebih proporsional */
-  background-color: #0d6efd;
-  transition: width 0.35s ease;
-  overflow: hidden;
-  height: 100vh;
-  padding-top: 50px;
-  border-radius: 0 18px 18px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 100;
+    width: 250px; /* Lebar default */
+    background-color: rgba(13, 110, 253, 0.95); /* Warna Primary Bootstrap */
+    transition: all 0.4s ease;
+    position: relative; 
+}
+
+#sidebar.collapsed {
+    width: 80px;
+    transition: all 0.4s ease;
+}
+
+#sidebar .menu-text {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.4s ease;
+    display: inline-block;
+    white-space: nowrap; /* Mencegah teks melompat/wrap */
+}
+
+#sidebar.collapsed .menu-text {
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.3s ease;
+    display: none;
+}
+
+/* Animasi ikon agar tetap smooth */
+#sidebar img.icon {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
+}
+
+/* Saat sidebar dibuka, teks swing halus */
+#sidebar.expanded .menu-text {
+    animation: swingIn 0.4s ease forwards;
+}
+
+@keyframes swingIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ======================================================= */
+/* ===== 2. SIDEBAR (Kode Tambahan dari Anda) ===== */
+/* ======================================================= */
+
+/* Mengambil properti yang lebih spesifik dari kode yang Anda berikan */
+.sidebar {
+    /* width: 200px; */ /* Dikesampingkan, menggunakan 250px untuk konsistensi JS & tampilan */
+    /* background-color: #0d6efd; */ /* Dikesampingkan, menggunakan rgba untuk opacity */
+    transition: width 0.35s ease;
+    overflow: hidden;
+    height: 100vh;
+    padding-top: 50px;
+    border-radius: 0 18px 18px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed; /* Diubah ke fixed untuk perilaku yang lebih baik */
+    top: 0;
+    left: 0;
+    z-index: 100;
 }
 
 .sidebar.collapsed {
-  width: 70px;
+    width: 70px; /* Mengambil 70px dari kode Anda */
 }
 
 .slide-btn {
-  width: 28px;
-  cursor: pointer;
-  margin-bottom: 30px;
-  transition: transform 0.3s ease;
+    width: 28px;
+    cursor: pointer;
+    margin-bottom: 30px;
+    transition: transform 0.3s ease;
 }
 
 .slide-btn:hover {
-  transform: scale(1.1);
+    transform: scale(1.1);
 }
 
 .nav {
-  width: 100%;
-  padding-left: 0;
-  margin-top: 8px;
+    width: 100%;
+    padding-left: 0;
+    margin-top: 8px;
 }
 
 .nav-item {
-  margin-bottom: 12px;
-  width: 100%;
+    margin-bottom: 12px;
+    width: 100%;
 }
 
 .nav-link {
-  color: white;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  border-radius: 10px;
-  transition: background 0.3s, transform 0.2s;
-  font-size: 15px;
-  font-weight: 500;
-  white-space: nowrap;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    transition: background 0.3s, transform 0.2s;
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
 }
 
 .nav-link:hover,
 .nav-link.active {
-  background-color: rgba(255,255,255,0.2);
-  transform: translateX(5px);
+    background-color: rgba(255,255,255,0.2);
+    transform: translateX(5px);
 }
 
 .icon {
-  width: 28px;
-  height: 28px;
-  flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
 }
 
 /* Sidebar Collapsed */
 .sidebar.collapsed .nav-link {
-  justify-content: center;
-  padding: 10px 0;
+    justify-content: center;
+    padding: 10px 0;
 }
 
 .sidebar.collapsed .nav-link span {
-  opacity: 0;
-  width: 0;
-  transition: opacity 0.2s ease, width 0.3s ease;
+    opacity: 0;
+    width: 0;
+    transition: opacity 0.2s ease, width 0.3s ease;
 }
 
 .sidebar .nav-link span {
-  opacity: 1;
-  width: auto;
-  transition: opacity 0.3s ease, width 0.3s ease;
+    opacity: 1;
+    width: auto;
+    transition: opacity 0.3s ease, width 0.3s ease;
 }
 
-/* ===== MAIN CONTENT ===== */
+
+/* ======================================================= */
+/* ===== 3. KONTEN UTAMA & MARGIN (Mengatasi Fixed Sidebar) ===== */
+/* ======================================================= */
+
 .main-content {
-  margin-left: 200px; /* sesuaikan dengan sidebar */
-  flex-grow: 1;
-  padding: 18px 28px;
-  transition: margin-left 0.35s ease;
-  background-color: transparent;
-  position: relative;
-  min-height: 100vh;
+    margin-left: 250px;
+    padding: 18px 28px;
+    transition: margin-left 0.35s ease;
+    background-color: transparent;
+    position: relative;
+    min-height: 100vh;
 }
 
 .sidebar.collapsed ~ .main-content {
-  margin-left: 80px;
+    margin-left: 70px; 
 }
 
-/* ===== SEARCH BOX ===== */
+/* ======================================================= */
+/* ===== 4. SEARCH BOX ===== */
+/* ======================================================= */
 .search-container {
-  background-color: #fff;
-  border-radius: 12px;
-  padding: 8px 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  display: flex;
-  align-items: center;
-  height: 42px;
-  position: relative;
-  width: 100%;
-  max-width: 450px;
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    height: 42px;
+    position: relative;
+    width: 100%;
+    max-width: 450px;
 }
 
 .search-container:focus-within {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .search-icon {
-  position: absolute;
-  left: 12px;
-  width: 20px;
-  height: 20px;
-  opacity: 0.6;
+    position: absolute;
+    left: 12px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.6;
 }
 
 .search-input {
-  border: none;
-  padding-left: 40px;
-  height: 100%;
-  font-size: 14px;
-  background: transparent;
+    border: none;
+    padding-left: 40px;
+    height: 100%;
+    font-size: 14px;
+    background: transparent;
 }
 
 .search-input:focus {
-  outline: none;
-  border: none;
-  box-shadow: none !important;
+    outline: none;
+    border: none;
+    box-shadow: none !important;
 }
 
-/* ===== HEADER & PROFILE ===== */
+/* ======================================================= */
+/* ===== 5. HEADER & PROFILE ===== */
+/* ======================================================= */
 .header-fixed {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  background-color: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(6px);
-  padding: 10px 0;
-  z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(6px);
+    padding: 10px 0;
+    z-index: 1000;
 }
 
 .profile-btn {
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  position: relative;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
 }
 
 .profile-avatar {
-  width: 50px;
-  height: 50px;
-  font-weight: 600;
-  font-size: 18px;
-  background-color: #0d6efd;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    width: 50px;
+    height: 50px;
+    font-weight: 600;
+    font-size: 18px;
+    background-color: #0d6efd;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .profile-card {
-  position: absolute;
-  top: 60px;
-  right: 0;
-  width: 210px;
-  background: #fff;
-  border-radius: 12px;
-  padding: 12px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-  display: none;
-  z-index: 1050;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 210px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    display: none;
+    z-index: 1050;
 }
 
 .profile-card.show {
-  display: block;
-  animation: fadeIn 0.2s ease;
+    display: block;
+    animation: fadeIn 0.2s ease;
 }
 
 .profile-card h6 {
-  margin-bottom: 4px;
-  color: #0d6efd;
-  font-weight: 600;
-  font-size: 15px;
+    margin-bottom: 4px;
+    color: #0d6efd;
+    font-weight: 600;
+    font-size: 15px;
 }
 
 .profile-card p {
-  margin: 0;
-  font-size: 13px;
-  color: #6c757d;
+    margin: 0;
+    font-size: 13px;
+    color: #6c757d;
 }
 
 .profile-card hr {
-  margin: 10px 0;
+    margin: 10px 0;
 }
 
 .profile-card a {
-  color: #d9534f !important;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
+    color: #d9534f !important;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
 }
 
 .profile-card a img {
-  width: 18px;
+    width: 18px;
 }
 
-/* ===== CARD GURU ===== */
+/* ======================================================= */
+/* ===== 6. LAIN-LAIN (Placeholder) ===== */
+/* ======================================================= */
+
 .guru-card {
-  border-radius: 15px;
-  transition: all 0.3s ease;
+    border-radius: 15px;
+    transition: all 0.3s ease;
 }
 
 .guru-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* ===== RESPONSIVE ===== */
+/* ======================================================= */
+/* ===== 7. RESPONSIVE ===== */
+/* ======================================================= */
 @media (max-width: 768px) {
-  .main-content {
-    padding: 15px;
-    margin-left: 0;
-  }
+    .main-content {
+        padding: 15px;
+        margin-left: 0;
+    }
 
-  .sidebar {
-    width: 60px;
-  }
+    .sidebar {
+        width: 60px;
+    }
 
-  .sidebar.collapsed {
-    width: 60px;
-  }
+    .sidebar.collapsed {
+        width: 60px;
+    }
 
-  .header-fixed {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
+    .sidebar.collapsed ~ .main-content {
+        margin-left: 0 !important;
+    }
+    
+    .header-fixed {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
 
-  .profile-card {
-    right: 10px;
-  }
+    .profile-card {
+        right: 10px;
+    } 
 }
 
-/* ===== ANIMATIONS ===== */
+/* ======================================================= */
+/* ===== 8. ANIMATIONS ===== */
+/* ======================================================= */
 @keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(-5px); }
-  100% { opacity: 1; transform: translateY(0); }
+    0% { opacity: 0; transform: translateY(-5px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
