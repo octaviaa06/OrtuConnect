@@ -1,261 +1,222 @@
 <?php
-// Contoh data siswa
-$daftar_siswa = [
-    ["id" => 1, "nama" => "Bryan Mbeumo", "status" => "Hadir"],
-    ["id" => 2, "nama" => "Benjamin Sesko", "status" => "Hadir"],
-    ["id" => 3, "nama" => "Muhammad Suumbul", "status" => "Sakit"],
-    ["id" => 4, "nama" => "Riski", "status" => "Tidak Hadir"],
-];
+session_start();
+$active_page = 'absensi';
+include '../guru/sidebar.php';
+// Pastikan admin login
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
+    header("Location: ../login/index.php?error=Harap login sebagai guru!");
+    exit;
+}
 
-$halaman_aktif = 'absensi';
+// VARIABEL UNTUK SIDEBAR EKSTERNAL
+$active_page = 'absensi'; // Menandai menu Absensi sebagai aktif
+
+// Ambil kelas dari API nyata
+function getDaftarKelas() {
+    $api_kelas_url = "https://ortuconnect.atwebpages.com/api/admin/absensi.php"; // misal endpoint daftar kelas
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $api_kelas_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    $data = json_decode($response, true);
+    return $data['data'] ?? [];
+}
+
+// Ambil parameter filter
+$selected_class = $_GET['kelas'] ?? '';
+$selected_date = $_GET['tanggal'] ?? date('Y-m-d');
+
+// Ambil daftar kelas
+$kelasList = getDaftarKelas();
+
+// Ambil daftar absensi dari API
+$absensiList = [];
+if ($selected_class) {
+    // Perhatikan: Jalur URL API Anda di sini tampaknya belum lengkap (kurang "?" sebelum parameter)
+    $api_absensi_url = "https://ortuconnect.atwebpages.com/api/admin/absensi.php?kelas=" . urlencode($selected_class) . "&tanggal=" . urlencode($selected_date);
+
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $api_absensi_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    $response = curl_exec($ch);
+
+    if (curl_errno($ch)) $response = json_encode(['data' => []]);
+    curl_close($ch);
+
+    $data = json_decode($response, true);
+    $absensiList = $data['data'] ?? [];
+
+    // Set default status 'Hadir' jika kosong
+    $absensiList = array_map(function($abs) {
+        $abs['status_absensi'] = $abs['status_absensi'] ?? 'Hadir';
+        return $abs;
+    }, $absensiList);
+}
 ?>
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Absensi</title>
-
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
-    <style>
-        body {
-            background-color: #f8f9fc;
-            font-family: "Poppins", sans-serif;
-            margin: 0;
-            transition: all 0.3s ease;
-        }
-
-        /* ===== SIDEBAR ===== */
-        .sidebar {
-            background-color: #3B5CCC;
-            min-height: 100vh;
-            width: 240px;
-            position: fixed;
-            left: 0;
-            top: 0;
-            padding-top: 25px;
-            border-radius: 0 12px 12px 0;
-            transition: width 0.3s ease;
-            overflow: hidden;
-        }
-
-        .sidebar.collapsed {
-            width: 80px;
-        }
-
-        .sidebar ul {
-            list-style: none;
-            padding: 0;
-            margin-top: 40px;
-            width: 100%;
-        }
-
-        .sidebar ul li {
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .sidebar ul li a {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: white;
-            font-weight: 600;
-            padding: 12px 20px;
-            border-radius: 8px;
-            transition: all 0.2s ease-in-out;
-            white-space: nowrap;
-        }
-
-        .sidebar ul li a i {
-            font-size: 22px;
-            margin-right: 14px;
-            min-width: 24px;
-            text-align: center;
-        }
-
-        .sidebar ul li a:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .sidebar ul li a.active {
-            background-color: #ffffff;
-            color: #3B5CCC;
-        }
-
-        .sidebar ul li a.active i {
-            color: #3B5CCC;
-        }
-
-        .sidebar.collapsed a span {
-            display: none;
-        }
-
-        .sidebar-toggle {
-            text-align: center;
-            color: white;
-            font-size: 26px;
-            cursor: pointer;
-            margin-bottom: 25px;
-        }
-
-        /* ===== MAIN CONTENT ===== */
-        .main-content {
-            margin-left: 260px;
-            padding: 30px;
-            transition: margin-left 0.3s ease;
-        }
-
-        .main-content.collapsed {
-            margin-left: 100px;
-        }
-
-        .judul {
-            color: #3B5CCC;
-            font-weight: 600;
-        }
-
-        .admin-badge {
-            background-color: #e9ecef;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: #3B5CCC;
-        }
-
-        /* ===== FILTER SECTION ===== */
-        .filter-section {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-        }
-
-        .filter-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .filter-section input[type="date"],
-        .filter-section select {
-            width: 200px;
-        }
-
-        .btn-simpan {
-            background-color: #3B5CCC;
-            border: none;
-            color: white;
-            font-weight: 500;
-            padding: 8px 20px;
-            border-radius: 6px;
-            transition: 0.2s;
-        }
-
-        .btn-simpan:hover {
-            background-color: #334FBA;
-        }
-
-        /* ===== CARD ABSENSI ===== */
-        .card-absensi {
-            border: 1px solid #e5e5e5;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: background-color 0.2s ease;
-        }
-
-        .card-absensi:hover {
-            background-color: #f1f3fe;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Absensi | OrtuConnect</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="absensi.css">
 </head>
 <body>
+<div class="d-flex">
+    
+    <?php require '../guru/sidebar.php'; ?>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-toggle" id="sidebarToggle">
-            <i class="bi bi-list"></i>
-        </div>
-
-        <ul>
-            <li><a href="dashboard.php" class="<?= $halaman_aktif == 'dashboard' ? 'active' : '' ?>"><i class="bi bi-grid-fill"></i><span>Dashboard</span></a></li>
-            <li><a href="murid.php" class="<?= $halaman_aktif == 'murid' ? 'active' : '' ?>"><i class="bi bi-people-fill"></i><span>Data Murid</span></a></li>
-            <li><a href="absensi.php" class="<?= $halaman_aktif == 'absensi' ? 'active' : '' ?>"><i class="bi bi-person-check-fill"></i><span>Absensi</span></a></li>
-            <li><a href="izin.php" class="<?= $halaman_aktif == 'izin' ? 'active' : '' ?>"><i class="bi bi-clipboard2-fill"></i><span>Perizinan</span></a></li>
-            <li><a href="kalender.php" class="<?= $halaman_aktif == 'kalender' ? 'active' : '' ?>"><i class="bi bi-calendar3-event-fill"></i><span>Kalender</span></a></li>
-        </ul>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div class="main-content" id="mainContent">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="judul"><i class="bi bi-person-check-fill me-2"></i>Absensi</h3>
-            <div class="d-flex align-items-center">
-                <div class="admin-badge me-2">A</div>
-                <span class="fw-bold text-primary">Admin</span>
-            </div>
-        </div>
-
-        <!-- FILTER SECTION -->
-        <div class="filter-section">
-            <div class="filter-left">
-                <input type="date" class="form-control" placeholder="Tanggal">
-                <select class="form-select">
-                    <option>Kelas A</option>
-                    <option>Kelas B</option>
-                    <option>Kelas C</option>
-                </select>
-            </div>
-            <button class="btn-simpan"><i class="bi bi-save me-1"></i> Simpan</button>
-        </div>
-
-        <!-- CARD ABSENSI -->
-        <div class="card p-4">
-            <h6 class="text-primary fw-bold mb-3">
-                <i class="bi bi-person-check me-2"></i>Daftar Absensi
-            </h6>
-
-            <?php foreach ($daftar_siswa as $siswa): ?>
-                <div class="card-absensi">
-                    <div>
-                        <strong><?= $siswa['id'] ?>.</strong> <?= htmlspecialchars($siswa['nama']) ?>
-                    </div>
-                    <select class="form-select w-auto">
-                        <option <?= $siswa['status'] == 'Hadir' ? 'selected' : '' ?>>Hadir</option>
-                        <option <?= $siswa['status'] == 'Tidak Hadir' ? 'selected' : '' ?>>Tidak Hadir</option>
-                        <option <?= $siswa['status'] == 'Sakit' ? 'selected' : '' ?>>Sakit</option>
-                        <option <?= $siswa['status'] == 'Alpa' ? 'selected' : '' ?>>Alpa</option>
-                    </select>
+    <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">
+    <div class="container-fluid py-3">
+        <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
+            <h4 class="fw-bold text-primary m-0">Absensi</h4>
+            <div class="profile-btn" id="profileToggle">
+                <div class="profile-avatar"><?= strtoupper(substr($_SESSION['username'], 0, 1)) ?></div>
+                <span class="fw-semibold text-primary"><?= htmlspecialchars($_SESSION['username']) ?></span>
+                <div class="profile-card" id="profileCard">
+                    <h6><?= ucfirst($_SESSION['role']) ?></h6>
+                    <p><?= htmlspecialchars($_SESSION['username']) ?>@gmail.com</p>
+                    <hr>
+                    <a href="../logout/logout.php?from=absensi" class="logout-btn"><img src="../assets/keluar.png" alt="Logout"> Logout</a>
                 </div>
-            <?php endforeach; ?>
+            </div>
+        </div>
+
+        <form id="filterForm" class="d-flex gap-3 align-items-center mb-5" action="Absensi.php" method="GET">
+            <input type="date" name="tanggal" class="form-control" value="<?= htmlspecialchars($selected_date) ?>" onchange="this.form.submit()">
+            <select name="kelas" class="form-select" onchange="this.form.submit()">
+                <option value="">Pilih Kelas</option>
+                <?php foreach($kelasList as $kelas): ?>
+                    <option value="<?= htmlspecialchars($kelas) ?>" <?= $selected_class === $kelas ? 'selected' : '' ?>>Kelas <?= htmlspecialchars($kelas) ?></option>
+                <?php endforeach; ?>
+            </select>
+            <button type="button" class="btn btn-primary" onclick="simpanAbsensi()">Simpan</button>
+        </form>
+
+        <div class="card shadow-sm border-0 p-4" style="border-radius:16px;">
+            <h5 class="fw-bold mb-4 text-primary">Daftar Absensi</h5>
+            <form id="formAbsensi">
+                <input type="hidden" name="tanggal" value="<?= htmlspecialchars($selected_date) ?>">
+                <input type="hidden" name="kelas" value="<?= htmlspecialchars($selected_class) ?>">
+
+                <?php if(empty($absensiList)): ?>
+                    <div class="text-center text-muted p-5">Tidak ada data murid untuk Kelas <?= htmlspecialchars($selected_class) ?> pada tanggal ini.</div>
+                <?php else: ?>
+                    <?php $no = 1; foreach($absensiList as $abs): ?>
+                        <div class="absensi-item d-flex align-items-center py-3 border-bottom">
+                            <div class="col-1 fw-bold"><?= $no++ ?></div>
+                            <div class="col-5 fw-semibold"><?= htmlspecialchars($abs['nama_murid'] ?? 'N/A') ?></div>
+                            <div class="col-6 d-flex justify-content-end">
+                                <input type="hidden" name="absensi[<?= htmlspecialchars($abs['id_murid']) ?>][id_murid]" value="<?= htmlspecialchars($abs['id_murid']) ?>">
+                                <select name="absensi[<?= htmlspecialchars($abs['id_murid']) ?>][status]" class="form-select status-absensi-select" data-initial-status="<?= htmlspecialchars($abs['status_absensi']) ?>" onchange="updateStatusColor(this)">
+                                    <option value="Hadir" <?= $abs['status_absensi'] === 'Hadir' ? 'selected' : '' ?>>Hadir</option>
+                                    <option value="Izin" <?= $abs['status_absensi'] === 'Izin' ? 'selected' : '' ?>>Izin</option>
+                                    <option value="Sakit" <?= $abs['status_absensi'] === 'Sakit' ? 'selected' : '' ?>>Sakit</option>
+                                    <option value="Alpa" <?= $abs['status_absensi'] === 'Alpa' ? 'selected' : '' ?>>Alpa</option>
+                                </select>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </form>
         </div>
     </div>
+    </div>
+</div>
 
-    <!-- JS: Toggle Sidebar -->
-    <script>
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        const toggleButton = document.getElementById('sidebarToggle');
+<div id="notifBox" class="notif"></div>
 
-        toggleButton.addEventListener('click', () => {
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('collapsed');
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Hapus semua logika JS sidebar (toggleSidebar) dari sini, karena sudah di sidebar.php
+// Sisakan hanya fungsi spesifik halaman Absensi dan JS Profile Card.
+function showNotif(message, isSuccess = true) {
+    const notifBox = document.getElementById('notifBox');
+    notifBox.textContent = message;
+    notifBox.style.backgroundColor = isSuccess ? '#28a745' : '#dc3545';
+    notifBox.style.display = 'block';
+    setTimeout(() => notifBox.style.display = 'none', 3000);
+}
+
+function updateStatusColor(select) {
+    select.className = 'form-select status-absensi-select';
+    select.classList.add('status-' + select.value.toLowerCase());
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Panggil fungsi status warna saat DOM selesai dimuat
+    document.querySelectorAll('.status-absensi-select').forEach(updateStatusColor);
+    
+    // Logika Profile Card (tetap di sini karena ini spesifik konten utama)
+    const profileBtn = document.getElementById('profileToggle');
+    const profileCard = document.getElementById('profileCard');
+    profileBtn.addEventListener('click', e => { e.stopPropagation(); profileCard.classList.toggle('show'); });
+    document.addEventListener('click', e => { if (!profileBtn.contains(e.target)) profileCard.classList.remove('show'); });
+});
+
+async function simpanAbsensi() {
+    // ... (Fungsi simpanAbsensi tetap di sini karena ini spesifik halaman Absensi)
+    const form = document.getElementById('formAbsensi');
+    const tombolSimpan = document.querySelector('.btn.btn-primary');
+    tombolSimpan.disabled = true;
+    tombolSimpan.textContent = "Menyimpan...";
+
+    const formData = new FormData(form);
+    const absensiUpdates = [];
+    const regex = /absensi\[(\d+)\]\[status\]/;
+
+    for(let [key, value] of formData.entries()) {
+        const match = key.match(regex);
+        if(match){
+            const id = match[1];
+            const selectEl = document.querySelector(`[name="absensi[${id}][status]"]`);
+            if(value !== selectEl.dataset.initialStatus){
+                absensiUpdates.push({id_murid: id, status: value});
+            }
+        }
+    }
+
+    if(absensiUpdates.length === 0){
+        showNotif("Tidak ada perubahan status absensi.", false);
+        tombolSimpan.disabled = false;
+        tombolSimpan.textContent = "Simpan";
+        return;
+    }
+
+    const payload = {
+        tanggal: form.querySelector('input[name="tanggal"]').value,
+        kelas: form.querySelector('input[name="kelas"]').value,
+        absensi: absensiUpdates
+    };
+
+    try {
+        const res = await fetch("https://ortuconnect.atwebpages.com/api/admin/absensi.php ", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(payload)
         });
-    </script>
-
+        const data = await res.json();
+        if(data.status === "success"){
+            showNotif(data.message || "Absensi berhasil disimpan.", true);
+            location.reload();
+        } else {
+            showNotif(data.message || "Gagal menyimpan absensi.", false);
+        }
+    } catch(err){
+        showNotif("Terjadi kesalahan koneksi atau server.", false);
+    } finally {
+        tombolSimpan.disabled = false;
+        tombolSimpan.textContent = "Simpan";
+    }
+}
+</script>
 </body>
 </html>
