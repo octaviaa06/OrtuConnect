@@ -148,7 +148,7 @@ $siswaList = $data['data'] ?? [];
                 </div>
                 <div class="form-group">
                     <label>Tanggal Lahir</label>
-                    <input type="date" name="tgl_lahir" required>
+                    <input type="date" name="tgl_lahir" required> 
                 </div>
                 <div class="form-group">
                     <label>Nama Orang tua/Wali</label>
