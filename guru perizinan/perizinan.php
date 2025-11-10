@@ -2,8 +2,8 @@
 session_start();
 
 // Validasi admin login
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../login/index.php?error=Harap login sebagai admin!");
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
+    header("Location: ../login/index.php?error=Harap login sebagai guru!");
     exit;
 }
 

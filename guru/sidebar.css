@@ -1,0 +1,133 @@
+.sidebar {
+ 
+    width: 200px;
+    background-color: #0d6efd;
+    transition: width 0.35s ease, margin-left 0.35s ease;
+    overflow: hidden;
+    height: 100vh;
+    padding-top: 50px;
+    border-radius: 0 18px 18px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+/* Lebar Collapsed */
+.sidebar.collapsed {
+    width: 70px;
+}
+
+/* ==================================== */
+/* 🖼️ TOMBOL TOGGLE & ICON */
+/* ==================================== */
+
+.slide-btn {
+    width: 28px;
+    cursor: pointer;
+    margin-bottom: 30px;
+    transition: transform 0.3s ease;
+}
+
+.slide-btn:hover {
+    transform: scale(1.1);
+}
+
+.icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+/* ==================================== */
+/* 🧭 NAVIGASI & LINK */
+/* ==================================== */
+
+.nav {
+    width: 100%;
+    padding-left: 0;
+    margin-top: 8px;
+}
+
+.nav-item {
+    margin-bottom: 12px;
+    width: 100%;
+}
+
+.nav-link {
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    transition: background 0.3s, transform 0.2s;
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background-color: rgba(255,255,255,0.2);
+    transform: translateX(5px);
+}
+
+/* ==================================== */
+/* 📝 ANIMASI & TEKS MENU */
+/* ==================================== */
+
+.sidebar .menu-text {
+    opacity: 1;
+    /* Ganti display block/inline-block untuk kontrol lebar saat expanded */
+    display: inline-block; 
+    transition: opacity 0.3s ease, width 0.3s ease;
+    width: auto;
+}
+
+/* Mode Collapsed: Sembunyikan teks menu */
+.sidebar.collapsed .nav-link {
+    justify-content: center;
+    padding: 10px; 
+}
+
+.sidebar.collapsed .menu-text {
+    opacity: 0;
+    width: 0; 
+    overflow: hidden; 
+    display: none; /* Hilangkan dari alur setelah transisi */
+}
+
+/* Animasi Swing (Opsional, untuk feedback visual saat expanded) */
+@keyframes swingIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.menu-text.animate-swing {
+    animation: swingIn 0.4s ease forwards;
+}
+
+/* ==================================== */
+/* 📱 RESPONSIVE (Disesuaikan) */
+/* ==================================== */
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 60px;
+    }
+
+    .sidebar.collapsed {
+        width: 60px;
+    }
+}
