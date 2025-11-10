@@ -1,22 +1,7 @@
 /* ======================================= */
 /* ====== STRUKTUR UMUM (TETAP SAMA) ===== */
 /* ======================================= */
-.sidebar {
-    width: 240px;
-    background-color: #0d6efd;
-    transition: width 0.35s ease;
-    overflow: hidden;
-    height: 100vh;
-    padding-top: 50px;
-    border-radius: 0 20px 20px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 100;
-}
+
 
 /* ... (CSS Sidebar, Nav, Icons, Header, Profile, Notifikasi, dll. tetap sama) */
 
@@ -30,9 +15,7 @@
     min-height: 100vh;
 }
 
-.sidebar.collapsed ~ .main-content {
-    margin-left: 90px;
-}
+
 
 /* ======================================= */
 /* ====== CUSTOM STYLE ABSENSI =========== */

@@ -1,5 +1,7 @@
 <?php
 session_start();
+$active_page = 'absensi';
+include '../admin/sidebar.php';
 
 // Pastikan admin login
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -66,19 +68,8 @@ if ($selected_class) {
 <body>
 <div class="d-flex">
     <!-- Sidebar -->
-    <div id="sidebar" class="sidebar bg-primary text-white p-3 expanded">
-        <div class="text-center mb-4">
-            <img src="../assets/slide.png" id="toggleSidebar" alt="Slide" class="slide-btn">
-        </div>
-        <ul class="nav flex-column">
-            <li class="nav-item"><a href="../dashboard_admin/home_admin.php" class="nav-link"><img src="../assets/Dashboard.png" class="icon"><span>Dashboard</span></a></li>
-            <li class="nav-item"><a href="../admin data guru/DataGuru.php" class="nav-link"><img src="../assets/Data Guru.png" class="icon"><span>Data Guru</span></a></li>
-            <li class="nav-item"><a href="../admin data siswa/DataSiswa.php" class="nav-link"><img src="../assets/Data Siswa.png" class="icon"><span>Data Murid</span></a></li>
-            <li class="nav-item"><a href="../admin absensi/Absensi.php" class="nav-link active"><img src="../assets/absensi.png" class="icon"><span>Absensi</span></a></li>
-            <li class="nav-item"><a href="../admin perizinan/Perizinan.php" class="nav-link"><img src="../assets/Perizinan.png" class="icon"><span>Perizinan</span></a></li>
-            <li class="nav-item"><a href="../admin kalender/Kalender.php" class="nav-link"><img src="../assets/Kalender.png" class="icon"><span>Kalender</span></a></li>
-        </ul>
-    </div>
+<?php include '../admin/sidebar.php'; ?>
+
 
     <!-- Main Content -->
     <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">

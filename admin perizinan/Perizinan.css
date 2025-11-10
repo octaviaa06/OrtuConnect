@@ -3,81 +3,14 @@
 /* ===== 1. SIDEBAR & ANIMASI (Dari Inline Style Asli) ===== */
 /* ======================================================= */
 
-.sidebar {
-    width: 250px; /* Lebar default */
-    background-color: rgba(13, 110, 253, 0.95); /* Warna Primary Bootstrap */
-    transition: all 0.4s ease;
-    position: relative; 
-}
 
-#sidebar.collapsed {
-    width: 80px;
-    transition: all 0.4s ease;
-}
-
-#sidebar .menu-text {
-    opacity: 1;
-    transform: translateX(0);
-    transition: all 0.4s ease;
-    display: inline-block;
-    white-space: nowrap; /* Mencegah teks melompat/wrap */
-}
-
-#sidebar.collapsed .menu-text {
-    opacity: 0;
-    transform: translateX(-20px);
-    transition: all 0.3s ease;
-    display: none;
-}
-
-/* Animasi ikon agar tetap smooth */
-#sidebar img.icon {
-    width: 24px;
-    height: 24px;
-    transition: transform 0.3s ease;
-}
-
-/* Saat sidebar dibuka, teks swing halus */
-#sidebar.expanded .menu-text {
-    animation: swingIn 0.4s ease forwards;
-}
-
-@keyframes swingIn {
-    0% {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
 
 /* ======================================================= */
 /* ===== 2. SIDEBAR (Kode Tambahan dari Anda) ===== */
 /* ======================================================= */
 
 /* Mengambil properti yang lebih spesifik dari kode yang Anda berikan */
-.sidebar {
-    /* width: 200px; */ /* Dikesampingkan, menggunakan 250px untuk konsistensi JS & tampilan */
-    /* background-color: #0d6efd; */ /* Dikesampingkan, menggunakan rgba untuk opacity */
-    transition: width 0.35s ease;
-    overflow: hidden;
-    height: 100vh;
-    padding-top: 50px;
-    border-radius: 0 18px 18px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: fixed; /* Diubah ke fixed untuk perilaku yang lebih baik */
-    top: 0;
-    left: 0;
-    z-index: 100;
-}
 
-.sidebar.collapsed {
-    width: 70px; /* Mengambil 70px dari kode Anda */
-}
 
 .slide-btn {
     width: 28px;
@@ -126,23 +59,6 @@
     flex-shrink: 0;
 }
 
-/* Sidebar Collapsed */
-.sidebar.collapsed .nav-link {
-    justify-content: center;
-    padding: 10px 0;
-}
-
-.sidebar.collapsed .nav-link span {
-    opacity: 0;
-    width: 0;
-    transition: opacity 0.2s ease, width 0.3s ease;
-}
-
-.sidebar .nav-link span {
-    opacity: 1;
-    width: auto;
-    transition: opacity 0.3s ease, width 0.3s ease;
-}
 
 
 /* ======================================================= */
@@ -158,9 +74,6 @@
     min-height: 100vh;
 }
 
-.sidebar.collapsed ~ .main-content {
-    margin-left: 70px; 
-}
 
 /* ======================================================= */
 /* ===== 4. SEARCH BOX ===== */
@@ -313,18 +226,6 @@
         margin-left: 0;
     }
 
-    .sidebar {
-        width: 60px;
-    }
-
-    .sidebar.collapsed {
-        width: 60px;
-    }
-
-    .sidebar.collapsed ~ .main-content {
-        margin-left: 0 !important;
-    }
-    
     .header-fixed {
         flex-direction: column;
         align-items: flex-start;

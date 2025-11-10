@@ -1,5 +1,5 @@
 <!-- SIDEBAR -->
-<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="../admin/sidebar.css">
 
 <div id="sidebar" class="sidebar expanded bg-primary text-white p-3">
     <div class="text-center mb-4">
