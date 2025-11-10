@@ -28,62 +28,11 @@ $perizinanList = $data['data'] ?? [];
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Perizinan | OrtuConnect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="Perizinan.css" />
-    <style>
-        /* ==== Sidebar Animasi Halus ==== */
-        #sidebar {
-            width: 250px;
-            transition: all 0.4s ease;
-            background-color: rgba(13, 110, 253, 0.95);
-            position: relative;
-        }
-
-        #sidebar.collapsed {
-            width: 80px;
-            transition: all 0.4s ease;
-        }
-
-        #sidebar .menu-text {
-            opacity: 1;
-            transform: translateX(0);
-            transition: all 0.4s ease;
-            display: inline-block;
-        }
-
-        #sidebar.collapsed .menu-text {
-            opacity: 0;
-            transform: translateX(-20px);
-            transition: all 0.3s ease;
-            display: none;
-        }
-
-        /* Animasi ikon agar tetap smooth */
-        #sidebar img.icon {
-            width: 24px;
-            height: 24px;
-            transition: transform 0.3s ease;
-        }
-
-        /* Saat sidebar dibuka, teks swing halus */
-        #sidebar.expanded .menu-text {
-            animation: swingIn 0.4s ease forwards;
-        }
-
-        @keyframes swingIn {
-            0% {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="Perizinan.css" /> 
+    <link rel="stylesheet" href="SidebarAnimation.css" /> 
 </head>
 <body>
     <div class="d-flex">
-        <!-- SIDEBAR -->
         <div id="sidebar" class="sidebar expanded bg-primary text-white p-3">
             <div class="text-center mb-4">
                 <img src="../assets/slide.png" id="toggleSidebar" alt="Slide" class="slide-btn" style="cursor:pointer; width:30px;">
@@ -122,7 +71,6 @@ $perizinanList = $data['data'] ?? [];
             </ul>
         </div>
 
-        <!-- KONTEN UTAMA -->
         <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">
             <div class="container-fluid py-3">
                 <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
@@ -204,7 +152,7 @@ $perizinanList = $data['data'] ?? [];
 
         toggleBtn.addEventListener("click", () => {
             sidebar.classList.toggle("collapsed");
-            sidebar.classList.toggle("expanded");
+            // sidebar.classList.toggle("expanded"); // expanded tidak diperlukan jika collapsed yang menentukan state
         });
 
         // === Profil toggle
@@ -227,6 +175,8 @@ $perizinanList = $data['data'] ?? [];
                 item.style.display = nama.includes(keyword) ? "" : "none";
             });
         });
+        
+        // Catatan: Logika Setujui/Tolak (AJAX) perlu ditambahkan di sini.
     });
     </script>
 </body>

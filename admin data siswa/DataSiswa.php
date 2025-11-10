@@ -166,6 +166,7 @@ $siswaList = $data['data'] ?? [];
   </div>
 </div>
 
+
 <!-- MODAL AKUN -->
 <div class="modal fade" id="modalAkun" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
@@ -185,6 +186,7 @@ $siswaList = $data['data'] ?? [];
       <div class="modal-footer">
         <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
       </div>
+
     </div>
   </div>
 </div>
