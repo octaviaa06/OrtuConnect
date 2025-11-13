@@ -1,6 +1,7 @@
 <?php
 session_start();
-
+$active_page = 'datasiswa';
+//include '../admin/sidebar.php';
 // Pastikan admin login
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   header("Location: ../login/index.php?error=Harap login sebagai admin!");
@@ -37,19 +38,7 @@ $siswaList = $data['data'] ?? [];
 <body>
 <div class="d-flex">
   <!-- SIDEBAR -->
-  <div id="sidebar" class="sidebar bg-primary text-white p-3 expanded">
-    <div class="text-center mb-4">
-      <img src="../assets/slide.png" id="toggleSidebar" alt="Slide" class="slide-btn">
-    </div>
-    <ul class="nav flex-column">
-      <li class="nav-item"><a href="../dashboard_admin/home_admin.php" class="nav-link"><img src="../assets/Dashboard.png" class="icon"><span>Dashboard</span></a></li>
-      <li class="nav-item"><a href="../admin data guru/DataGuru.php" class="nav-link"><img src="../assets/Data Guru.png" class="icon"><span>Data Guru</span></a></li>
-      <li class="nav-item"><a href="../admin data siswa/DataSiswa.php" class="nav-link active"><img src="../assets/Data Siswa.png" class="icon"><span>Data Murid</span></a></li>
-      <li class="nav-item"><a href="../admin absensi/Absensi.php" class="nav-link"><img src="../assets/absensi.png" class="icon"><span>Absensi</span></a></li>
-      <li class="nav-item"><a href="../admin perizinan/Perizinan.php" class="nav-link"><img src="../assets/Perizinan.png" class="icon"><span>Perizinan</span></a></li>
-      <li class="nav-item"><a href="../admin kalender/Kalender.php" class="nav-link"><img src="../assets/Kalender.png" class="icon"><span>Kalender</span></a></li>
-    </ul>
-  </div>
+  <?php include '../admin/sidebar.php'; ?>
 
   <!-- MAIN CONTENT -->
   <div class="flex-grow-1 main-content" 
@@ -150,7 +139,15 @@ $siswaList = $data['data'] ?? [];
         <input type="hidden" name="id_siswa" id="id_siswa">
         <div class="modal-body">
           <div class="mb-3"><label class="form-label">Nama Lengkap</label><input type="text" name="nama_siswa" id="nama_siswa" class="form-control" required></div>
-          <div class="mb-3"><label class="form-label">Kelas</label><input type="text" name="kelas" id="kelas" class="form-control" required></div>
+       <div class="mb-3">
+  <label class="form-label">Kelas</label>
+  <select name="kelas" id="kelas" class="form-select" required>
+    <option value="">-- Pilih Kelas --</option>
+    <option value="Kelas A">Kelas A</option>
+    <option value="Kelas B">Kelas B</option>
+  </select>
+          </div>
+
           <div class="mb-3"><label class="form-label">Tanggal Lahir</label><input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control" required></div>
           <div class="mb-3"><label class="form-label">Jenis Kelamin</label><input type="text" name="gender" id="gender" class="form-control" required></div>
           <div class="mb-3"><label class="form-label">Nama Orang Tua</label><input type="text" name="nama_ortu" id="nama_ortu" class="form-control" required></div>
@@ -172,7 +169,7 @@ $siswaList = $data['data'] ?? [];
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">Akun Siswa</h5>
+        <h5 class="modal-title">Akun OrangTua</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
@@ -306,6 +303,30 @@ window.generateAkun = async function(id) {
   }
 }
 });
+
+// 🔍 Fitur Pencarian Data Siswa
+const searchInput = document.getElementById('searchInput');
+const siswaContainer = document.getElementById('siswaContainer');
+
+if (searchInput && siswaContainer) {
+  searchInput.addEventListener('input', function() {
+    const keyword = this.value.toLowerCase().trim();
+    const siswaItems = siswaContainer.getElementsByClassName('siswa-item');
+
+    for (let item of siswaItems) {
+      const nama = item.querySelector('.card-title').textContent.toLowerCase();
+      const kelas = item.querySelector('small').textContent.toLowerCase();
+
+      // tampilkan jika nama atau kelas cocok dengan pencarian
+      if (nama.includes(keyword) || kelas.includes(keyword)) {
+        item.style.display = '';
+      } else {
+        item.style.display = 'none';
+      }
+    }
+  });
+}
+
 
 </script>
 </body>

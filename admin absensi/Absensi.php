@@ -1,55 +1,62 @@
 <?php
 session_start();
+$active_page = 'absensi';
+//include '../admin/sidebar.php';
 
-// Pastikan admin login
+// Cek login
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login/index.php?error=Harap login sebagai admin!");
     exit;
 }
 
-// Ambil kelas dari API nyata
+// Ambil daftar kelas dari API
 function getDaftarKelas() {
-    $api_kelas_url = "https://ortuconnect.atwebpages.com/api/admin/absensi.php"; 
+    $api_url = "http://ortuconnect.atwebpages.com/api/admin/absensi.php?mode=kelas";
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $api_kelas_url);
+    curl_setopt($ch, CURLOPT_URL, $api_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
     $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
+
+    if (empty($response) || $httpCode !== 200) {
+        error_log("API Error - Kelas: HTTP $httpCode - Response: $response");
+        return [];
+    }
+
     $data = json_decode($response, true);
     return $data['data'] ?? [];
 }
 
-// Ambil parameter filter
 $selected_class = $_GET['kelas'] ?? '';
 $selected_date = $_GET['tanggal'] ?? date('Y-m-d');
-
-// Ambil daftar kelas
 $kelasList = getDaftarKelas();
 
 // Ambil daftar absensi dari API
 $absensiList = [];
 if ($selected_class) {
-    $api_absensi_url = "https://ortuconnect.atwebpages.com/api/admin/absensi.php" . urlencode($selected_class) . "&tanggal=" . urlencode($selected_date);
-
-
+    $api_absensi_url = "http://ortuconnect.atwebpages.com/api/admin/absensi.php?kelas=" . urlencode($selected_class) . "&tanggal=" . urlencode($selected_date);
+    
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $api_absensi_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
     $response = curl_exec($ch);
-
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if (curl_errno($ch)) $response = json_encode(['data' => []]);
     curl_close($ch);
 
-    $data = json_decode($response, true);
-    $absensiList = $data['data'] ?? [];
+    if ($httpCode === 200 && !empty($response)) {
+        $data = json_decode($response, true);
+        $absensiList = $data['data'] ?? [];
+    }
 
-    // Set default status 'Hadir' jika kosong
-    $absensiList = array_map(function($abs) {
-        $abs['status_absensi'] = $abs['status_absensi'] ?? 'Hadir';
+    // Set default 'Hadir' untuk yang belum punya status
+    $absensiList = array_map(function ($abs) {
+        $abs['status_absensi'] = !empty($abs['status_absensi']) ? $abs['status_absensi'] : 'Hadir';
         return $abs;
     }, $absensiList);
 }
@@ -66,22 +73,9 @@ if ($selected_class) {
 <body>
 <div class="d-flex">
     <!-- Sidebar -->
-    <div id="sidebar" class="sidebar bg-primary text-white p-3 expanded">
-        <div class="text-center mb-4">
-            <img src="../assets/slide.png" id="toggleSidebar" alt="Slide" class="slide-btn">
-        </div>
-        <ul class="nav flex-column">
-            <li class="nav-item"><a href="../dashboard_admin/home_admin.php" class="nav-link"><img src="../assets/Dashboard.png" class="icon"><span>Dashboard</span></a></li>
-            <li class="nav-item"><a href="../admin data guru/DataGuru.php" class="nav-link"><img src="../assets/Data Guru.png" class="icon"><span>Data Guru</span></a></li>
-            <li class="nav-item"><a href="../admin data siswa/DataSiswa.php" class="nav-link"><img src="../assets/Data Siswa.png" class="icon"><span>Data Murid</span></a></li>
-            <li class="nav-item"><a href="../admin absensi/Absensi.php" class="nav-link active"><img src="../assets/absensi.png" class="icon"><span>Absensi</span></a></li>
-            <li class="nav-item"><a href="../admin perizinan/Perizinan.php" class="nav-link"><img src="../assets/Perizinan.png" class="icon"><span>Perizinan</span></a></li>
-            <li class="nav-item"><a href="../admin kalender/Kalender.php" class="nav-link"><img src="../assets/Kalender.png" class="icon"><span>Kalender</span></a></li>
-        </ul>
-    </div>
+    <?php include '../admin/sidebar.php'; ?>
 
-    <!-- Main Content -->
-    <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">
+    <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover;">
     <div class="container-fluid py-3">
         <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
             <h4 class="fw-bold text-primary m-0">Absensi</h4>
@@ -92,24 +86,26 @@ if ($selected_class) {
                     <h6><?= ucfirst($_SESSION['role']) ?></h6>
                     <p><?= htmlspecialchars($_SESSION['username']) ?>@gmail.com</p>
                     <hr>
-                    <a href="../logout/logout.php?from=absensi" class="logout-btn"><img src="../assets/keluar.png" alt="Logout"> Logout</a>
+                    <a href="../logout/logout.php?from=absensi" class="logout-btn">
+                        <img src="../assets/keluar.png" alt="Logout"> Logout
+                    </a>
                 </div>
             </div>
         </div>
 
         <!-- Filter Form -->
-        <form id="filterForm" class="d-flex gap-3 align-items-center mb-5" action="Absensi.php" method="GET">
+        <form id="filterForm" class="d-flex gap-3 align-items-center mb-5" method="GET">
             <input type="date" name="tanggal" class="form-control" value="<?= htmlspecialchars($selected_date) ?>" onchange="this.form.submit()">
             <select name="kelas" class="form-select" onchange="this.form.submit()">
                 <option value="">Pilih Kelas</option>
                 <?php foreach($kelasList as $kelas): ?>
-                    <option value="<?= htmlspecialchars($kelas) ?>" <?= $selected_class === $kelas ? 'selected' : '' ?>>Kelas <?= htmlspecialchars($kelas) ?></option>
+                    <option value="<?= htmlspecialchars($kelas) ?>" <?= $selected_class === $kelas ? 'selected' : '' ?>><?= htmlspecialchars($kelas) ?></option>
                 <?php endforeach; ?>
             </select>
             <button type="button" class="btn btn-primary" onclick="simpanAbsensi()">Simpan</button>
         </form>
 
-        <!-- Absensi List -->
+        <!-- Daftar Absensi -->
         <div class="card shadow-sm border-0 p-4" style="border-radius:16px;">
             <h5 class="fw-bold mb-4 text-primary">Daftar Absensi</h5>
             <form id="formAbsensi">
@@ -117,7 +113,9 @@ if ($selected_class) {
                 <input type="hidden" name="kelas" value="<?= htmlspecialchars($selected_class) ?>">
 
                 <?php if(empty($absensiList)): ?>
-                    <div class="text-center text-muted p-5">Tidak ada data murid untuk Kelas <?= htmlspecialchars($selected_class) ?> pada tanggal ini.</div>
+                    <div class="text-center text-muted p-5">
+                        <?= $selected_class ? "Tidak ada data murid untuk kelas ".htmlspecialchars($selected_class)." pada tanggal ini." : "Silakan pilih kelas terlebih dahulu." ?>
+                    </div>
                 <?php else: ?>
                     <?php $no = 1; foreach($absensiList as $abs): ?>
                         <div class="absensi-item d-flex align-items-center py-3 border-bottom">
@@ -154,45 +152,31 @@ function showNotif(message, isSuccess = true) {
 }
 
 function updateStatusColor(select) {
-    select.className = 'form-select status-absensi-select';
-    select.classList.add('status-' + select.value.toLowerCase());
+    select.className = 'form-select status-absensi-select status-' + select.value.toLowerCase();
 }
-
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll('.status-absensi-select').forEach(updateStatusColor);
-    const sidebar = document.getElementById('sidebar');
-    document.getElementById('toggleSidebar').addEventListener('click', () => sidebar.classList.toggle('collapsed'));
-    const profileBtn = document.getElementById('profileToggle');
-    const profileCard = document.getElementById('profileCard');
-    profileBtn.addEventListener('click', e => { e.stopPropagation(); profileCard.classList.toggle('show'); });
-    document.addEventListener('click', e => { if (!profileBtn.contains(e.target)) profileCard.classList.remove('show'); });
-});
 
 async function simpanAbsensi() {
     const form = document.getElementById('formAbsensi');
-    const tombolSimpan = document.querySelector('.btn.btn-primary');
-    tombolSimpan.disabled = true;
-    tombolSimpan.textContent = "Menyimpan...";
+    const btn = document.querySelector('.btn.btn-primary');
+    btn.disabled = true;
+    btn.textContent = "Menyimpan...";
 
     const formData = new FormData(form);
     const absensiUpdates = [];
     const regex = /absensi\[(\d+)\]\[status\]/;
 
-    for(let [key, value] of formData.entries()) {
+    for (let [key, value] of formData.entries()) {
         const match = key.match(regex);
-        if(match){
+        if (match) {
             const id = match[1];
-            const selectEl = document.querySelector(`[name="absensi[${id}][status]"]`);
-            if(value !== selectEl.dataset.initialStatus){
-                absensiUpdates.push({id_murid: id, status: value});
-            }
+            absensiUpdates.push({ id_murid: id, status: value });
         }
     }
 
-    if(absensiUpdates.length === 0){
-        showNotif("Tidak ada perubahan status absensi.", false);
-        tombolSimpan.disabled = false;
-        tombolSimpan.textContent = "Simpan";
+    if (absensiUpdates.length === 0) {
+        showNotif("Tidak ada data untuk disimpan.", false);
+        btn.disabled = false;
+        btn.textContent = "Simpan";
         return;
     }
 
@@ -203,23 +187,29 @@ async function simpanAbsensi() {
     };
 
     try {
-        const res = await fetch("https://ortuconnect.atwebpages.com/api/admin/absensi.php ", {
+        console.log("DEBUG - Payload:", JSON.stringify(payload, null, 2));
+        
+        const res = await fetch("simpan_absensi.php", {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
+        
         const data = await res.json();
-        if(data.status === "success"){
+        console.log("DEBUG - Response API:", data);
+        
+        if (data.status === "success") {
             showNotif(data.message || "Absensi berhasil disimpan.", true);
-            location.reload();
+            setTimeout(() => location.reload(), 1500);
         } else {
             showNotif(data.message || "Gagal menyimpan absensi.", false);
         }
-    } catch(err){
+    } catch (err) {
+        console.log("DEBUG - Error:", err);
         showNotif("Terjadi kesalahan koneksi atau server.", false);
     } finally {
-        tombolSimpan.disabled = false;
-        tombolSimpan.textContent = "Simpan";
+        btn.disabled = false;
+        btn.textContent = "Simpan";
     }
 }
 </script>
