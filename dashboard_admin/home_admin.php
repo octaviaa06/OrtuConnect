@@ -1,6 +1,7 @@
 <?php
 session_start();
-
+$active_page = 'dashboard';
+//include '../admin/sidebar.php';
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   header("Location: ../login/index.php?error=Harap login sebagai admin!");
   exit;
@@ -32,20 +33,8 @@ $agenda = $data['agenda_terdekat'] ?? [];
 </head>
 <body>
   <div class="d-flex">
-
-    <div id="sidebar" class="sidebar bg-primary text-white p-3 expanded">
-      <div class="text-center mb-4">
-        <img src="../assets/slide.png" id="toggleSidebar" alt="Slide" class="slide-btn">
-      </div>
-      <ul class="nav flex-column">
-        <li class="nav-item"><a href="home_admin.php" class="nav-link active"><img src="../assets/Dashboard.png" class="icon"><span>Dashboard</span></a></li>
-        <li class="nav-item"><a href="../admin data guru/DataGuru.php" class="nav-link"><img src="../assets/Data Guru.png" class="icon"><span>Data Guru</span></a></li>
-        <li class="nav-item"><a href="../admin data siswa/DataSiswa.php" class="nav-link"><img src="../assets/Data Siswa.png" class="icon"><span>Data Murid</span></a></li>
-        <li class="nav-item"><a href="../admin absensi/Absensi.php" class="nav-link"><img src="../assets/absensi.png" class="icon"><span>Absensi</span></a></li>
-        <li class="nav-item"><a href="../admin perizinan/Perizinan.php" class="nav-link"><img src="../assets/Perizinan.png" class="icon"><span>Perizinan</span></a></li>
-        <li class="nav-item"><a href="../admin kalender/Kalender.php" class="nav-link"><img src="../assets/Kalender.png" class="icon"><span>Kalender</span></a></li>
-      </ul>
-    </div>
+  
+  <?php include '../admin/sidebar.php'; ?>
 
     <div class="flex-grow-1 main-content" style="background-image: url('../assets/background/Dashboard Admin.png'); background-size: cover;">
       <div class="container-fluid py-3">
@@ -171,14 +160,10 @@ $agenda = $data['agenda_terdekat'] ?? [];
   </div>
 
   <script>
-    const sidebar = document.getElementById('sidebar');
+
     const toggleBtn = document.getElementById('toggleSidebar');
     const profileBtn = document.getElementById('profileToggle');
     const profileCard = document.getElementById('profileCard');
-
-    toggleBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('collapsed');
-    });
 
     profileBtn.addEventListener('click', (e) => {
       e.stopPropagation();

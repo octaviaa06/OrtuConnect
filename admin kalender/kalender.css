@@ -3,48 +3,7 @@
    =============================== */
 
 /* === Sidebar (sama seperti Perizinan) === */
-.sidebar {
-    width: 240px;
-    min-height: 100vh;
-    background-color: #1a73e8;
-    color: white;
-    transition: width 0.3s ease;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-}
-.sidebar.collapsed {
-    width: 80px;
-}
-.sidebar img.icon {
-    width: 22px;
-    margin-right: 12px;
-}
-.sidebar .nav-link {
-    color: #fff;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    padding: 10px 16px;
-    border-radius: 8px;
-    margin-bottom: 6px;
-    transition: all 0.2s ease;
-}
-.sidebar .nav-link:hover,
-.sidebar .nav-link.active {
-    background-color: rgba(255, 255, 255, 0.2);
-}
-.sidebar .slide-btn {
-    width: 28px;
-    cursor: pointer;
-}
-.sidebar.expanded span {
-    display: inline;
-}
-.sidebar.collapsed span {
-    display: none;
-}
+
 
 /* === Main Content === */
 .main-content {

@@ -1,6 +1,7 @@
 <?php
 session_start();
-
+$active_page = 'kalender';
+//include '../admin/sidebar.php';
 // =====================================================
 // 🔒 CEK LOGIN ADMIN
 // =====================================================
@@ -87,6 +88,7 @@ $selected_agenda    = $agendaByDate[$selected_date_full] ?? [];
 </head>
 
 <body>
+    
     <?php include '../admin/sidebar.php'; ?>
 
         <!-- ===================== MAIN CONTENT ===================== -->
@@ -298,19 +300,6 @@ $selected_agenda    = $agendaByDate[$selected_date_full] ?? [];
             }
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const sidebar = document.getElementById("sidebar");
-            document.getElementById("toggleSidebar").addEventListener("click", () => sidebar.classList.toggle("collapsed"));
-
-            const profileBtn = document.getElementById("profileToggle");
-            const profileCard = document.getElementById("profileCard");
-            profileBtn.addEventListener("click", e => {
-                e.stopPropagation();
-                profileCard.classList.toggle("show");
-            });
-            document.addEventListener("click", e => {
-                if (!profileBtn.contains(e.target)) profileCard.classList.remove("show");
-            });
 
             document.getElementById('formAgenda').addEventListener('submit', async e => {
                 e.preventDefault();
@@ -348,7 +337,6 @@ $selected_agenda    = $agendaByDate[$selected_date_full] ?? [];
                     btn.textContent = id ? 'Perbarui' : 'Simpan';
                 }
             });
-        });
     </script>
 </body>
 </html>

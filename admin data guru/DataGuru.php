@@ -1,6 +1,7 @@
 <?php
 session_start();
-
+$active_page = 'DataGuru';
+//include '../admin/sidebar.php';
 // Pastikan admin login
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   header("Location: ../login/index.php?error=Harap login sebagai admin!");
@@ -37,19 +38,7 @@ $guruList = $data['data'] ?? [];
 <body>
 <div class="d-flex">
   <!-- SIDEBAR -->
-  <div id="sidebar" class="sidebar bg-primary text-white p-3 expanded">
-    <div class="text-center mb-4">
-      <img src="../assets/slide.png" id="toggleSidebar" alt="Slide" class="slide-btn">
-    </div>
-    <ul class="nav flex-column">
-      <li class="nav-item"><a href="../dashboard_admin/home_admin.php" class="nav-link"><img src="../assets/Dashboard.png" class="icon"><span>Dashboard</span></a></li>
-      <li class="nav-item"><a href="../admin data guru/DataGuru.php" class="nav-link active"><img src="../assets/Data Guru.png" class="icon"><span>Data Guru</span></a></li>
-      <li class="nav-item"><a href="../admin data siswa/DataSiswa.php" class="nav-link"><img src="../assets/Data Siswa.png" class="icon"><span>Data Murid</span></a></li>
-      <li class="nav-item"><a href="../admin absensi/Absensi.php" class="nav-link"><img src="../assets/absensi.png" class="icon"><span>Absensi</span></a></li>
-      <li class="nav-item"><a href="../admin perizinan/Perizinan.php" class="nav-link"><img src="../assets/Perizinan.png" class="icon"><span>Perizinan</span></a></li>
-      <li class="nav-item"><a href="../admin kalender/Kalender.php" class="nav-link"><img src="../assets/Kalender.png" class="icon"><span>Kalender</span></a></li>
-    </ul>
-  </div>
+<?php include '../admin/sidebar.php'; ?>
 
   <!-- MAIN CONTENT -->
   <div class="flex-grow-1 main-content" 
@@ -194,9 +183,6 @@ $guruList = $data['data'] ?? [];
 <div id="notifBox" class="notif"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const sidebar = document.getElementById('sidebar');
-  document.getElementById('toggleSidebar').addEventListener('click', () => sidebar.classList.toggle('collapsed'));
 
   const profileBtn = document.getElementById('profileToggle');
   const profileCard = document.getElementById('profileCard');
@@ -315,7 +301,6 @@ document.addEventListener("DOMContentLoaded", () => {
       showNotif("Gagal menampilkan akun: " + err.message, false);
     }
   };
-});
 </script>
 </body>
 </html>

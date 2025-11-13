@@ -8,37 +8,43 @@
 
     <ul class="nav flex-column">
         <li class="nav-item mb-2">
-            <a href="../dashboard_admin/home_admin.php" class="nav-link text-white d-flex align-items-center gap-2">
+            <a href="../dashboard_admin/home_admin.php"
+               class="nav-link text-white d-flex align-items-center gap-2 <?php echo basename($_SERVER['PHP_SELF']) == 'home_admin.php' ? 'active' : ''; ?>">
                 <img src="../assets/Dashboard.png" class="icon" />
                 <span class="menu-text">Dashboard</span>
             </a>
         </li>
         <li class="nav-item mb-2">
-            <a href="../admin data guru/DataGuru.php" class="nav-link text-white d-flex align-items-center gap-2">
+            <a href="../admin data guru/DataGuru.php"
+               class="nav-link text-white d-flex align-items-center gap-2 <?php echo basename($_SERVER['PHP_SELF']) == 'DataGuru.php' ? 'active' : ''; ?>">
                 <img src="../assets/Data Guru.png" class="icon" />
                 <span class="menu-text">Data Guru</span>
             </a>
         </li>
         <li class="nav-item mb-2">
-            <a href="../admin data siswa/DataSiswa.php" class="nav-link text-white d-flex align-items-center gap-2">
+            <a href="../admin data siswa/DataSiswa.php"
+               class="nav-link text-white d-flex align-items-center gap-2 <?php echo basename($_SERVER['PHP_SELF']) == 'DataSiswa.php' ? 'active' : ''; ?>">
                 <img src="../assets/Data Siswa.png" class="icon" />
                 <span class="menu-text">Data Murid</span>
             </a>
         </li>
         <li class="nav-item mb-2">
-            <a href="../admin absensi/Absensi.php" class="nav-link text-white d-flex align-items-center gap-2">
+            <a href="../admin absensi/Absensi.php"
+               class="nav-link text-white d-flex align-items-center gap-2 <?php echo basename($_SERVER['PHP_SELF']) == 'Absensi.php' ? 'active' : ''; ?>">
                 <img src="../assets/absensi.png" class="icon" />
                 <span class="menu-text">Absensi</span>
             </a>
         </li>
         <li class="nav-item mb-2">
-            <a href="../admin perizinan/Perizinan.php" class="nav-link active text-white d-flex align-items-center gap-2">
+            <a href="../admin perizinan/Perizinan.php"
+               class="nav-link text-white d-flex align-items-center gap-2 <?php echo basename($_SERVER['PHP_SELF']) == 'Perizinan.php' ? 'active' : ''; ?>">
                 <img src="../assets/Perizinan.png" class="icon" />
                 <span class="menu-text">Perizinan</span>
             </a>
         </li>
         <li class="nav-item mb-2">
-            <a href="../admin kalender/Kalender.php" class="nav-link text-white d-flex align-items-center gap-2">
+            <a href="../admin kalender/Kalender.php"
+               class="nav-link text-white d-flex align-items-center gap-2 <?php echo basename($_SERVER['PHP_SELF']) == 'Kalender.php' ? 'active' : ''; ?>">
                 <img src="../assets/Kalender.png" class="icon" />
                 <span class="menu-text">Kalender</span>
             </a>
