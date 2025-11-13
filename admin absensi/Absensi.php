@@ -9,7 +9,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
 // Ambil kelas dari API nyata
 function getDaftarKelas() {
-    $api_kelas_url = "https://ortuconnect.atwebpages.com/api/admin/absensi.php"; // misal endpoint daftar kelas
+    $api_kelas_url = "https://ortuconnect.atwebpages.com/api/admin/absensi.php"; 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $api_kelas_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

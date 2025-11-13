@@ -97,7 +97,7 @@ $siswaList = $data['data'] ?? [];
               ? strtoupper(substr($kata[0], 0, 1) . substr($kata[1], 0, 1))
               : strtoupper(substr($kata[0], 0, 2));
           ?>
-            <div class="col-md-4 mb-3 siswa-item">
+            <div class="col-md-4 mb-3 siswa-item">//
               <div class="card shadow-sm border-0 p-3 d-flex flex-column justify-content-between" style="border-radius:16px;">
                 <div class="d-flex align-items-center mb-3">
                   <div class="avatar-inisial bg-primary text-white me-3" 

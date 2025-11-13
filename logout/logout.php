@@ -15,13 +15,34 @@ if (isset($_POST['confirm_logout'])) {
 // Jika klik "Batal"
 if (isset($_POST['cancel_logout'])) {
     switch ($from_page) {
+
+       case 'dashboard admin':
+            header("Location: ../dashboard_admin/home_admin.php");
+            break;
         case 'dataguru':
             header("Location: ../admin data guru/DataGuru.php");
             break;
         case 'datasiswa':
             header("Location: ../admin data siswa/DataSiswa.php");
             break;
-        default:
+        case 'absensi':
+            header("Location: ../admin absensi/Absensi.php");
+            break;
+        case 'perizinan':
+            header("Location: ../admin perizinan/Perizinan.php");
+            break;
+        case 'kalender':
+            header("Location: ../admin kalender/Kalender.php");
+            break;
+
+ case 'absensi guru':
+            header("Location: ../guru absensi/absensi_siswa.php");
+            break;
+case 'kalender guru':
+            header("Location: ../guru kalender/kalender.php");
+            break;
+
+              default:
             header("Location: ../dashboard_admin/home_admin.php");
             break;
     }
