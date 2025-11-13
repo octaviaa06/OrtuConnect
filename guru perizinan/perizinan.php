@@ -74,136 +74,15 @@ $perizinanList = fetchPerizinanData($debug_mode);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Perizinan | OrtuConnect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="style.css" />
-    <style>
-        .notif {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            display: none;
-            z-index: 9999;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        .search-icon {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
-            pointer-events: none;
-        }
-        
-        .search-input {
-            padding-left: 40px;
-            border-radius: 8px;
-        }
-        
-        .badge {
-            padding: 6px 12px;
-            font-size: 0.85rem;
-        }
-        
-        .btn-sm {
-            padding: 4px 12px;
-            font-size: 0.875rem;
-        }
-        
-        .table th {
-            font-weight: 600;
-            color: #495057;
-        }
-        
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9998;
-        }
-        
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #007bff;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    <link rel="stylesheet" href="sidebar.css" />
+    <link rel="stylesheet" href="style.css" />   
 </head>
+
 <body>
-    <!-- Loading Overlay -->
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner"></div>
-    </div>
 
     <div class="d-flex">
-        <!-- Sidebar -->
-        <div id="sidebar" class="sidebar bg-primary text-white p-3 expanded">
-            <div class="text-center mb-4">
-                <img src="../assets/slide.png" id="toggleSidebar" alt="Slide" class="slide-btn" style="cursor: pointer;" />
-            </div>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a href="../dashboard_admin/home_admin.php" class="nav-link">
-                        <img src="../assets/Dashboard.png" class="icon" alt="Dashboard" />
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="../admin data siswa/DataSiswa.php" class="nav-link">
-                        <img src="../assets/Data Siswa.png" class="icon" alt="Data Siswa" />
-                        <span>Data Murid</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="../admin absensi/Absensi.php" class="nav-link">
-                        <img src="../assets/absensi.png" class="icon" alt="Absensi" />
-                        <span>Absensi</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="../admin perizinan/Perizinan.php" class="nav-link active">
-                        <img src="../assets/Perizinan.png" class="icon" alt="Perizinan" />
-                        <span>Perizinan</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="../admin kalender/Kalender.php" class="nav-link">
-                        <img src="../assets/Kalender.png" class="icon" alt="Kalender" />
-                        <span>Kalender</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
+        <!-- Include Sidebar -->
+        <?php include '../guru/sidebar.php'; ?>
 
         <!-- Main Content -->
         <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center; min-height:100vh;">
@@ -335,42 +214,38 @@ $perizinanList = fetchPerizinanData($debug_mode);
 
         // Main App Logic
         document.addEventListener("DOMContentLoaded", () => {
-            // Sidebar Toggle
-            const sidebar = document.getElementById("sidebar");
-            const toggleBtn = document.getElementById("toggleSidebar");
-            
-            toggleBtn.addEventListener("click", () => {
-                sidebar.classList.toggle("collapsed");
-            });
-
             // Profile Dropdown
             const profileBtn = document.getElementById("profileToggle");
             const profileCard = document.getElementById("profileCard");
             
-            profileBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                profileCard.classList.toggle("show");
-            });
-            
-            document.addEventListener("click", (e) => {
-                if (!profileBtn.contains(e.target)) {
-                    profileCard.classList.remove("show");
-                }
-            });
+            if (profileBtn && profileCard) {
+                profileBtn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    profileCard.classList.toggle("show");
+                });
+                
+                document.addEventListener("click", (e) => {
+                    if (!profileBtn.contains(e.target)) {
+                        profileCard.classList.remove("show");
+                    }
+                });
+            }
 
             // Search Functionality
             const searchInput = document.getElementById("searchInput");
-            searchInput.addEventListener("input", () => {
-                const keyword = searchInput.value.toLowerCase().trim();
-                const rows = document.querySelectorAll(".izin-item");
-                
-                rows.forEach((row) => {
-                    const idSiswa = row.dataset.idSiswa.toLowerCase();
-                    const kelas = row.dataset.kelas.toLowerCase();
-                    const shouldShow = idSiswa.includes(keyword) || kelas.includes(keyword);
-                    row.style.display = shouldShow ? "" : "none";
+            if (searchInput) {
+                searchInput.addEventListener("input", () => {
+                    const keyword = searchInput.value.toLowerCase().trim();
+                    const rows = document.querySelectorAll(".izin-item");
+                    
+                    rows.forEach((row) => {
+                        const idSiswa = row.dataset.idSiswa.toLowerCase();
+                        const kelas = row.dataset.kelas.toLowerCase();
+                        const shouldShow = idSiswa.includes(keyword) || kelas.includes(keyword);
+                        row.style.display = shouldShow ? "" : "none";
+                    });
                 });
-            });
+            }
 
             // Handle Approve/Reject Actions
             const handleAksi = async (idIzin, idSiswa, aksi) => {
@@ -382,7 +257,7 @@ $perizinanList = fetchPerizinanData($debug_mode);
 
                 showLoading(true);
 
-                const apiUrl = "https://ortuconnect.atwebpages.com/api/admin/perizinan_aksi.php";
+                const apiUrl = "http://ortuconnect.atwebpages.com/api/admin/absensi.php";
                 
                 try {
                     const response = await fetch(apiUrl, {
@@ -423,21 +298,23 @@ $perizinanList = fetchPerizinanData($debug_mode);
             // Event Delegation for Action Buttons
             const tableBody = document.querySelector("#perizinanTable tbody");
             
-            tableBody.addEventListener("click", (e) => {
-                const target = e.target;
-                
-                if (target.classList.contains("btn-setujui")) {
-                    e.preventDefault();
-                    const idIzin = target.dataset.id;
-                    const idSiswa = target.dataset.idSiswa;
-                    handleAksi(idIzin, idSiswa, "Setujui");
-                } else if (target.classList.contains("btn-tolak")) {
-                    e.preventDefault();
-                    const idIzin = target.dataset.id;
-                    const idSiswa = target.dataset.idSiswa;
-                    handleAksi(idIzin, idSiswa, "Tolak");
-                }
-            });
+            if (tableBody) {
+                tableBody.addEventListener("click", (e) => {
+                    const target = e.target;
+                    
+                    if (target.classList.contains("btn-setujui")) {
+                        e.preventDefault();
+                        const idIzin = target.dataset.id;
+                        const idSiswa = target.dataset.idSiswa;
+                        handleAksi(idIzin, idSiswa, "Setujui");
+                    } else if (target.classList.contains("btn-tolak")) {
+                        e.preventDefault();
+                        const idIzin = target.dataset.id;
+                        const idSiswa = target.dataset.idSiswa;
+                        handleAksi(idIzin, idSiswa, "Tolak");
+                    }
+                });
+            }
         });
     </script>
 </body>

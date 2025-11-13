@@ -1,8 +1,11 @@
+/* ======================================================= */
+/* ===== 1. SIDEBAR & ANIMASI ===== */
+/* ======================================================= */
+
 .sidebar {
- 
-    width: 200px;
-    background-color: #0d6efd;
-    transition: width 0.35s ease, margin-left 0.35s ease;
+    width: 250px;
+    background-color: rgba(13, 110, 253, 0.95);
+    transition: all 0.4s ease;
     overflow: hidden;
     height: 100vh;
     padding-top: 50px;
@@ -16,14 +19,46 @@
     z-index: 100;
 }
 
-/* Lebar Collapsed */
+/* Saat sidebar collapse */
 .sidebar.collapsed {
-    width: 70px;
+    width: 80px;
 }
 
-/* ==================================== */
-/* 🖼️ TOMBOL TOGGLE & ICON */
-/* ==================================== */
+/* Animasi teks menu */
+.sidebar .menu-text {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.4s ease;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.sidebar.collapsed .menu-text {
+    opacity: 0;
+    transform: translateX(-20px);
+    display: none;
+}
+
+/* Animasi ikon */
+.sidebar img.icon {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
+}
+
+/* Saat sidebar terbuka */
+.sidebar.expanded .menu-text {
+    animation: swingIn 0.4s ease forwards;
+}
+
+@keyframes swingIn {
+    0% { opacity: 0; transform: translateX(-20px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+/* ======================================================= */
+/* ===== 2. TOMBOL SLIDE & NAVIGATION ===== */
+/* ======================================================= */
 
 .slide-btn {
     width: 28px;
@@ -35,16 +70,6 @@
 .slide-btn:hover {
     transform: scale(1.1);
 }
-
-.icon {
-    width: 28px;
-    height: 28px;
-    flex-shrink: 0;
-}
-
-/* ==================================== */
-/* 🧭 NAVIGASI & LINK */
-/* ==================================== */
 
 .nav {
     width: 100%;
@@ -68,7 +93,6 @@
     font-size: 15px;
     font-weight: 500;
     white-space: nowrap;
-    text-decoration: none;
 }
 
 .nav-link:hover,
@@ -77,52 +101,55 @@
     transform: translateX(5px);
 }
 
-/* ==================================== */
-/* 📝 ANIMASI & TEKS MENU */
-/* ==================================== */
-
-.sidebar .menu-text {
-    opacity: 1;
-    /* Ganti display block/inline-block untuk kontrol lebar saat expanded */
-    display: inline-block; 
-    transition: opacity 0.3s ease, width 0.3s ease;
-    width: auto;
+.icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
 }
 
-/* Mode Collapsed: Sembunyikan teks menu */
+/* Sidebar Collapsed */
 .sidebar.collapsed .nav-link {
     justify-content: center;
-    padding: 10px; 
+    padding: 10px 0;
 }
 
-.sidebar.collapsed .menu-text {
+.sidebar.collapsed .nav-link span {
     opacity: 0;
-    width: 0; 
-    overflow: hidden; 
-    display: none; /* Hilangkan dari alur setelah transisi */
+    width: 0;
+    transition: opacity 0.2s ease, width 0.3s ease;
 }
 
-/* Animasi Swing (Opsional, untuk feedback visual saat expanded) */
-@keyframes swingIn {
-    0% {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(0);
-    }
+.sidebar .nav-link span {
+    opacity: 1;
+    width: auto;
+    transition: opacity 0.3s ease, width 0.3s ease;
 }
 
-.menu-text.animate-swing {
-    animation: swingIn 0.4s ease forwards;
+/* ======================================================= */
+/* ===== 3. KONTEN UTAMA ===== */
+/* ======================================================= */
+.main-content {
+    margin-left: 250px;
+    padding: 18px 28px;
+    transition: margin-left 0.35s ease;
+    background-color: transparent;
+    position: relative;
+    min-height: 100vh;
 }
 
-/* ==================================== */
-/* 📱 RESPONSIVE (Disesuaikan) */
-/* ==================================== */
+.sidebar.collapsed ~ .main-content {
+    margin-left: 70px;
+}
 
+/* ======================================================= */
+/* ===== 4. RESPONSIVE ===== */
+/* ======================================================= */
 @media (max-width: 768px) {
+    .main-content {
+        padding: 15px;
+        margin-left: 0;
+    }
+
     .sidebar {
         width: 60px;
     }
@@ -130,4 +157,16 @@
     .sidebar.collapsed {
         width: 60px;
     }
+
+    .sidebar.collapsed ~ .main-content {
+        margin-left: 0 !important;
+    }
+}
+
+/* ======================================================= */
+/* ===== 5. ANIMASI TAMBAHAN ===== */
+/* ======================================================= */
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(-5px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
