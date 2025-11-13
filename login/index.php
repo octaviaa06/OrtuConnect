@@ -5,10 +5,10 @@ session_start();
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login | OrtuConnect</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | OrtuConnect</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
     
@@ -19,15 +19,13 @@ session_start();
 
     <div class="right">
         <form action="cek_login.php" method="POST" class="login-box">
-
-         <img src="../../assets/logo.png" alt="Logo OrtuConnect" class="logo-img">
-
+            <img src="../../assets/logo.png" alt="Logo OrtuConnect" class="logo-img">
 
             <input type="text" name="username" placeholder="Username" required>
 
             <div class="password-box">
                 <input type="password" name="password" id="password" placeholder="Password" required>
-                <span id="togglePassword"></span>
+                <span id="togglePassword" class="toggle-icon"></span>
             </div>
 
             <button type="submit">Masuk</button>
@@ -46,8 +44,8 @@ document.getElementById("togglePassword").addEventListener("click", function () 
     const passwordField = document.getElementById("password");
     const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
     passwordField.setAttribute("type", type);
+    this.classList.toggle("show");
 });
 </script>
-
 </body>
 </html>

@@ -1,4 +1,5 @@
 <?php
+session_name('SESS_GURU');
 session_start();
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {

@@ -1,4 +1,5 @@
 <?php
+session_name('SESS_ADMIN');
 session_start();
 $active_page = 'dashboard';
 //include '../admin/sidebar.php';
@@ -89,7 +90,7 @@ $agenda = $data['agenda_terdekat'] ?? [];
           <div class="col-md-4">
             <a href="../admin data guru/DataGuru.php?action=generate" class="card text-center shadow-sm access-card link-underline-opacity-0">
               <div class="card-body">
-                <img src="../assets/Akun Guru.png" class="access-icon mb-2" alt="Generate Akun Guru">
+                <img src="../assets/Data Guru biru.png" class="access-icon mb-2" alt="Generate Akun Guru">
                 <p class="mb-0 text-dark fw-semibold">Generate Akun Guru</p>
               </div>
             </a>
@@ -97,7 +98,7 @@ $agenda = $data['agenda_terdekat'] ?? [];
           <div class="col-md-4">
             <a href="../admin data siswa/DataSiswa.php?action=generate" class="card text-center shadow-sm access-card link-underline-opacity-0">
               <div class="card-body">
-                <img src="../assets/Akun Siswa.png" class="access-icon mb-2" alt="Generate Akun Siswa">
+                <img src="../assets/Data Siswa biru.png" class="access-icon mb-2" alt="Generate Akun Siswa">
                 <p class="mb-0 text-dark fw-semibold">Generate Akun Siswa</p>
               </div>
             </a>
@@ -105,7 +106,7 @@ $agenda = $data['agenda_terdekat'] ?? [];
           <div class="col-md-4">
             <a href="../admin kalender/Kalender.php" class="card text-center shadow-sm access-card link-underline-opacity-0">
               <div class="card-body">
-                <img src="../assets/CRUD Kalender.png" class="access-icon mb-2" alt="CRUD Kalender">
+                <img src="../assets/Kalender biru.png" class="access-icon mb-2" alt="CRUD Kalender">
                 <p class="mb-0 text-dark fw-semibold">CRUD Kalender</p>
               </div>
             </a>

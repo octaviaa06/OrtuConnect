@@ -1,4 +1,5 @@
 <?php
+session_name('SESS_ADMIN');
 session_start();
 $active_page = 'kalender';
 //include '../admin/sidebar.php';

@@ -1,4 +1,5 @@
 <?php
+session_name('SESS_GURU');
 session_start();
 
 // Validasi admin login

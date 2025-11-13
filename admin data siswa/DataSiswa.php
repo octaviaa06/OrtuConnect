@@ -1,4 +1,5 @@
 <?php
+session_name('SESS_ADMIN');
 session_start();
 $active_page = 'datasiswa';
 //include '../admin/sidebar.php';
