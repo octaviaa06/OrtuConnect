@@ -2,8 +2,8 @@
 session_start();
 
 // Pastikan admin login
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../login/index.php?error=Harap login sebagai admin!");
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
+    header("Location: ../login/index.php?error=Harap login sebagai guru!");
     exit;
 }
 
@@ -42,7 +42,7 @@ $siswaList = $data['data'] ?? [];
             <img src="../assets/slide.png" id="toggleSidebar" alt="Slide" class="slide-btn">
         </div>
         <ul class="nav flex-column">
-            <li class="nav-item"><a href="../dashboard_guru/home_guru.php" class="nav-link"><img src="../assets/Dashboard.png" class="icon"><span>Dashboard</span></a></li>
+            <li class="nav-item"><a href="../dashboard guru/dashboardGuru.php" class="nav-link"><img src="../assets/Dashboard.png" class="icon"><span>Dashboard</span></a></li>
             <li class="nav-item"><a href="DataSiswa.php" class="nav-link active"><img src="../assets/Data Siswa.png" class="icon"><span>Data Murid</span></a></li>
             <li class="nav-item"><a href="../guru absensi/Absensi.php" class="nav-link"><img src="../assets/absensi.png" class="icon"><span>Absensi</span></a></li>
             <li class="nav-item"><a href="../guru perizinan/Perizinan.php" class="nav-link"><img src="../assets/Perizinan.png" class="icon"><span>Perizinan</span></a></li>
