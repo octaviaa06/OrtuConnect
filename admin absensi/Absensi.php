@@ -1,4 +1,5 @@
 <?php
+session_name('SESS_ADMIN');
 session_start();
 
 // Pastikan admin login
