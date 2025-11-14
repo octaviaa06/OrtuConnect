@@ -1,8 +1,5 @@
 <?php
-// Mulai session SEBELUM output apapun
-session_name('ORTUCONNECT_SESSION');
-session_start();
-ob_start();
+ob_start(); 
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: index.php?error=Invalid request");
@@ -22,7 +19,6 @@ if ($username === '' || $password === '') {
     exit;
 }
 
-// Panggil endpoint API eksternal
 $api_url = "http://ortuconnect.atwebpages.com/api/login.php";
 $data = [
     "username" => $username,
@@ -35,15 +31,15 @@ curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Jika SSL error
+curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Timeout 10 detik
 
 $response = curl_exec($ch);
 $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
 if ($response === false || $http_code !== 200) {
-    $error = "API tidak merespons (HTTP $http_code)";
+    $error = curl_error($ch) ?: "API tidak merespons (HTTP $http_code)";
     header("Location: index.php?error=" . urlencode("Gagal koneksi ke server: $error"));
     exit;
 }
@@ -62,27 +58,36 @@ if (!$user || !isset($user['role']) || !isset($user['id_akun'])) {
     exit;
 }
 
-// Hapus session lama jika ada
-session_destroy();
+$role = $user['role']; 
 
-// Mulai session baru
-session_name('ORTUCONNECT_SESSION');
+$session_name = 'SESS_' . strtoupper($role);
+session_name($session_name);
 session_start();
+
 session_regenerate_id(true);
 
-// Set session variables
+if (isset($_SESSION['role']) && $_SESSION['role'] === $role && $_SESSION['username'] === $user['username']) {
+    $redirect = $role === 'admin' 
+        ? '../dashboard_admin/home_admin.php' 
+        : '../dashboard_guru/home_guru.php';
+    header("Location: $redirect");
+    exit;
+}
+
 $_SESSION['id_akun'] = $user['id_akun'];
 $_SESSION['username'] = $user['username'];
-$_SESSION['role'] = $user['role'];
-$_SESSION['login_time'] = time();
+$_SESSION['role']     = $user['role'];
+$_SESSION['login_time'] = time(); 
 
-$role = $user['role'];
+$redirect = $role === 'admin' 
+    ? '../dashboard_admin/home_admin.php' 
+    : '../dashboard_guru/home_guru.php';
 
-// 🔧 Redirect berdasarkan role (pakai path relatif)
-if ($role === 'admin') {
-    header("Location: ../dashboard_admin/home_admin.php");
-} else {
-    header("Location: ../dashboard_guru/home_guru.php");
+if (!file_exists($redirect)) {
+    header("Location: index.php?error=Halaman tidak ditemukan: " . basename($redirect));
+    exit;
 }
+
+header("Location: $redirect");
 exit;
 ?>

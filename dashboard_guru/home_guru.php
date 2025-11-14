@@ -1,5 +1,5 @@
 <?php
-session_name('ORTUCONNECT_SESSION');
+session_name('SESS_GURU');
 session_start();
 
 // Cek login - jika session role tidak ada atau bukan guru, redirect

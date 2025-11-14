@@ -1,19 +1,13 @@
 <?php
-session_name('SESS_ADMIN');
+session_name('ORTUCONNECT_SESSION');
 session_start();
 $active_page = 'kalender';
-//include '../admin/sidebar.php';
-// =====================================================
-// 🔒 CEK LOGIN ADMIN
-// =====================================================
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login/index.php?error=Harap login sebagai admin!");
     exit;
 }
 
-// =====================================================
-// 📅 LOGIKA KALENDER
-// =====================================================
 $current_month = $_GET['month'] ?? 11;
 $current_year  = $_GET['year'] ?? 2025;
 
@@ -38,29 +32,21 @@ $first_day_of_month = mktime(0, 0, 0, $current_month, 1, $current_year);
 $number_of_days     = date('t', $first_day_of_month);
 $date_components    = getdate($first_day_of_month);
 $month_name         = date('F Y', $first_day_of_month);
-$day_of_week        = $date_components['wday']; // 0=Sun, 6=Sat
-
-// =====================================================
-// 📦 AMBIL DATA AGENDA DARI API
-// =====================================================
-$api_agenda_url = "https://ortuconnect.atwebpages.com/api/admin/agenda.php?month={$current_month}&year={$current_year}";
+$day_of_week        = $date_components['wday'];
+$api_agenda_url = "http://ortuconnect.atwebpages.com/api/admin/agenda.php?month={$current_month}&year={$current_year}";
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_agenda_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 $response = curl_exec($ch);
-
-// Jika gagal, pakai dummy data
-if (curl_errno($ch)) {
-    $response = json_encode([
-        "data" => [
-            ['id' => 1, 'nama_kegiatan' => 'Memakai Baju Batik', 'tanggal' => '2025-11-10']
-        ]
-    ]);
-}
+$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
+
+if ($httpCode !== 200 || empty($response)) {
+    $response = json_encode(["data" => []]);
+}
 
 $data        = json_decode($response, true);
 $agendaList  = $data['data'] ?? [];
@@ -89,10 +75,8 @@ $selected_agenda    = $agendaByDate[$selected_date_full] ?? [];
 </head>
 
 <body>
-    
-    <?php include '../admin/sidebar.php'; ?>
-
-        <!-- ===================== MAIN CONTENT ===================== -->
+    <div class="d-flex">
+        <?php include '../admin/sidebar.php'; ?>
         <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">
             <div class="container-fluid py-3">
 
@@ -119,7 +103,7 @@ $selected_agenda    = $agendaByDate[$selected_date_full] ?? [];
                 </button>
 
                 <div class="row">
-                    <!-- ===================== KALENDER ===================== -->
+                    <!-- Kalender -->
                     <div class="col-md-6 mb-4">
                         <div class="card shadow-sm border-0 p-4 kalender-container">
                             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -178,7 +162,7 @@ $selected_agenda    = $agendaByDate[$selected_date_full] ?? [];
                         </div>
                     </div>
 
-                    <!-- ===================== DAFTAR KEGIATAN ===================== -->
+                    <!-- DAFTAR KEGIATAN -->
                     <div class="col-md-6">
                         <div class="card shadow-sm border-0 p-4 daftar-kegiatan-container">
                             <h5 class="fw-bold mb-3 text-primary">Daftar Kegiatan</h5>
@@ -209,10 +193,10 @@ $selected_agenda    = $agendaByDate[$selected_date_full] ?? [];
         </div>
     </div>
 
-    <!-- ===================== NOTIFIKASI ===================== -->
+    <!-- NOTIFIKASI -->
     <div id="notifBox" class="notif"></div>
 
-    <!-- ===================== MODAL TAMBAH/EDIT AGENDA ===================== -->
+    <!-- TAMBAH/EDIT AGENDA -->
     <div class="modal fade" id="agendaModal" tabindex="-1" aria-labelledby="agendaModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -232,6 +216,10 @@ $selected_agenda    = $agendaByDate[$selected_date_full] ?? [];
                             <label for="agendaTanggal" class="form-label">Tanggal</label>
                             <input type="date" class="form-control" id="agendaTanggal" name="tanggal" required>
                         </div>
+                        <div class="mb-3">
+                            <label for="agendaDeskripsi" class="form-label">Deskripsi (Opsional)</label>
+                            <textarea class="form-control" id="agendaDeskripsi" name="deskripsi" rows="3"></textarea>
+                        </div>
                     </div>
 
                     <div class="modal-footer">
@@ -243,10 +231,10 @@ $selected_agenda    = $agendaByDate[$selected_date_full] ?? [];
         </div>
     </div>
 
-    <!-- ===================== SCRIPT ===================== -->
+    <!--  SCRIPT  -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const AGENDA_API = "https://ortuconnect.atwebpages.com/api/admin/agenda.php";
+        const AGENDA_API = "http://ortuconnect.atwebpages.com/api/admin/agenda.php";
 
         function showNotif(message, isSuccess = true) {
             const notifBox = document.getElementById("notifBox");
@@ -260,6 +248,7 @@ $selected_agenda    = $agendaByDate[$selected_date_full] ?? [];
             document.getElementById('agendaId').value = '';
             document.getElementById('agendaNama').value = '';
             document.getElementById('agendaTanggal').value = '<?= $selected_date_full ?>';
+            document.getElementById('agendaDeskripsi').value = '';
             document.getElementById('agendaModalLabel').textContent = 'Tambah Agenda';
             document.getElementById('btnSimpanAgenda').textContent = 'Simpan';
             new bootstrap.Modal(document.getElementById('agendaModal')).show();
@@ -274,6 +263,7 @@ $selected_agenda    = $agendaByDate[$selected_date_full] ?? [];
                     document.getElementById('agendaId').value = a.id;
                     document.getElementById('agendaNama').value = a.nama_kegiatan;
                     document.getElementById('agendaTanggal').value = a.tanggal;
+                    document.getElementById('agendaDeskripsi').value = a.deskripsi || '';
                     document.getElementById('agendaModalLabel').textContent = 'Edit Agenda';
                     document.getElementById('btnSimpanAgenda').textContent = 'Perbarui';
                     new bootstrap.Modal(document.getElementById('agendaModal')).show();
@@ -301,43 +291,58 @@ $selected_agenda    = $agendaByDate[$selected_date_full] ?? [];
             }
         }
 
+        document.getElementById('formAgenda').addEventListener('submit', async e => {
+            e.preventDefault();
+            const id = document.getElementById('agendaId').value;
+            const method = id ? 'PUT' : 'POST';
+            const formData = {
+                id,
+                nama_kegiatan: document.getElementById('agendaNama').value,
+                tanggal: document.getElementById('agendaTanggal').value,
+                deskripsi: document.getElementById('agendaDeskripsi').value
+            };
 
-            document.getElementById('formAgenda').addEventListener('submit', async e => {
-                e.preventDefault();
-                const id = document.getElementById('agendaId').value;
-                const method = id ? 'PUT' : 'POST';
-                const formData = {
-                    id,
-                    nama_kegiatan: document.getElementById('agendaNama').value,
-                    tanggal: document.getElementById('agendaTanggal').value
-                };
+            const btn = document.getElementById('btnSimpanAgenda');
+            btn.disabled = true;
+            btn.textContent = 'Loading...';
 
-                const btn = document.getElementById('btnSimpanAgenda');
-                btn.disabled = true;
-                btn.textContent = 'Loading...';
+            try {
+                const res = await fetch(AGENDA_API, {
+                    method,
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formData)
+                });
+                const data = await res.json();
 
-                try {
-                    const res = await fetch(AGENDA_API, {
-                        method,
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(formData)
-                    });
-                    const data = await res.json();
+                if (data.status === 'success') {
+                    showNotif(data.message || (id ? 'Agenda diperbarui!' : 'Agenda ditambahkan!'));
+                    bootstrap.Modal.getInstance(document.getElementById('agendaModal')).hide();
+                    location.reload();
+                } else {
+                    showNotif(data.message || 'Gagal menyimpan agenda.', false);
+                }
+            } catch {
+                showNotif("Terjadi kesalahan koneksi.", false);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = id ? 'Perbarui' : 'Simpan';
+            }
+        });
 
-                    if (data.status === 'success') {
-                        showNotif(data.message || (id ? 'Agenda diperbarui!' : 'Agenda ditambahkan!'));
-                        bootstrap.Modal.getInstance(document.getElementById('agendaModal')).hide();
-                        location.reload();
-                    } else {
-                        showNotif(data.message || 'Gagal menyimpan agenda.', false);
-                    }
-                } catch {
-                    showNotif("Terjadi kesalahan koneksi.", false);
-                } finally {
-                    btn.disabled = false;
-                    btn.textContent = id ? 'Perbarui' : 'Simpan';
+        // Profile toggle
+        const profileBtn = document.getElementById('profileToggle');
+        const profileCard = document.getElementById('profileCard');
+        if (profileBtn) {
+            profileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                profileCard.classList.toggle('show');
+            });
+            document.addEventListener('click', (e) => {
+                if (!profileBtn.contains(e.target)) {
+                    profileCard.classList.remove('show');
                 }
             });
+        }
     </script>
 </body>
 </html>

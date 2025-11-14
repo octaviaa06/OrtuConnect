@@ -11,7 +11,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
     <ul class="nav flex-column">
         <li class="nav-item mb-2">
-            <a href="../dashboard_guru/dashboardGuru.php" class="nav-link text-white d-flex align-items-center gap-2">
+            <a href="../dashboard_guru/home_guru.php" class="nav-link text-white d-flex align-items-center gap-2">
                 <img src="../assets/Dashboard.png" class="icon" />
                 <span class="menu-text">Dashboard</span>
             </a>
