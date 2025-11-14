@@ -69,7 +69,7 @@ session_regenerate_id(true);
 if (isset($_SESSION['role']) && $_SESSION['role'] === $role && $_SESSION['username'] === $user['username']) {
     $redirect = $role === 'admin' 
         ? '../dashboard_admin/home_admin.php' 
-        : '../dasboard_guru/home_guru.php';
+        : '../dashboard_guru/home_guru.php';
     header("Location: $redirect");
     exit;
 }
@@ -81,7 +81,7 @@ $_SESSION['login_time'] = time();
 
 $redirect = $role === 'admin' 
     ? '../dashboard_admin/home_admin.php' 
-    : '../dasboard_guru/home_guru.php';
+    : '../dashboard_guru/home_guru.php';
 
 if (!file_exists($redirect)) {
     header("Location: index.php?error=Halaman tidak ditemukan: " . basename($redirect));

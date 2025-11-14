@@ -11,7 +11,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 
     <ul class="nav flex-column">
         <li class="nav-item mb-2">
-            <a href="../dashboard_guru/dashboardGuru.php" class="nav-link text-white d-flex align-items-center gap-2">
+            <a href="../dashboard_guru/home_guru.php" class="nav-link text-white d-flex align-items-center gap-2">
                 <img src="../assets/Dashboard.png" class="icon" />
                 <span class="menu-text">Dashboard</span>
             </a>
@@ -43,15 +43,50 @@ if (session_status() === PHP_SESSION_NONE) session_start();
     </ul>
 </div>
 
+<!-- TAMBAHAN: JavaScript yang DIPERBAIKI -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const sidebar = document.getElementById("sidebar");
     const toggleBtn = document.getElementById("toggleSidebar");
-const mainContent = document.querySelector(".main-content");
+    const mainContent = document.querySelector(".main-content");
 
-    toggleBtn.addEventListener("click", () => {
+    // Pastikan main-content ada
+    if (!mainContent) return;
+
+    // Fungsi toggle
+    const toggleSidebar = () => {
         sidebar.classList.toggle("collapsed");
         sidebar.classList.toggle("expanded");
+
+        // Mobile: pastikan tetap responsive
+        if (window.innerWidth <= 768) {
+            if (sidebar.classList.contains("expanded")) {
+                mainContent.style.marginLeft = "250px";
+            } else {
+                mainContent.style.marginLeft = "80px";
+            }
+        }
+    };
+
+    // Event klik
+    toggleBtn.addEventListener("click", toggleSidebar);
+
+    // Auto-collapse di mobile saat load
+    if (window.innerWidth <= 768) {
+        sidebar.classList.remove("expanded");
+        sidebar.classList.add("collapsed");
+        mainContent.style.marginLeft = "80px";
+    }
+
+    // Update saat resize (opsional)
+    window.addEventListener("resize", () => {
+        if (window.innerWidth <= 768) {
+            if (!sidebar.classList.contains("collapsed")) {
+                sidebar.classList.add("collapsed");
+                sidebar.classList.remove("expanded");
+                mainContent.style.marginLeft = "80px";
+            }
+        }
     });
 });
 </script>

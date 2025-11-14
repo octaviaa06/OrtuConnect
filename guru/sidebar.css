@@ -24,6 +24,11 @@
     width: 80px;
 }
 
+/* Pastikan .expanded untuk lebar penuh (tambahan) */
+.sidebar.expanded {
+    width: 250px;
+}
+
 /* Animasi teks menu */
 .sidebar .menu-text {
     opacity: 1;
@@ -137,29 +142,53 @@
     min-height: 100vh;
 }
 
+/* Saat sidebar expanded */
+.sidebar.expanded ~ .main-content {
+    margin-left: 250px !important;
+}
+
+/* Saat sidebar collapsed */
 .sidebar.collapsed ~ .main-content {
-    margin-left: 70px;
+    margin-left: 80px !important;
 }
 
 /* ======================================================= */
-/* ===== 4. RESPONSIVE ===== */
+/* ===== 4. RESPONSIVE & MOBILE ===== */
 /* ======================================================= */
 @media (max-width: 768px) {
     .main-content {
         padding: 15px;
-        margin-left: 0;
+        margin-left: 80px !important;
     }
 
+    /* Default mobile: sidebar collapse */
     .sidebar {
-        width: 60px;
+        width: 80px !important;
     }
 
     .sidebar.collapsed {
-        width: 60px;
+        width: 80px !important;
     }
 
-    .sidebar.collapsed ~ .main-content {
-        margin-left: 0 !important;
+    .sidebar.expanded {
+        width: 250px !important;
+    }
+
+    /* Saat dibuka di mobile */
+    .sidebar.expanded ~ .main-content {
+        margin-left: 250px !important;
+    }
+
+    /* Sembunyikan teks saat collapse di mobile */
+    .sidebar:not(.expanded) .menu-text {
+        opacity: 0;
+        transform: translateX(-20px);
+        display: none;
+    }
+
+    /* Hover tidak geser di mobile saat collapse */
+    .sidebar.collapsed .nav-link:hover {
+        transform: none !important;
     }
 }
 
