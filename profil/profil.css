@@ -1,0 +1,186 @@
+/* ======================================================= */
+/* ===== USER PROFILE DROPDOWN - NEUMORPHIC & CLEAN ===== */
+/* ======================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f8f9fc;
+  padding: 60px;
+  margin: 0;
+  color: #333;
+}
+
+/* CONTAINER untuk positioning dropdown */
+.profile-container {
+  position: relative;
+  display: inline-block;
+}
+
+/* USER PROFILE BUTTON */
+.user-profile {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  z-index: 1001;
+  padding: 8px 14px;
+  border-radius: 50px;
+  background: #ffffff;
+  box-shadow: 
+    6px 6px 12px rgba(0, 0, 0, 0.08),
+    -6px -6px 12px rgba(255, 255, 255, 0.9);
+  transition: all 0.2s ease;
+}
+
+.user-profile:hover {
+  box-shadow: 
+    8px 8px 16px rgba(0, 0, 0, 0.1),
+    -8px -8px 16px rgba(255, 255, 255, 1);
+  transform: translateY(-2px);
+}
+
+.profile-avatar {
+  width: 42px;
+  height: 42px;
+  background: #0d6efd;
+  color: white;
+  font-weight: 600;
+  font-size: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    4px 4px 8px rgba(0, 0, 0, 0.1),
+    -4px -4px 8px rgba(255, 255, 255, 0.8);
+}
+
+.username-text {
+  font-weight: 500;
+  font-size: 15px;
+  color: #1e40af;
+  white-space: nowrap;
+}
+
+/* DROPDOWN CARD */
+.dropdown-card {
+  position: absolute;
+  top: calc(100% + 16px);
+  right: 0;
+  width: 260px;
+  background: #ffffff;
+  border-radius: 18px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-12px) scale(0.94);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  overflow: hidden;
+
+  /* Efek Timbul */
+  box-shadow: 
+    12px 12px 24px rgba(0, 0, 0, 0.1),
+    -12px -12px 24px rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.dropdown-card.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+/* Card Header */
+.card-header {
+  padding: 18px 20px;
+  background: #ffffff;
+}
+
+.card-header .text-primary {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1e40af;
+  margin: 0;
+}
+
+.card-header .text-muted {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 3px 0 0;
+}
+
+/* HR */
+.dropdown-card hr {
+  margin: 0;
+  border: none;
+  height: 1px;
+  background: #e5e7eb;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+/* Logout Link */
+.logout-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  color: #dc3545;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  background: #ffffff;
+}
+
+.logout-link:hover {
+  background: #fef2f2;
+  color: #b91c1c;
+  border-radius: 0 0 18px 18px;
+}
+
+.logout-link img {
+  width: 18px;
+  height: 18px;
+  filter: brightness(0) saturate(100%) invert(27%) sepia(81%) saturate(7471%) hue-rotate(355deg) brightness(93%) contrast(111%);
+}
+
+/* ======================================================= */
+/* ===== RESPONSIVE ===== */
+/* ======================================================= */
+
+@media (max-width: 576px) {
+  .user-profile {
+    gap: 8px;
+    padding: 6px 10px;
+  }
+
+  .profile-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+
+  .username-text {
+    font-size: 14px;
+  }
+
+  .dropdown-card {
+    width: 220px;
+    right: -10px;
+  }
+
+  .card-header {
+    padding: 16px 18px;
+  }
+
+  .logout-link {
+    padding: 12px 18px;
+    font-size: 13px;
+  }
+}

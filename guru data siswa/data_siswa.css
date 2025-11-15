@@ -1,291 +1,345 @@
-/* ===== datasiswa.css - SESUAI SCREENSHOT GURU ===== */
 
-/* Reset & Body */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* ======================================================= */
+/* ===== 1. SIDEBAR & ANIMASI (Dari Inline Style Asli) ===== */
+/* ======================================================= */
+
+.sidebar {
+    width: 250px; /* Lebar default */
+    background-color: rgba(13, 110, 253, 0.95); /* Warna Primary Bootstrap */
+    transition: all 0.4s ease;
+    position: relative; 
 }
 
-body {
-  background-color: #f8f9fc;
-  font-family: "Poppins", sans-serif;
-  color: #333;
+#sidebar.collapsed {
+    width: 80px;
+    transition: all 0.4s ease;
 }
 
-/* Main Content - HAPUS BACKGROUND IMAGE */
+#sidebar .menu-text {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.4s ease;
+    display: inline-block;
+    white-space: nowrap; /* Mencegah teks melompat/wrap */
+}
+
+#sidebar.collapsed .menu-text {
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.3s ease;
+    display: none;
+}
+
+/* Animasi ikon agar tetap smooth */
+#sidebar img.icon {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
+}
+
+/* Saat sidebar dibuka, teks swing halus */
+#sidebar.expanded .menu-text {
+    animation: swingIn 0.4s ease forwards;
+}
+
+@keyframes swingIn {
+    0% {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ======================================================= */
+/* ===== 2. SIDEBAR (Kode Tambahan dari Anda) ===== */
+/* ======================================================= */
+
+/* Mengambil properti yang lebih spesifik dari kode yang Anda berikan */
+.sidebar {
+    /* width: 200px; */ /* Dikesampingkan, menggunakan 250px untuk konsistensi JS & tampilan */
+    /* background-color: #0d6efd; */ /* Dikesampingkan, menggunakan rgba untuk opacity */
+    transition: width 0.35s ease;
+    overflow: hidden;
+    height: 100vh;
+    padding-top: 50px;
+    border-radius: 0 18px 18px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed; /* Diubah ke fixed untuk perilaku yang lebih baik */
+    top: 0;
+    left: 0;
+    z-index: 100;
+}
+
+.sidebar.collapsed {
+    width: 70px; /* Mengambil 70px dari kode Anda */
+}
+
+.slide-btn {
+    width: 28px;
+    cursor: pointer;
+    margin-bottom: 30px;
+    transition: transform 0.3s ease;
+}
+
+.slide-btn:hover {
+    transform: scale(1.1);
+}
+
+.nav {
+    width: 100%;
+    padding-left: 0;
+    margin-top: 8px;
+}
+
+.nav-item {
+    margin-bottom: 12px;
+    width: 100%;
+}
+
+.nav-link {
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    transition: background 0.3s, transform 0.2s;
+    font-size: 15px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background-color: rgba(255,255,255,0.2);
+    transform: translateX(5px);
+}
+
+.icon {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+/* Sidebar Collapsed */
+.sidebar.collapsed .nav-link {
+    justify-content: center;
+    padding: 10px 0;
+}
+
+.sidebar.collapsed .nav-link span {
+    opacity: 0;
+    width: 0;
+    transition: opacity 0.2s ease, width 0.3s ease;
+}
+
+.sidebar .nav-link span {
+    opacity: 1;
+    width: auto;
+    transition: opacity 0.3s ease, width 0.3s ease;
+}
+
+
+/* ======================================================= */
+/* ===== 3. KONTEN UTAMA & MARGIN (Mengatasi Fixed Sidebar) ===== */
+/* ======================================================= */
+
 .main-content {
-  margin-left: 240px;
-  padding: 25px;
-  min-height: 100vh;
-  transition: margin-left 0.35s ease;
-  background: #f8f9fc !important; /* Override inline style */
+    margin-left: 250px;
+    padding: 18px 28px;
+    transition: margin-left 0.35s ease;
+    background-color: transparent;
+    position: relative;
+    min-height: 100vh;
 }
 
 .sidebar.collapsed ~ .main-content {
-  margin-left: 90px;
+    margin-left: 70px; 
 }
 
-/* ===== HEADER ===== */
-.header-fixed {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(10px);
-  padding: 16px 24px;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  position: sticky;
-  top: 15px;
-  z-index: 1000;
-  margin-bottom: 28px;
-}
-
-/* Judul Halaman */
-.header-fixed h4 {
-  color: #0d6efd;
-  font-weight: 700;
-  font-size: 24px;
-  margin: 0;
-}
-
-/* ===== PROFIL GURU (Dropdown) ===== */
-.profile-btn {
-  position: relative;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.profile-avatar {
-  width: 48px;
-  height: 48px;
-  background: #0d6efd;
-  color: white;
-  font-weight: 700;
-  font-size: 18px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 3px 10px rgba(13, 110, 253, 0.3);
-}
-
-.profile-btn span {
-  font-weight: 600;
-  color: #0d6efd;
-  font-size: 15px;
-}
-
-/* Dropdown Card */
-.profile-card {
-  position: absolute;
-  top: 70px;
-  right: 0;
-  width: 240px;
-  background: white;
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  display: none;
-  z-index: 1050;
-  animation: fadeIn 0.2s ease;
-}
-
-.profile-card.show {
-  display: block;
-}
-
-.profile-card h6 {
-  margin: 0 0 4px;
-  color: #0d6efd;
-  font-weight: 600;
-  font-size: 15px;
-}
-
-.profile-card p {
-  margin: 0;
-  font-size: 13.5px;
-  color: #6c757d;
-}
-
-.profile-card hr {
-  margin: 12px 0;
-  border-color: #e9ecef;
-}
-
-.logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #dc3545;
-  font-weight: 600;
-  text-decoration: none;
-  font-size: 14px;
-  transition: opacity 0.2s;
-}
-
-.logout-btn:hover {
-  opacity: 0.8;
-}
-
-.logout-btn img {
-  width: 18px;
-  filter: brightness(0) invert(1);
-}
-
-/* ===== SEARCH BOX (Ikon di dalam input) ===== */
+/* ======================================================= */
+/* ===== 4. SEARCH BOX ===== */
+/* ======================================================= */
 .search-container {
-  background: white;
-  border-radius: 14px;
-  padding: 10px 16px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-  display: flex;
-  align-items: center;
-  height: 52px;
-  max-width: 520px;
-  width: 100%;
-  position: relative;
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    height: 42px;
+    position: relative;
+    width: 100%;
+    max-width: 450px;
 }
 
 .search-container:focus-within {
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
-  border-color: #0d6efd;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .search-icon {
-  position: absolute;
-  left: 18px;
-  width: 24px;
-  height: 24px;
-  opacity: 0.6;
-  pointer-events: none;
-  z-index: 1;
+    position: absolute;
+    left: 12px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.6;
 }
 
 .search-input {
-  border: none;
-  padding-left: 50px;
-  height: 100%;
-  width: 100%;
-  font-size: 15px;
-  background: transparent;
-  color: #495057;
-}
-
-.search-input::placeholder {
-  color: #adb5bd;
-  font-style: italic;
-  font-size: 14.5px;
+    border: none;
+    padding-left: 40px;
+    height: 100%;
+    font-size: 14px;
+    background: transparent;
 }
 
 .search-input:focus {
-  outline: none;
+    outline: none;
+    border: none;
+    box-shadow: none !important;
 }
 
-/* ===== GRID CARD SISWA ===== */
-#siswaContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-  gap: 22px;
-  padding: 0 8px;
+/* ======================================================= */
+/* ===== 5. HEADER & PROFILE ===== */
+/* ======================================================= */
+.header-fixed {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(6px);
+    padding: 10px 0;
+    z-index: 1000;
 }
 
-/* Card */
+.profile-btn {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.profile-avatar {
+    width: 50px;
+    height: 50px;
+    font-weight: 600;
+    font-size: 18px;
+    background-color: #0d6efd;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.profile-card {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 210px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    display: none;
+    z-index: 1050;
+}
+
+.profile-card.show {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+.profile-card h6 {
+    margin-bottom: 4px;
+    color: #0d6efd;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.profile-card p {
+    margin: 0;
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.profile-card hr {
+    margin: 10px 0;
+}
+
+.profile-card a {
+    color: #d9534f !important;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+}
+
+.profile-card a img {
+    width: 18px;
+}
+
+/* ======================================================= */
+/* ===== 6. LAIN-LAIN (Placeholder) ===== */
+/* ======================================================= */
+
 .guru-card {
-  background: white;
-  border-radius: 18px;
-  padding: 20px;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
-  border: 1px solid #eef2f7;
-  transition: all 0.25s ease;
-  height: 100%;
+    border-radius: 15px;
+    transition: all 0.3s ease;
 }
 
 .guru-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
 }
 
-/* Avatar + Nama + Kelas */
-.avatar-inisial {
-  width: 50px;
-  height: 50px;
-  background: #0d6efd;
-  color: white;
-  font-weight: 700;
-  font-size: 16px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(13, 110, 253, 0.25);
-}
-
-.card-title {
-  font-size: 17px;
-  color: #0d6efd;
-  font-weight: 600;
-  margin: 0;
-}
-
-.card-title + small {
-  color: #6c757d;
-  font-size: 13.5px;
-  display: block;
-  margin-top: 2px;
-}
-
-/* Detail */
-.card-body p {
-  font-size: 14px;
-  color: #444;
-  margin: 6px 0;
-  line-height: 1.4;
-}
-
-.card-body p strong {
-  color: #212529;
-}
-
-/* ===== ANIMASI ===== */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 992px) {
-  .main-content {
-    margin-left: 90px;
-    padding: 20px;
-  }
-  .profile-avatar {
-    width: 46px;
-    height: 46px;
-    font-size: 17px;
-  }
-}
-
+/* ======================================================= */
+/* ===== 7. RESPONSIVE ===== */
+/* ======================================================= */
 @media (max-width: 768px) {
-  .header-fixed {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 16px;
-  }
-  .d-flex.justify-content-between.mb-4 {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .search-container {
-    max-width: 100%;
-  }
-  #siswaContainer {
-    grid-template-columns: 1fr;
-  }
+    .main-content {
+        padding: 15px;
+        margin-left: 0;
+    }
+
+    .sidebar {
+        width: 60px;
+    }
+
+    .sidebar.collapsed {
+        width: 60px;
+    }
+
+    .sidebar.collapsed ~ .main-content {
+        margin-left: 0 !important;
+    }
+    
+    .header-fixed {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .profile-card {
+        right: 10px;
+    } 
+}
+
+/* ======================================================= */
+/* ===== 8. ANIMATIONS ===== */
+/* ======================================================= */
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(-5px); }
+    100% { opacity: 1; transform: translateY(0); }
 }

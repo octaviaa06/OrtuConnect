@@ -1,7 +1,8 @@
 <?php
+
 session_name('SESS_GURU');
 session_start();
-
+$_SESSION['last_page'] = 'data_siswa.php';
 // Verifikasi role guru
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
   header("Location: ../login/index.php?error=Harap login sebagai guru!");
@@ -34,7 +35,7 @@ $siswaList = $data['data'] ?? [];
   <title>Data Siswa | OrtuConnect</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="../guru/sidebar.css">
-  <link rel="stylesheet" href="datasiswa.css">
+  <link rel="stylesheet" href="data_siswa.css">
 </head>
 <body>
 <div class="d-flex">

@@ -1,10 +1,11 @@
 <?php
 session_start();
 
-// Ambil parameter asal halaman
-$from_page = $_GET['from'] ?? ($_POST['from'] ?? 'dashboard');
+// Ambil halaman asal dengan aman
+$from_page = $_GET['from'] ?? ($_POST['from'] ?? 'dashboard admin');
+$from_page = $_GET['from'] ?? ($_POST['from'] ?? 'dashboard guru');
 
-// Jika klik "Ya, Logout"
+// Proses konfirmasi logout
 if (isset($_POST['confirm_logout'])) {
     session_unset();
     session_destroy();
@@ -12,40 +13,50 @@ if (isset($_POST['confirm_logout'])) {
     exit;
 }
 
-// Jika klik "Batal"
+// Proses batal logout
 if (isset($_POST['cancel_logout'])) {
-    switch ($from_page) {
+    $from = htmlspecialchars($from_page, ENT_QUOTES); // Aman dari XSS
 
-       case 'dashboard admin':
-            header("Location: ../dashboard_admin/home_admin.php");
+    switch ($from) {
+        case 'dashboard admin':
+            $url = '../dashboard_admin/home_admin.php';
             break;
         case 'dataguru':
-            header("Location: ../admin data guru/DataGuru.php");
+            $url = '../admin data guru/DataGuru.php';
             break;
         case 'datasiswa':
-            header("Location: ../admin data siswa/DataSiswa.php");
+            $url = '../admin data siswa/DataSiswa.php';
             break;
         case 'absensi':
-            header("Location: ../admin absensi/Absensi.php");
+            $url = '../admin absensi/Absensi.php';
             break;
         case 'perizinan':
-            header("Location: ../admin perizinan/Perizinan.php");
+            $url = '../admin perizinan/Perizinan.php';
             break;
         case 'kalender':
-            header("Location: ../admin kalender/Kalender.php");
+            $url = '../admin kalender/Kalender.php';
             break;
-
- case 'absensi guru':
-            header("Location: ../guru absensi/absensi_siswa.php");
+        case 'data_siswa':
+            $url = '../guru data siswa/data_siswa.php';
             break;
-case 'kalender guru':
-            header("Location: ../guru kalender/kalender.php");
+        case 'absensi guru':
+            $url = '../guru absensi/absensi_siswa.php';
             break;
-
-              default:
-            header("Location: ../dashboard_admin/home_admin.php");
+        case 'perizinan siswa':
+            $url = '../guru perizinan/perizinan.php';
+            break;
+        case 'kalender guru':
+            $url = '../guru kalender/kalender.php';
+            break;
+        case 'dashboard guru':
+            $url = '../dashboard_guru/home_guru.php';
+            break;
+        default:
+            $url = '../dashboard_admin/home_admin.php';
             break;
     }
+
+    header("Location: $url");
     exit;
 }
 ?>
