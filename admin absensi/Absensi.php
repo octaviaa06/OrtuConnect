@@ -1,8 +1,7 @@
 <?php
-session_name('SESS_ADMIN');
+session_name('ORTUCONNECT_SESSION');
 session_start();
 $active_page = 'absensi';
-//include '../admin/sidebar.php';
 
 // Cek login
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -55,9 +54,14 @@ if ($selected_class) {
         $absensiList = $data['data'] ?? [];
     }
 
-    // Set default 'Hadir' untuk yang belum punya status
     $absensiList = array_map(function ($abs) {
-        $abs['status_absensi'] = !empty($abs['status_absensi']) ? $abs['status_absensi'] : 'Hadir';
+        // Jika status kosong, set default 'Hadir' tapi mark sebagai belum diabsen
+        if (empty($abs['status_absensi'])) {
+            $abs['status_absensi'] = ''; // Tetap kosong agar bisa dibedakan
+            $abs['is_recorded'] = false;  // Flag: belum diabsen
+        } else {
+            $abs['is_recorded'] = true;   // Flag: sudah diabsen
+        }
         return $abs;
     }, $absensiList);
 }
@@ -73,7 +77,6 @@ if ($selected_class) {
 </head>
 <body>
 <div class="d-flex">
-    <!-- Sidebar -->
     <?php include '../admin/sidebar.php'; ?>
 
     <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover;">
@@ -96,14 +99,17 @@ if ($selected_class) {
 
         <!-- Filter Form -->
         <form id="filterForm" class="d-flex gap-3 align-items-center mb-5" method="GET">
-            <input type="date" name="tanggal" class="form-control" value="<?= htmlspecialchars($selected_date) ?>" onchange="this.form.submit()">
-            <select name="kelas" class="form-select" onchange="this.form.submit()">
+            <input type="date" name="tanggal" class="form-control" value="<?= htmlspecialchars($selected_date) ?>" onchange="this.form.submit()" style="max-width: 150px;">
+            <select name="kelas" class="form-select" onchange="this.form.submit()" style="max-width: 150px;">
                 <option value="">Pilih Kelas</option>
                 <?php foreach($kelasList as $kelas): ?>
                     <option value="<?= htmlspecialchars($kelas) ?>" <?= $selected_class === $kelas ? 'selected' : '' ?>><?= htmlspecialchars($kelas) ?></option>
                 <?php endforeach; ?>
             </select>
             <button type="button" class="btn btn-primary" onclick="simpanAbsensi()">Simpan</button>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exportPdfModal">
+                <i class="bi bi-file-earmark-pdf"></i> Export PDF
+            </button>
         </form>
 
         <!-- Daftar Absensi -->
@@ -119,17 +125,35 @@ if ($selected_class) {
                     </div>
                 <?php else: ?>
                     <?php $no = 1; foreach($absensiList as $abs): ?>
+                        <?php 
+                            // Gunakan flag is_recorded untuk cek apakah sudah diabsen
+                            $isAbsentRecorded = $abs['is_recorded'] ?? false;
+                            $currentStatus = $abs['status_absensi'] ?? '';
+                        ?>
                         <div class="absensi-item d-flex align-items-center py-3 border-bottom">
                             <div class="col-1 fw-bold"><?= $no++ ?></div>
                             <div class="col-5 fw-semibold"><?= htmlspecialchars($abs['nama_murid'] ?? 'N/A') ?></div>
                             <div class="col-6 d-flex justify-content-end">
                                 <input type="hidden" name="absensi[<?= htmlspecialchars($abs['id_murid']) ?>][id_murid]" value="<?= htmlspecialchars($abs['id_murid']) ?>">
-                                <select name="absensi[<?= htmlspecialchars($abs['id_murid']) ?>][status]" class="form-select status-absensi-select" data-initial-status="<?= htmlspecialchars($abs['status_absensi']) ?>" onchange="updateStatusColor(this)">
-                                    <option value="Hadir" <?= $abs['status_absensi'] === 'Hadir' ? 'selected' : '' ?>>Hadir</option>
-                                    <option value="Izin" <?= $abs['status_absensi'] === 'Izin' ? 'selected' : '' ?>>Izin</option>
-                                    <option value="Sakit" <?= $abs['status_absensi'] === 'Sakit' ? 'selected' : '' ?>>Sakit</option>
-                                    <option value="Alpa" <?= $abs['status_absensi'] === 'Alpa' ? 'selected' : '' ?>>Alpa</option>
-                                </select>
+                                
+                                <?php if($isAbsentRecorded): ?>
+                                    <!-- Jika sudah ada absensi, tampilkan badge bukan dropdown -->
+                                    <span class="badge bg-<?= 
+                                        $abs['status_absensi'] === 'Hadir' ? 'success' : 
+                                        ($abs['status_absensi'] === 'Izin' ? 'warning' : 
+                                        ($abs['status_absensi'] === 'Sakit' ? 'info' : 'danger')) 
+                                    ?>" style="font-size: 0.95rem; padding: 0.5rem 0.75rem;">
+                                        <?= htmlspecialchars($abs['status_absensi']) ?>
+                                    </span>
+                                <?php else: ?>
+                                    <!-- Jika belum ada absensi, tampilkan dropdown -->
+                                    <select name="absensi[<?= htmlspecialchars($abs['id_murid']) ?>][status]" class="form-select status-absensi-select" onchange="updateStatusColor(this)">
+                                        <option value="Hadir">Hadir</option>
+                                        <option value="Izin">Izin</option>
+                                        <option value="Sakit">Sakit</option>
+                                        <option value="Alpa">Alpa</option>
+                                    </select>
+                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -140,9 +164,60 @@ if ($selected_class) {
     </div>
 </div>
 
+<!-- Modal Export PDF -->
+<div class="modal fade" id="exportPdfModal" tabindex="-1" aria-labelledby="exportPdfLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exportPdfLabel">Export PDF Absensi</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formExportPdf">
+            <div class="mb-3">
+                <label for="exportClass" class="form-label fw-semibold">Kelas <span class="text-danger">*</span></label>
+                <select id="exportClass" class="form-select" required>
+                    <option value="">Pilih Kelas</option>
+                    <?php foreach($kelasList as $kelas): ?>
+                        <option value="<?= htmlspecialchars($kelas) ?>" <?= $selected_class === $kelas ? 'selected' : '' ?>><?= htmlspecialchars($kelas) ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="exportFilter" class="form-label fw-semibold">Filter Periode <span class="text-danger">*</span></label>
+                <select id="exportFilter" class="form-select" onchange="updateExportDateInput()">
+                    <option value="hari">Per Hari</option>
+                    <option value="minggu">Per Minggu</option>
+                    <option value="bulan">Per Bulan</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="exportDate" class="form-label fw-semibold">Tanggal <span class="text-danger">*</span></label>
+                <input type="date" id="exportDate" class="form-control" value="<?= htmlspecialchars($selected_date) ?>" required>
+                <small class="text-muted" id="exportDateInfo">Pilih tanggal untuk periode yang diinginkan</small>
+            </div>
+
+            <div class="alert alert-info" id="exportPeriodInfo" style="display:none;">
+                <strong>Periode:</strong> <span id="periodText"></span>
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-success" onclick="exportPDF()">
+            <i class="bi bi-download"></i> Download PDF
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="notifBox" class="notif"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 function showNotif(message, isSuccess = true) {
     const notifBox = document.getElementById('notifBox');
@@ -154,6 +229,127 @@ function showNotif(message, isSuccess = true) {
 
 function updateStatusColor(select) {
     select.className = 'form-select status-absensi-select status-' + select.value.toLowerCase();
+}
+
+function getDateRange(type, date) {
+    const dateObj = new Date(date);
+    let start, end;
+
+    switch(type) {
+        case 'minggu':
+            const day = dateObj.getDay();
+            const diff = dateObj.getDate() - day + (day === 0 ? -6 : 1);
+            start = new Date(dateObj.setDate(diff));
+            end = new Date(start);
+            end.setDate(end.getDate() + 6);
+            break;
+        case 'bulan':
+            start = new Date(dateObj.getFullYear(), dateObj.getMonth(), 1);
+            end = new Date(dateObj.getFullYear(), dateObj.getMonth() + 1, 0);
+            break;
+        default:
+            start = new Date(date);
+            end = new Date(date);
+    }
+
+    return {
+        start: start.toISOString().split('T')[0],
+        end: end.toISOString().split('T')[0]
+    };
+}
+
+function formatDateIndo(dateStr) {
+    const date = new Date(dateStr + 'T00:00:00');
+    const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    return date.getDate() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
+}
+
+function updateExportDateInput() {
+    const filter = document.getElementById('exportFilter').value;
+    const exportDate = document.getElementById('exportDate').value;
+    const dateInfo = document.getElementById('exportDateInfo');
+    const periodInfo = document.getElementById('exportPeriodInfo');
+    const periodText = document.getElementById('periodText');
+
+    let infoText = '';
+    switch(filter) {
+        case 'hari':
+            infoText = 'Pilih tanggal untuk export';
+            break;
+        case 'minggu':
+            infoText = 'Pilih tanggal dalam minggu yang diinginkan';
+            break;
+        case 'bulan':
+            infoText = 'Pilih tanggal dalam bulan yang diinginkan';
+            break;
+    }
+    
+    dateInfo.textContent = infoText;
+
+    if (exportDate) {
+        const range = getDateRange(filter, exportDate);
+        if (filter === 'hari') {
+            periodText.textContent = formatDateIndo(range.start);
+        } else {
+            periodText.textContent = formatDateIndo(range.start) + ' - ' + formatDateIndo(range.end);
+        }
+        periodInfo.style.display = 'block';
+    }
+}
+
+async function exportPDF() {
+    const selectedClass = document.getElementById('exportClass').value;
+    const selectedDate = document.getElementById('exportDate').value;
+    const filterType = document.getElementById('exportFilter').value;
+
+    if (!selectedClass) {
+        showNotif("Silakan pilih kelas terlebih dahulu.", false);
+        return;
+    }
+
+    if (!selectedDate) {
+        showNotif("Silakan pilih tanggal terlebih dahulu.", false);
+        return;
+    }
+
+    const exportBtn = event.target;
+    exportBtn.disabled = true;
+    exportBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengunduh...';
+
+    try {
+        const response = await fetch('export_pdf.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                kelas: selectedClass,
+                tanggal: selectedDate,
+                filter_type: filterType
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Gagal mengunduh PDF');
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Absensi_${selectedClass}_${new Date().toISOString().slice(0,10)}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        showNotif("PDF berhasil diunduh.", true);
+        bootstrap.Modal.getInstance(document.getElementById('exportPdfModal')).hide();
+    } catch (err) {
+        console.error('Error:', err);
+        showNotif("Gagal mengunduh PDF: " + err.message, false);
+    } finally {
+        exportBtn.disabled = false;
+        exportBtn.innerHTML = '<i class="bi bi-download"></i> Download PDF';
+    }
 }
 
 async function simpanAbsensi() {
@@ -188,8 +384,6 @@ async function simpanAbsensi() {
     };
 
     try {
-        console.log("DEBUG - Payload:", JSON.stringify(payload, null, 2));
-        
         const res = await fetch("simpan_absensi.php", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -197,7 +391,6 @@ async function simpanAbsensi() {
         });
         
         const data = await res.json();
-        console.log("DEBUG - Response API:", data);
         
         if (data.status === "success") {
             showNotif(data.message || "Absensi berhasil disimpan.", true);
@@ -206,13 +399,17 @@ async function simpanAbsensi() {
             showNotif(data.message || "Gagal menyimpan absensi.", false);
         }
     } catch (err) {
-        console.log("DEBUG - Error:", err);
         showNotif("Terjadi kesalahan koneksi atau server.", false);
     } finally {
         btn.disabled = false;
         btn.textContent = "Simpan";
     }
 }
+
+document.getElementById('exportDate').addEventListener('change', updateExportDateInput);
+document.addEventListener('DOMContentLoaded', function() {
+    updateExportDateInput();
+});
 </script>
 </body>
 </html>

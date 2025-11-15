@@ -3,13 +3,12 @@ session_name('SESS_ADMIN');
 session_start();
 $active_page = 'datasiswa';
 //include '../admin/sidebar.php';
-// Pastikan admin login
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   header("Location: ../login/index.php?error=Harap login sebagai admin!");
   exit;
 }
 
-// Ambil data siswa dari API
 $api_url = "http://ortuconnect.atwebpages.com/api/admin/data_siswa.php";
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url);
@@ -87,7 +86,7 @@ $siswaList = $data['data'] ?? [];
               ? strtoupper(substr($kata[0], 0, 1) . substr($kata[1], 0, 1))
               : strtoupper(substr($kata[0], 0, 2));
           ?>
-            <div class="col-md-4 mb-3 siswa-item">//
+            <div class="col-md-4 mb-3 siswa-item">
               <div class="card shadow-sm border-0 p-3 d-flex flex-column justify-content-between" style="border-radius:16px;">
                 <div class="d-flex align-items-center mb-3">
                   <div class="avatar-inisial bg-primary text-white me-3" 
@@ -128,7 +127,7 @@ $siswaList = $data['data'] ?? [];
   </div>
 </div>
 
-<!-- MODAL TAMBAH/EDIT -->
+<!-- TAMBAH/EDIT -->
 <div class="modal fade" id="modalSiswa" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-3">
@@ -150,7 +149,14 @@ $siswaList = $data['data'] ?? [];
           </div>
 
           <div class="mb-3"><label class="form-label">Tanggal Lahir</label><input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control" required></div>
-          <div class="mb-3"><label class="form-label">Jenis Kelamin</label><input type="text" name="gender" id="gender" class="form-control" required></div>
+          <div class="mb-3">
+            <label class="form-label">Jenis Kelamin</label>
+            <select type="text" name="gender" id="gender" class="form-select" required>
+                <option value="">-- Jenis Kelamin --</option>
+                <option value="Laki-Laki">Laki-Laki</option>
+                <option value="Perempuan">Perempuan</option>
+           </select>
+          </div>
           <div class="mb-3"><label class="form-label">Nama Orang Tua</label><input type="text" name="nama_ortu" id="nama_ortu" class="form-control" required></div>
           <div class="mb-3"><label class="form-label">No. Telp Orang Tua</label><input type="text" name="no_telp_ortu" id="no_telp_ortu" class="form-control" required></div>
           <div class="mb-3"><label class="form-label">Alamat</label><textarea name="alamat" id="alamat" class="form-control"></textarea></div>
@@ -165,7 +171,7 @@ $siswaList = $data['data'] ?? [];
 </div>
 
 
-<!-- MODAL AKUN -->
+<!-- AKUN -->
 <div class="modal fade" id="modalAkun" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -245,8 +251,7 @@ if (profileToggle) {
       alert("Gagal menyimpan: " + err.message);
     }
   });
-
- // Pastikan fungsi ini bisa diakses global
+l
 window.editSiswa = async function(id) {
   try {
     const res = await fetch(apiURL + `?id_siswa=${id}`);
@@ -305,7 +310,6 @@ window.generateAkun = async function(id) {
 }
 });
 
-// 🔍 Fitur Pencarian Data Siswa
 const searchInput = document.getElementById('searchInput');
 const siswaContainer = document.getElementById('siswaContainer');
 
@@ -318,7 +322,7 @@ if (searchInput && siswaContainer) {
       const nama = item.querySelector('.card-title').textContent.toLowerCase();
       const kelas = item.querySelector('small').textContent.toLowerCase();
 
-      // tampilkan jika nama atau kelas cocok dengan pencarian
+ 
       if (nama.includes(keyword) || kelas.includes(keyword)) {
         item.style.display = '';
       } else {
