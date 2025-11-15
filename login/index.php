@@ -23,10 +23,7 @@ session_start();
 
             <input type="text" name="username" placeholder="Username" required>
 
-            <div class="password-box">
-                <input type="password" name="password" id="password" placeholder="Password" required>
-                <span id="togglePassword" class="toggle-icon"></span>
-            </div>
+           <input type="password" name="password" id="password" placeholder="Password" required>
 
             <button type="submit">Masuk</button>
 

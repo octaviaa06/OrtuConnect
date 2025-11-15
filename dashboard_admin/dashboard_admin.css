@@ -5,8 +5,6 @@ body {
   overflow-x: hidden;
 }
 
-
-
 .nav {
   width: 100%;
   padding-left: 0;
@@ -42,7 +40,6 @@ body {
   flex-shrink: 0;
 }
 
-/* saat collapsed */
 .sidebar.collapsed .nav-link {
   justify-content: center;
   padding: 14px 0;
@@ -56,13 +53,21 @@ body {
 .main-content {
   margin-left: 240px;
   flex-grow: 1;
-  padding: 20px 40px;
+  padding: 0 40px;
   transition: margin-left 0.35s ease;
   background-color: transparent;
+  min-height: 100vh;
 }
 
+/* === PERINTAHMU #2 — PERKECIL JARAK SAAT COLLAPSED === */
 .sidebar.collapsed ~ .main-content {
-  margin-left: 90px;
+  margin-left: 60px !important;
+}
+
+/* === PERINTAHMU #1 — NAIKKAN JARAK HEADER === */
+.main-content .container-fluid {
+  padding-top: 5px !important;
+  padding-bottom: 20px;
 }
 
 /* ===== HEADER ===== */
@@ -70,6 +75,8 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 25px;
+  padding-top: 0;
 }
 
 .profile-btn {
@@ -81,10 +88,10 @@ body {
 }
 
 .profile-avatar {
-  width: 58px;
-  height: 58px;
+  width: 42px;
+  height: 42px;
   font-weight: 600;
-  font-size: 20px;
+  font-size: 18px;
   background-color: #0d6efd;
   color: white;
   border-radius: 50%;
@@ -132,7 +139,7 @@ body {
   background: white;
 }
 
-/* ===== AKSES CEPAT CARD BARU ===== */
+/* ===== AKSES CEPAT CARD ===== */
 .access-card {
   border-radius: 16px;
   padding: 20px 10px;
@@ -156,4 +163,51 @@ body {
 .access-icon {
   width: 50px; 
   height: 50px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 0 15px;
+  }
+
+  .header-fixed {
+    padding-top: 0;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-card {
+    padding: 15px;
+    min-height: 120px;
+  }
+}
+
+/* ===== PERINTAHMU #3 — MOBILE VIEW TAMBAHAN ===== */
+@media (max-width: 576px) {
+
+  .main-content {
+    padding: 5px 12px !important;
+    margin-left: 0 !important;
+  }
+
+  .header-fixed {
+    margin-top: 0;
+    margin-bottom: 12px;
+  }
+
+  .dashboard-card {
+    min-height: 110px;
+    padding: 12px !important;
+  }
+
+  .access-card {
+    padding: 12px 6px !important;
+  }
+
+  .profile-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 15px;
+  }
 }

@@ -1,122 +1,91 @@
-body {
-    background-color: #f8f9fc;
-    font-family: "Poppins", sans-serif;
+/* ======================================= */
+/* ====== ABSENSI SISWA - STYLE ONLY ===== */
+/* ======================================= */
+
+/* Card Utama Absensi */
+.card-absensi {
+    border-radius: 16px;
+    background: white;
 }
 
-.main-content {
-    margin-left: 100px;
-    padding: 25px;
+/* Item Absensi */
+.absensi-item {
+    padding-left: 10px;
+    padding-right: 10px;
+    border-color: #eee !important;
+    transition: background 0.2s ease;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
+.absensi-item:hover {
+    background-color: #f8f9fa;
 }
 
-.header .judul {
-    color: #3b5bdb;
-    font-weight: 600;
-    font-size: 1.6rem;
+.absensi-item:last-child {
+    border-bottom: none !important;
 }
 
-.admin-badge {
-    background-color: #e9ecef;
-    border-radius: 50%;
-    width: 42px;
-    height: 42px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+/* Status Dropdown */
+.status-absensi-select {
+    width: 150px;
+    border-radius: 8px;
     font-weight: bold;
-    color: #3b5bdb;
-    font-size: 1.1rem;
-}
-
-.admin-name {
-    color: #3b5bdb;
-    font-weight: 600;
-    margin-left: 8px;
-}
-
-.filter-section {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 25px;
-}
-
-.filter-section input,
-.filter-section select {
-    width: 200px;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    padding: 8px 10px;
-}
-
-.filter-section button {
-    background-color: #3b5bdb;
+    text-align: center;
+    padding: 8px 12px;
     border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 10px 10px;
+    transition: all 0.2s ease;
+}
+
+/* Warna Status */
+.status-hadir { background-color: #e6f7eb; color: #28a745; }
+.status-izin  { background-color: #e6f7fb; color: #0d6efd; }
+.status-sakit { background-color: #fcf8e3; color: #ffc107; }
+.status-alpa  { background-color: #f8d7da; color: #dc3545; }
+
+/* Option di dalam dropdown (opsional) */
+.status-absensi-select option {
+    font-weight: bold;
+}
+
+/* Empty State */
+.empty-state {
+    font-style: italic;
+    color: #6c757d;
+}
+
+/* Notifikasi */
+.notif {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    min-width: 300px;
+    padding: 12px 20px;
     color: white;
     font-weight: 500;
-    padding: 8px 20px;
-    border-radius: 6px;
-    transition: 0.2s;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    display: none;
+    animation: slideIn 0.3s ease;
 }
 
-.filter-section button:hover {
-    background-color: #3048b0;
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
-.card-absensi-wrapper {
-    background: #fff;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
-}
-
-.card-absensi-wrapper h6 {
-    color: #3b5bdb;
-    font-weight: 600;
-    margin-bottom: 15px;
-}
-
-.card-absensi {
-    border: 1px solid #e5e5e5;
-    border-radius: 10px;
-    padding: 12px 15px;
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background 0.2s;
-}
-
-.card-absensi:hover {
-    background-color: #f1f3fe;
-}
-
-.card-absensi strong {
-    font-size: 1rem;
-    margin-right: 10px;
-}
-
-.card-absensi select {
-    width: 120px;
-    border: 1px solid #ced4da;
-    border-radius: 6px;
-    padding: 6px 10px;
-    font-size: 0.9rem;
-}
-
-.card-absensi option[value="Hadir"] {
-    color: green;
-}
-
-.card-absensi option[value="Tidak Hadir"] {
-    color: red;
-}
-
-.card-absensi option[value="Izin"] {
-    color: orange;
+/* Responsive */
+@media (max-width: 576px) {
+    .status-absensi-select {
+        width: 120px;
+        font-size: 14px;
+    }
+    .absensi-item .col-5 {
+        font-size: 14px;
+    }
 }

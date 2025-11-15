@@ -1,7 +1,8 @@
 <?php
+
 session_name('SESS_GURU');
 session_start();
-
+$_SESSION['last_page'] = 'data_siswa.php';
 // Verifikasi role guru
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
   header("Location: ../login/index.php?error=Harap login sebagai guru!");

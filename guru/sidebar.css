@@ -1,11 +1,11 @@
 /* ======================================================= */
-/* ===== 1. SIDEBAR & ANIMASI ===== */
+/* ===== 1. SIDEBAR & TRANSISI HALUS ===== */
 /* ======================================================= */
 
 .sidebar {
     width: 250px;
     background-color: rgba(13, 110, 253, 0.95);
-    transition: all 0.4s ease;
+    transition: width 0.4s ease;
     overflow: hidden;
     height: 100vh;
     padding-top: 50px;
@@ -24,16 +24,16 @@
     width: 80px;
 }
 
-/* Pastikan .expanded untuk lebar penuh (tambahan) */
+/* Lebar saat expanded */
 .sidebar.expanded {
     width: 250px;
 }
 
-/* Animasi teks menu */
+/* Teks menu - transisi halus */
 .sidebar .menu-text {
     opacity: 1;
     transform: translateX(0);
-    transition: all 0.4s ease;
+    transition: opacity 0.35s ease, transform 0.35s ease;
     display: inline-block;
     white-space: nowrap;
 }
@@ -44,21 +44,11 @@
     display: none;
 }
 
-/* Animasi ikon */
+/* Ikon */
 .sidebar img.icon {
     width: 24px;
     height: 24px;
     transition: transform 0.3s ease;
-}
-
-/* Saat sidebar terbuka */
-.sidebar.expanded .menu-text {
-    animation: swingIn 0.4s ease forwards;
-}
-
-@keyframes swingIn {
-    0% { opacity: 0; transform: translateX(-20px); }
-    100% { opacity: 1; transform: translateX(0); }
 }
 
 /* ======================================================= */
@@ -112,42 +102,28 @@
     flex-shrink: 0;
 }
 
-/* Sidebar Collapsed */
+/* Saat collapsed */
 .sidebar.collapsed .nav-link {
     justify-content: center;
     padding: 10px 0;
 }
 
-.sidebar.collapsed .nav-link span {
-    opacity: 0;
-    width: 0;
-    transition: opacity 0.2s ease, width 0.3s ease;
-}
-
-.sidebar .nav-link span {
-    opacity: 1;
-    width: auto;
-    transition: opacity 0.3s ease, width 0.3s ease;
-}
-
 /* ======================================================= */
 /* ===== 3. KONTEN UTAMA ===== */
 /* ======================================================= */
+
 .main-content {
     margin-left: 250px;
     padding: 18px 28px;
     transition: margin-left 0.35s ease;
     background-color: transparent;
-    position: relative;
     min-height: 100vh;
 }
 
-/* Saat sidebar expanded */
 .sidebar.expanded ~ .main-content {
     margin-left: 250px !important;
 }
 
-/* Saat sidebar collapsed */
 .sidebar.collapsed ~ .main-content {
     margin-left: 80px !important;
 }
@@ -155,13 +131,14 @@
 /* ======================================================= */
 /* ===== 4. RESPONSIVE & MOBILE ===== */
 /* ======================================================= */
+
 @media (max-width: 768px) {
     .main-content {
         padding: 15px;
         margin-left: 80px !important;
     }
 
-    /* Default mobile: sidebar collapse */
+    /* Default: sidebar collapse di mobile */
     .sidebar {
         width: 80px !important;
     }
@@ -174,28 +151,30 @@
         width: 250px !important;
     }
 
-    /* Saat dibuka di mobile */
     .sidebar.expanded ~ .main-content {
         margin-left: 250px !important;
     }
 
-    /* Sembunyikan teks saat collapse di mobile */
+    /* Sembunyikan teks saat collapse */
     .sidebar:not(.expanded) .menu-text {
         opacity: 0;
         transform: translateX(-20px);
         display: none;
     }
 
-    /* Hover tidak geser di mobile saat collapse */
+    /* Nonaktifkan hover geser di mobile saat collapse */
     .sidebar.collapsed .nav-link:hover {
         transform: none !important;
     }
 }
 
 /* ======================================================= */
-/* ===== 5. ANIMASI TAMBAHAN ===== */
+/* ===== 5. NON-HOVER DEVICES (TOUCH) ===== */
 /* ======================================================= */
-@keyframes fadeIn {
-    0% { opacity: 0; transform: translateY(-5px); }
-    100% { opacity: 1; transform: translateY(0); }
+
+@media (hover: none) {
+    .slide-btn:hover,
+    .nav-link:hover {
+        transform: none !important;
+    }
 }
