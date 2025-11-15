@@ -1,5 +1,5 @@
 <?php
-session_name('ORTUCONNECT_SESSION');
+session_name('SESS_ADMIN');
 session_start();
 $active_page = 'kalender';
 
