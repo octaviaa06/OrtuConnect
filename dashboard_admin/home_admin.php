@@ -23,10 +23,7 @@ $guru = $data['guru'] ?? 0;
 $siswa = $data['siswa'] ?? 0;
 $izin = $data['izin_menunggu'] ?? [];
 $agenda = $data['agenda_terdekat'] ?? [];
-
-// 👇 AMBIL DATA ABSENSI HARI INI DARI API
 $today = date('Y-m-d');
-// API endpoint untuk ambil semua kelas dulu
 $api_kelas_url = "http://ortuconnect.atwebpages.com/api/admin/absensi.php?mode=kelas";
 
 $ch = curl_init();
@@ -72,7 +69,6 @@ foreach ($kelas_list as $kelas) {
 }
 
 $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
-// 👆 AMBIL DATA ABSENSI HARI INI DARI API
 ?>
 <!DOCTYPE html>
 <html lang="id">
