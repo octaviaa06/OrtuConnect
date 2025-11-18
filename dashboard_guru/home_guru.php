@@ -4,17 +4,17 @@ session_name('SESS_GURU');
 session_start();
 
 if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'guru') {
-session_name('SESS_GURU');
-session_start();
-
-// Cek login - jika session role tidak ada atau bukan guru, redirect
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
     header("Location: ../login/index.php?error=Silakan login sebagai Guru");
     exit;
 }
 
-ob_start()
+// Mulai buffer baru
+ob_start();
+
+// ============= API TETAP ADMIN SESUAI PERMINTAAN =============
 $api_url = "http://ortuconnect.atwebpages.com/api/admin/dashboard_admin.php";
+// =====================================
+
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -25,15 +25,14 @@ curl_close($ch);
 
 $data = ($http_code === 200 && $response) ? json_decode($response, true) : [];
 
+// Penyesuaian variabel berdasarkan respons API Admin (diasumsikan sama)
 $siswa = $data['siswa'] ?? 0;
-$total_Kehadiran_Siswa = $data['Total hadir Siswa '] ?? 0;
+$total_Kehadiran_Siswa = $data['Total hadir Siswa '] ?? 0; // Perhatikan spasi di key array
 $izin_list = $data['izin_menunggu'] ?? [];
 $izin_menunggu_count = count($izin_list);
-$agenda = $data['agenda_terdekat'] ?? []
-  
-ob_end_flush(); 
-ob_end_flush();
+$agenda = $data['agenda_terdekat'] ?? [];
 
+ob_end_flush();
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -51,7 +50,6 @@ ob_end_flush();
 
         <div class="flex-grow-1 main-content" style="background-image: url('../assets/background/Dashboard Admin.png');">
             <div class="container-fluid py-3">
-                <!-- HEADER -->
                 <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
                     <h4 class="fw-bold text-primary m-0">Dashboard Guru</h4>
                     <div class="profile-btn" id="profileToggle">
@@ -63,14 +61,13 @@ ob_end_flush();
                             <h6><?= ucfirst($_SESSION['role']) ?></h6>
                             <p><?= htmlspecialchars($_SESSION['username']) ?>@gmail.com</p>
                             <hr>
-                            <a href="../logout/logout.php" class="text-danger d-flex align-items-center gap-2 text-decoration-none">
+                            <a href="../logout/logout.php?from=dashboard%20guru" class="text-danger d-flex align-items-center gap-2 text-decoration-none">
                                 <img src="../assets/keluar.png" width="20" alt="Logout"> Logout
                             </a>
-                        </div>
+                            </div>
                     </div>
                 </div>
 
-                <!-- KARTU STATISTIK -->
                 <div class="row g-3 mb-4 mt-3">
                     <div class="col-md-4">
                         <div class="card text-center shadow-sm border-primary dashboard-card">
@@ -98,7 +95,6 @@ ob_end_flush();
                     </div>
                 </div>
 
-                <!-- AKSES CEPAT -->
                 <h5 class="fw-bold text-primary mb-3 mt-4">Akses Cepat</h5>
                 <div class="row g-3 mb-4">
                     <div class="col-md-4">
@@ -120,14 +116,13 @@ ob_end_flush();
                     <div class="col-md-4">
                         <a href="../guru_kalender/kalender.php" class="card text-center shadow-sm access-card link-underline-opacity-0">
                             <div class="card-body">
-                                <img src="../assets/Kalender.png" class="access-icon mb-2" alt="Kalender">
+                                <img src="../assets/Kalender Biru.png" class="access-icon mb-2" alt="Kalender">
                                 <p class="mb-0 text-dark fw-semibold">Lihat Kalender</p>
                             </div>
                         </a>
                     </div>
                 </div>
 
-                <!-- IZIN & AGENDA -->
                 <div class="row g-3">
                     <div class="col-md-6">
                         <div class="card border-primary shadow-sm">
@@ -155,7 +150,7 @@ ob_end_flush();
                         <div class="card border-primary shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-primary d-flex align-items-center gap-2">
-                                    <img src="../assets/Kalender.png" width="22"> Agenda Terdekat
+                                    <img src="../assets/Kalender Biru.png" width="22"> Agenda Terdekat
                                 </h6>
                                 <ul class="list-group list-group-flush">
                                     <?php if (empty($agenda)): ?>
@@ -163,7 +158,7 @@ ob_end_flush();
                                     <?php else: ?>
                                         <?php foreach ($agenda as $a): ?>
                                             <li class="list-group-item">
-                                                <?= htmlspecialchars($a['judul_kegiatan']) ?> - <?= htmlspecialchars($a['tanggal']) ?>
+                                                <?= htmlspecialchars($a['nama_kegiatan']) ?> - <?= htmlspecialchars($a['tanggal']) ?>
                                             </li>
                                         <?php endforeach; ?>
                                     <?php endif; ?>

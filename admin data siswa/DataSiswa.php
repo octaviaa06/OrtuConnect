@@ -251,7 +251,7 @@ if (profileToggle) {
       alert("Gagal menyimpan: " + err.message);
     }
   });
-l
+
 window.editSiswa = async function(id) {
   try {
     const res = await fetch(apiURL + `?id_siswa=${id}`);

@@ -1,3 +1,7 @@
+
+/* ====== STRUKTUR UMUM (TETAP SAMA) ====== */
+/* ======================================= */
+
 body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
@@ -49,6 +53,24 @@ body {
   display: none;
 }
 
+/* ===== SIDEBAR (FIXED & COLLAPSIBLE) ===== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 240px;
+  background: #1a1a2e;
+  transition: all 0.35s ease;
+  z-index: 1050;
+  padding-top: 20px;
+  overflow-y: auto;
+}
+
+.sidebar.collapsed {
+  width: 60px;
+}
+
 /* ===== MAIN CONTENT ===== */
 .main-content {
   margin-left: 240px;
@@ -59,12 +81,12 @@ body {
   min-height: 100vh;
 }
 
-/* === PERINTAHMU #2 — PERKECIL JARAK SAAT COLLAPSED === */
+/* PERINTAHMU #2 — PERKECIL JARAK SAAT COLLAPSED */
 .sidebar.collapsed ~ .main-content {
   margin-left: 60px !important;
 }
 
-/* === PERINTAHMU #1 — NAIKKAN JARAK HEADER === */
+/* PERINTAHMU #1 — NAIKKAN JARAK HEADER */
 .main-content .container-fluid {
   padding-top: 5px !important;
   padding-bottom: 20px;
@@ -77,6 +99,8 @@ body {
   align-items: center;
   margin-bottom: 25px;
   padding-top: 0;
+  position: relative;
+  z-index: 1030;
 }
 
 .profile-btn {
@@ -165,15 +189,73 @@ body {
   height: 50px;
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
+/* ===== HAMBURGER BUTTON (MOBILE) ===== */
+.mobile-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: #333;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1100;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+}
+
+/* ===== OVERLAY (MOBILE) ===== */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1040;
+  display: none;
+}
+
+.sidebar-overlay.show {
+  display: block;
+}
+
+/* ===== SCROLLBAR SIDEBAR ===== */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: #ffffff33;
+  border-radius: 3px;
+}
+
+/* ======================================= */
+/* ====== MOBILE & TABLET RESPONSIVE ====== */
+/* ======================================= */
+
+/* Tablet & Mobile: Tampilkan hamburger, sembunyikan sidebar */
+@media (max-width: 992px) {
+  .mobile-toggle {
+    display: block;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
   .main-content {
-    margin-left: 0;
-    padding: 0 15px;
+    margin-left: 0 !important;
+    padding: 15px !important;
   }
 
   .header-fixed {
-    padding-top: 0;
     margin-bottom: 20px;
   }
 
@@ -183,9 +265,8 @@ body {
   }
 }
 
-/* ===== PERINTAHMU #3 — MOBILE VIEW TAMBAHAN ===== */
+/* Mobile Kecil (≤576px) – SESUAI PERMINTAAN ANDA */
 @media (max-width: 576px) {
-
   .main-content {
     padding: 5px 12px !important;
     margin-left: 0 !important;
@@ -209,5 +290,45 @@ body {
     width: 36px;
     height: 36px;
     font-size: 15px;
+  }
+
+  .mobile-toggle {
+    top: 12px;
+    left: 12px;
+  }
+
+  /* Filter form jadi vertikal */
+  #filterForm {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  #filterForm .form-control,
+  #filterForm .form-select,
+  #filterForm .btn {
+    margin-bottom: 8px;
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  /* Absensi item jadi kolom */
+  .absensi-item {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 8px;
+    padding: 12px 8px;
+  }
+
+  .absensi-item > div {
+    width: 100% !important;
+    text-align: left !important;
+  }
+
+  .absensi-item .col-6 {
+    justify-content: flex-start !important;
+  }
+
+  .status-absensi-select {
+    width: 100% !important;
   }
 }

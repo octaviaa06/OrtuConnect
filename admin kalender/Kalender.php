@@ -1,5 +1,5 @@
 <?php
-session_name('ORTUCONNECT_SESSION');
+session_name('SESS_ADMIN');
 session_start();
 $active_page = 'kalender';
 
@@ -72,6 +72,7 @@ $selected_agenda    = $agendaByDate[$selected_date_full] ?? [];
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="kalender.css" />
+    
 </head>
 
 <body>

@@ -31,9 +31,18 @@ $agenda = $data['agenda_terdekat'] ?? [];
   <link rel="stylesheet" href="dashboard_admin.css">
   <link rel="stylesheet" href="../profil/profil.css">
   <link rel="stylesheet" href="../admin/sidebar.css">
-  
 </head>
 <body>
+  <!-- TOGGLE BUTTON MOBILE/TABLET -->
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
   <div class="d-flex">
 
     <!-- SIDEBAR -->
@@ -150,7 +159,7 @@ $agenda = $data['agenda_terdekat'] ?? [];
             <div class="card border-primary shadow-sm h-100">
               <div class="card-body">
                 <h6 class="text-primary d-flex align-items-center gap-2 mb-3">
-                  <img src="../assets/Kalender.png" width="22" alt="Agenda"> Agenda Terdekat
+                  <img src="../assets/Kalender Biru.png" width="22" alt="Agenda"> Agenda Terdekat
                 </h6>
                 <ul class="list-group list-group-flush">
                   <?php if (empty($agenda)): ?>
@@ -158,7 +167,7 @@ $agenda = $data['agenda_terdekat'] ?? [];
                   <?php else: ?>
                     <?php foreach ($agenda as $a): ?>
                       <li class="list-group-item small py-2">
-                        <strong><?= htmlspecialchars($a['judul_kegiatan']) ?></strong><br>
+                        <strong><?= htmlspecialchars($a['nama_kegiatan']) ?></strong><br>
                         <span class="text-muted"><?= htmlspecialchars($a['tanggal']) ?></span>
                       </li>
                     <?php endforeach; ?>
@@ -175,5 +184,100 @@ $agenda = $data['agenda_terdekat'] ?? [];
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- JavaScript untuk Sidebar Mobile & Tablet -->
+  <script>
+    // Element references
+    const toggleBtn = document.getElementById('sidebarToggle');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const body = document.body;
+
+    // Fungsi untuk membuka sidebar
+    function openSidebar() {
+      sidebar.classList.add('show');
+      overlay.classList.add('show');
+      toggleBtn.classList.add('active');
+      body.classList.add('sidebar-open');
+    }
+
+    // Fungsi untuk menutup sidebar
+    function closeSidebar() {
+      sidebar.classList.remove('show');
+      overlay.classList.remove('show');
+      toggleBtn.classList.remove('active');
+      body.classList.remove('sidebar-open');
+    }
+
+    // Toggle sidebar saat button diklik
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (sidebar.classList.contains('show')) {
+          closeSidebar();
+        } else {
+          openSidebar();
+        }
+      });
+    }
+
+    // Tutup sidebar saat overlay diklik
+    if (overlay) {
+      overlay.addEventListener('click', closeSidebar);
+    }
+
+    // Tutup sidebar saat link menu diklik (hanya di mobile/tablet)
+    const sidebarLinks = document.querySelectorAll('.sidebar .nav-link');
+    sidebarLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        if (window.innerWidth <= 992) {
+          closeSidebar();
+        }
+      });
+    });
+
+    // Auto close sidebar saat resize ke desktop
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function() {
+        if (window.innerWidth > 992) {
+          closeSidebar();
+        }
+      }, 250);
+    });
+
+    // Prevent body scroll dengan touch events
+    if (sidebar) {
+      let touchStartY = 0;
+      
+      sidebar.addEventListener('touchstart', function(e) {
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+
+      sidebar.addEventListener('touchmove', function(e) {
+        if (!sidebar.classList.contains('show')) return;
+        
+        const touchY = e.touches[0].clientY;
+        const touchDiff = touchY - touchStartY;
+        const scrollTop = sidebar.scrollTop;
+        const scrollHeight = sidebar.scrollHeight;
+        const clientHeight = sidebar.clientHeight;
+
+        // Prevent overscroll bounce
+        if ((scrollTop === 0 && touchDiff > 0) || 
+            (scrollTop + clientHeight >= scrollHeight && touchDiff < 0)) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+    }
+
+    // Keyboard accessibility (ESC untuk menutup sidebar)
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && sidebar.classList.contains('show')) {
+        closeSidebar();
+      }
+    });
+  </script>
 </body>
 </html>
