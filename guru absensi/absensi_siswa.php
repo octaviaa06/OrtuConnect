@@ -124,9 +124,9 @@ $_GET['from'] = $from_param;
                         ?>
                         <div class="absensi-item d-flex align-items-center py-3 border-bottom">
                             <div class="col-1 fw-bold"><?= $no++ ?></div>
-                            <div class="col-5 fw-semibold"><?= htmlspecialchars($abs['nama_murid'] ?? 'N/A') ?></div>
+                            <div class="col-5 fw-semibold"><?= htmlspecialchars($abs['nama_siswa'] ?? 'N/A') ?></div>
                             <div class="col-6 d-flex justify-content-end">
-                                <input type="hidden" name="absensi[<?= htmlspecialchars($abs['id_siswa']) ?>][id_murid]" value="<?= htmlspecialchars($abs['id_murid']) ?>">
+                                <input type="hidden" name="absensi[<?= htmlspecialchars($abs['id_siswa']) ?>][id_murid]" value="<?= htmlspecialchars($abs['id_siswa']) ?>">
                                 
                                 <?php if($isAbsentRecorded): ?>
                                     <span class="badge bg-<?= 
