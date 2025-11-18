@@ -35,6 +35,8 @@ $guruList = $data['data'] ?? [];
   <title>Data Guru | OrtuConnect</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../profil/profil.css">
+  <link rel="stylesheet" href="../admin/sidebar.css">
 </head>
 <body>
 <div class="d-flex">
@@ -49,20 +51,7 @@ $guruList = $data['data'] ?? [];
       <!-- HEADER -->
       <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
         <h4 class="fw-bold text-primary m-0">Data Guru</h4>
-        <div class="profile-btn" id="profileToggle">
-          <div class="profile-avatar"><?= strtoupper(substr($_SESSION['username'], 0, 1)) ?></div>
-          <span class="fw-semibold text-primary"><?= htmlspecialchars($_SESSION['username']) ?></span>
-          <div class="profile-card" id="profileCard">
-            <h6><?= ucfirst($_SESSION['role']) ?></h6>
-            <p><?= htmlspecialchars($_SESSION['username']) ?>@gmail.com</p>
-            <hr>
-<a href="../logout/logout.php?from=dataguru" class="logout-btn">
-  <img src="../assets/keluar.png" alt="Logout"> Logout
-</a>
-
-
-          </div>
-        </div>
+       <?php include '../profil/profil.php'; ?>
       </div>
 
       <!-- HEADER TAMBAH & PENCARIAN -->
@@ -185,12 +174,6 @@ $guruList = $data['data'] ?? [];
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 
-  const profileBtn = document.getElementById('profileToggle');
-  const profileCard = document.getElementById('profileCard');
-  profileBtn.addEventListener('click', (e) => { e.stopPropagation(); profileCard.classList.toggle('show'); });
-  document.addEventListener('click', (e) => { if (!profileBtn.contains(e.target)) profileCard.classList.remove('show'); });
-
-  
 
   const searchInput = document.getElementById('searchInput');
   searchInput.addEventListener('keyup', () => {

@@ -74,6 +74,7 @@ if ($selected_class) {
 <title>Absensi | OrtuConnect</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="absensi.css">
+<link rel="stylesheet" href="../profil/profil.css">
 </head>
 <body>
 <div class="d-flex">
@@ -83,24 +84,14 @@ if ($selected_class) {
     <div class="container-fluid py-3">
         <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
             <h4 class="fw-bold text-primary m-0">Absensi</h4>
-            <div class="profile-btn" id="profileToggle">
-                <div class="profile-avatar"><?= strtoupper(substr($_SESSION['username'], 0, 1)) ?></div>
-                <span class="fw-semibold text-primary"><?= htmlspecialchars($_SESSION['username']) ?></span>
-                <div class="profile-card" id="profileCard">
-                    <h6><?= ucfirst($_SESSION['role']) ?></h6>
-                    <p><?= htmlspecialchars($_SESSION['username']) ?>@gmail.com</p>
-                    <hr>
-                    <a href="../logout/logout.php?from=absensi" class="logout-btn">
-                        <img src="../assets/keluar.png" alt="Logout"> Logout
-                    </a>
-                </div>
+                <?php include '../profil/profil.php'; ?>
             </div>
         </div>
 
         <!-- Filter Form -->
-        <form id="filterForm" class="d-flex gap-3 align-items-center mb-5" method="GET">
+        <form id="filterForm" class="d-flex gap-3 align-items-center mb-5 flex-wrap" method="GET">
             <input type="date" name="tanggal" class="form-control" value="<?= htmlspecialchars($selected_date) ?>" onchange="this.form.submit()" style="max-width: 150px;">
-            <select name="kelas" class="form-select" onchange="this.form.submit()" style="max-width: 150px;">
+            <select name="kelas" class="form-select" onchange="this.form.submit()" style="max-width: 200px;">
                 <option value="">Pilih Kelas</option>
                 <?php foreach($kelasList as $kelas): ?>
                     <option value="<?= htmlspecialchars($kelas) ?>" <?= $selected_class === $kelas ? 'selected' : '' ?>><?= htmlspecialchars($kelas) ?></option>
@@ -108,7 +99,7 @@ if ($selected_class) {
             </select>
             <button type="button" class="btn btn-primary" onclick="simpanAbsensi()">Simpan</button>
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exportPdfModal">
-                <i class="bi bi-file-earmark-pdf"></i> Export PDF
+                Export PDF
             </button>
         </form>
 
@@ -126,15 +117,14 @@ if ($selected_class) {
                 <?php else: ?>
                     <?php $no = 1; foreach($absensiList as $abs): ?>
                         <?php 
-                            // Gunakan flag is_recorded untuk cek apakah sudah diabsen
                             $isAbsentRecorded = $abs['is_recorded'] ?? false;
-                            $currentStatus = $abs['status_absensi'] ?? '';
+                            $siswaId = $abs['id_siswa'];
                         ?>
                         <div class="absensi-item d-flex align-items-center py-3 border-bottom">
                             <div class="col-1 fw-bold"><?= $no++ ?></div>
-                            <div class="col-5 fw-semibold"><?= htmlspecialchars($abs['nama_murid'] ?? 'N/A') ?></div>
+                            <div class="col-5 fw-semibold"><?= htmlspecialchars($abs['nama_siswa'] ?? 'N/A') ?></div>
                             <div class="col-6 d-flex justify-content-end">
-                                <input type="hidden" name="absensi[<?= htmlspecialchars($abs['id_murid']) ?>][id_murid]" value="<?= htmlspecialchars($abs['id_murid']) ?>">
+                                <input type="hidden" name="absensi[<?= htmlspecialchars($siswaId) ?>][id_siswa]" value="<?= htmlspecialchars($siswaId) ?>">
                                 
                                 <?php if($isAbsentRecorded): ?>
                                     <!-- Jika sudah ada absensi, tampilkan badge bukan dropdown -->
@@ -147,7 +137,8 @@ if ($selected_class) {
                                     </span>
                                 <?php else: ?>
                                     <!-- Jika belum ada absensi, tampilkan dropdown -->
-                                    <select name="absensi[<?= htmlspecialchars($abs['id_murid']) ?>][status]" class="form-select status-absensi-select" onchange="updateStatusColor(this)">
+                                    <select name="absensi[<?= htmlspecialchars($siswaId) ?>][status]" class="form-select status-absensi-select" onchange="updateStatusColor(this)">
+                                        <option value="">-- Pilih Status --</option>
                                         <option value="Hadir">Hadir</option>
                                         <option value="Izin">Izin</option>
                                         <option value="Sakit">Sakit</option>
@@ -207,7 +198,7 @@ if ($selected_class) {
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
         <button type="button" class="btn btn-success" onclick="exportPDF()">
-            <i class="bi bi-download"></i> Download PDF
+         Download PDF
         </button>
       </div>
     </div>
@@ -228,7 +219,11 @@ function showNotif(message, isSuccess = true) {
 }
 
 function updateStatusColor(select) {
-    select.className = 'form-select status-absensi-select status-' + select.value.toLowerCase();
+    const value = select.value;
+    select.className = 'form-select status-absensi-select';
+    if (value) {
+        select.classList.add('status-' + value.toLowerCase());
+    }
 }
 
 function getDateRange(type, date) {
@@ -348,67 +343,106 @@ async function exportPDF() {
         showNotif("Gagal mengunduh PDF: " + err.message, false);
     } finally {
         exportBtn.disabled = false;
-        exportBtn.innerHTML = '<i class="bi bi-download"></i> Download PDF';
+        exportBtn.innerHTML = ' Download PDF';
     }
 }
 
 async function simpanAbsensi() {
     const form = document.getElementById('formAbsensi');
-    const btn = document.querySelector('.btn.btn-primary');
+    const btn = document.querySelector('button[onclick="simpanAbsensi()"]');
+    
+    if (!btn) {
+        showNotif("Tombol tidak ditemukan.", false);
+        return;
+    }
+
     btn.disabled = true;
-    btn.textContent = "Menyimpan...";
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
 
     const formData = new FormData(form);
     const absensiUpdates = [];
-    const regex = /absensi\[(\d+)\]\[status\]/;
+    const tanggal = form.querySelector('input[name="tanggal"]').value;
+    const kelas = form.querySelector('input[name="kelas"]').value;
 
     for (let [key, value] of formData.entries()) {
-        const match = key.match(regex);
-        if (match) {
-            const id = match[1];
-            absensiUpdates.push({ id_murid: id, status: value });
+        if (key.includes('[status]')) {
+            const match = key.match(/absensi\[(.+?)\]\[status\]/);
+            if (match) {
+                const id = match[1];
+                if (value) {
+                    absensiUpdates.push({ id_murid: id, status: value });
+                }
+            }
         }
     }
 
-    if (absensiUpdates.length === 0) {
-        showNotif("Tidak ada data untuk disimpan.", false);
+    if (!tanggal || !kelas) {
+        showNotif("Tanggal atau Kelas belum dipilih.", false);
         btn.disabled = false;
-        btn.textContent = "Simpan";
+        btn.innerHTML = 'Simpan';
+        return;
+    }
+
+    if (absensiUpdates.length === 0) {
+        showNotif("Tidak ada data absensi yang diubah. Pilih status untuk siswa terlebih dahulu.", false);
+        btn.disabled = false;
+        btn.innerHTML = 'Simpan';
         return;
     }
 
     const payload = {
-        tanggal: form.querySelector('input[name="tanggal"]').value,
-        kelas: form.querySelector('input[name="kelas"]').value,
+        tanggal: tanggal,
+        kelas: kelas,
         absensi: absensiUpdates
     };
 
     try {
         const res = await fetch("simpan_absensi.php", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
             body: JSON.stringify(payload)
         });
+
+        const responseText = await res.text();
+        let data;
         
-        const data = await res.json();
+        try {
+            data = JSON.parse(responseText);
+        } catch (e) {
+            showNotif("Server error: " + responseText.substring(0, 100), false);
+            btn.disabled = false;
+            btn.innerHTML = 'Simpan';
+            return;
+        }
         
         if (data.status === "success") {
-            showNotif(data.message || "Absensi berhasil disimpan.", true);
+            showNotif(data.message || "Absensi berhasil disimpan!", true);
             setTimeout(() => location.reload(), 1500);
         } else {
             showNotif(data.message || "Gagal menyimpan absensi.", false);
         }
     } catch (err) {
-        showNotif("Terjadi kesalahan koneksi atau server.", false);
+        showNotif("Terjadi kesalahan: " + err.message, false);
     } finally {
         btn.disabled = false;
-        btn.textContent = "Simpan";
+        btn.innerHTML = 'Simpan';
     }
 }
 
 document.getElementById('exportDate').addEventListener('change', updateExportDateInput);
 document.addEventListener('DOMContentLoaded', function() {
     updateExportDateInput();
+});
+
+document.addEventListener('click', function(e) {
+    const profileBtn = document.getElementById('profileToggle');
+    const profileCard = document.getElementById('profileCard');
+    if (!profileBtn.contains(e.target)) {
+        profileCard.classList.remove('show');
+    }
 });
 </script>
 </body>
