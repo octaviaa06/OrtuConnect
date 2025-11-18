@@ -2,7 +2,7 @@
 session_name('SESS_GURU');
 session_start();
 
-// Validasi admin login
+// Validasi guru login
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
     header("Location: ../login/index.php?error=Harap login sebagai guru!");
     exit;
@@ -14,7 +14,7 @@ $debug_mode = true;
 // Fungsi untuk fetch API dengan error handling
 function fetchPerizinanData($debug = false) {
     // PENTING: Gunakan API endpoint yang SAMA dengan code asli
-    $api_url = "https://ortuconnect.atwebpages.com/api/admin/absensi.php";
+    $api_url = "http://ortuconnect.atwebpages.com/api/admin/perizinan.php";
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $api_url);
@@ -29,16 +29,11 @@ function fetchPerizinanData($debug = false) {
     $curlError = curl_error($ch);
     
     if ($debug) {
-        echo "<!-- DEBUG INFO:\n";
-        echo "API URL: " . $api_url . "\n";
-        echo "HTTP Code: " . $httpCode . "\n";
-        echo "cURL Error: " . $curlError . "\n";
-        echo "Raw Response: " . substr($response, 0, 500) . "\n";
-        echo "-->\n";
+        echo "\n";
     }
     
     if (curl_errno($ch)) {
-        if ($debug) echo "<!-- cURL Error: " . $curlError . " -->\n";
+        if ($debug) echo "\n";
         curl_close($ch);
         return [];
     }
@@ -46,14 +41,14 @@ function fetchPerizinanData($debug = false) {
     curl_close($ch);
     
     if ($httpCode !== 200) {
-        if ($debug) echo "<!-- HTTP Error Code: " . $httpCode . " -->\n";
+        if ($debug) echo "\n";
         return [];
     }
     
     $data = json_decode($response, true);
     
     if ($debug) {
-        echo "<!-- Decoded Data: " . print_r($data, true) . " -->\n";
+        echo "\n";
     }
     
     // Coba berbagai kemungkinan struktur response
@@ -67,6 +62,10 @@ function fetchPerizinanData($debug = false) {
 }
 
 $perizinanList = fetchPerizinanData($debug_mode);
+
+// Set parameter 'from' untuk profil.php
+$from_param = 'perizinan guru'; 
+$_GET['from'] = $from_param; 
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -75,45 +74,27 @@ $perizinanList = fetchPerizinanData($debug_mode);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Perizinan | OrtuConnect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="sidebar.css" />
-    <link rel="stylesheet" href="style.css" />   
+    <link rel="stylesheet" href="../guru/sidebar.css" /> 
+    <link rel="stylesheet" href="../profil/profil.css" /> <link rel="stylesheet" href="style.css" />   
 </head>
 
 <body>
 
     <div class="d-flex">
-        <!-- Include Sidebar -->
         <?php include '../guru/sidebar.php'; ?>
 
-        <!-- Main Content -->
         <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center; min-height:100vh;">
             <div class="container-fluid py-3">
-                <!-- Header -->
                 <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
                     <h4 class="fw-bold text-primary m-0">Perizinan</h4>
-                    <div class="profile-btn" id="profileToggle" style="cursor: pointer;">
-                        <div class="profile-avatar">
-                            <?= strtoupper(substr($_SESSION['username'], 0, 1)) ?>
-                        </div>
-                        <span class="fw-semibold text-primary">
-                            <?= htmlspecialchars($_SESSION['username']) ?>
-                        </span>
-                        <div class="profile-card" id="profileCard">
-                            <h6><?= ucfirst($_SESSION['role']) ?></h6>
-                            <p><?= htmlspecialchars($_SESSION['username']) ?>@gmail.com</p>
-                            <hr />
-                            <a href="../logout/logout.php?from=perizinan" class="logout-btn">
-                                <img src="../assets/keluar.png" alt="Logout" /> Logout
-                            </a>
-                        </div>
-                    </div>
+                    
+                    <?php include '../profil/profil.php'; ?>
+                    
                 </div>
 
-                <!-- Card Content -->
                 <div class="card shadow-sm border-0 p-4" style="border-radius:16px;">
                     <h5 class="fw-bold mb-4">Daftar Perizinan Murid</h5>
 
-                    <!-- Search Bar -->
                     <div class="d-flex justify-content-end mb-3">
                         <div class="search-container position-relative" style="max-width: 400px; width: 100%;">
                             <img src="../assets/cari.png" alt="Cari" class="search-icon" />
@@ -126,7 +107,6 @@ $perizinanList = fetchPerizinanData($debug_mode);
                         </div>
                     </div>
 
-                    <!-- Table -->
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0" id="perizinanTable">
                             <thead class="bg-light">
@@ -158,6 +138,7 @@ $perizinanList = fetchPerizinanData($debug_mode);
                                             <td><?= htmlspecialchars($izin['keterangan'] ?? 'N/A') ?></td> 
                                             <td><?= htmlspecialchars($izin['tanggal_mulai'] ?? 'N/A') ?></td>
                                             <td><?= htmlspecialchars($izin['tanggal_selesai'] ?? 'N/A') ?></td>
+                                            
                                             <td>
                                                 <?php
                                                 $status = strtoupper($izin['status'] ?? 'MENUNGGU');
@@ -181,7 +162,7 @@ $perizinanList = fetchPerizinanData($debug_mode);
                                                     </button>
                                                 <?php endif; ?>
                                             </td>
-                                        </tr>
+                                            </tr>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </tbody>
@@ -192,14 +173,22 @@ $perizinanList = fetchPerizinanData($debug_mode);
         </div>
     </div>
 
-    <!-- Notification Box -->
     <div id="notifBox" class="notif"></div>
+
+    <div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); justify-content: center; align-items: center; z-index: 1050;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Utility Functions
         const showLoading = (show) => {
-            document.getElementById("loadingOverlay").style.display = show ? "flex" : "none";
+            const loadingOverlay = document.getElementById("loadingOverlay");
+            if (loadingOverlay) {
+                loadingOverlay.style.display = show ? "flex" : "none";
+            }
         };
 
         const showNotif = (message, isSuccess = true) => {
@@ -215,22 +204,6 @@ $perizinanList = fetchPerizinanData($debug_mode);
 
         // Main App Logic
         document.addEventListener("DOMContentLoaded", () => {
-            // Profile Dropdown
-            const profileBtn = document.getElementById("profileToggle");
-            const profileCard = document.getElementById("profileCard");
-            
-            if (profileBtn && profileCard) {
-                profileBtn.addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    profileCard.classList.toggle("show");
-                });
-                
-                document.addEventListener("click", (e) => {
-                    if (!profileBtn.contains(e.target)) {
-                        profileCard.classList.remove("show");
-                    }
-                });
-            }
 
             // Search Functionality
             const searchInput = document.getElementById("searchInput");
@@ -258,7 +231,7 @@ $perizinanList = fetchPerizinanData($debug_mode);
 
                 showLoading(true);
 
-                const apiUrl = "http://ortuconnect.atwebpages.com/api/admin/absensi.php";
+                const apiUrl = "http://ortuconnect.atwebpages.com/api/admin/perizinan.php";
                 
                 try {
                     const response = await fetch(apiUrl, {

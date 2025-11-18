@@ -1,180 +1,85 @@
-/* ======================================================= */
-/* ===== 1. SIDEBAR & TRANSISI HALUS ===== */
-/* ======================================================= */
-
+/* ===== SIDEBAR ===== */
 .sidebar {
-    width: 250px;
-    background-color: rgba(13, 110, 253, 0.95);
-    transition: width 0.4s ease;
-    overflow: hidden;
-    height: 100vh;
-    padding-top: 50px;
-    border-radius: 0 18px 18px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 100;
+  width: 200px;
+  background-color: #0d6efd;
+  transition: width 0.35s ease;
+  overflow: hidden;
+  height: 100vh;
+  padding-top: 50px;
+  border-radius: 0 18px 18px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
 }
 
-/* Saat sidebar collapse */
 .sidebar.collapsed {
-    width: 80px;
+  width: 70px;
 }
-
-/* Lebar saat expanded */
-.sidebar.expanded {
-    width: 250px;
-}
-
-/* Teks menu - transisi halus */
-.sidebar .menu-text {
-    opacity: 1;
-    transform: translateX(0);
-    transition: opacity 0.35s ease, transform 0.35s ease;
-    display: inline-block;
-    white-space: nowrap;
-}
-
-.sidebar.collapsed .menu-text {
-    opacity: 0;
-    transform: translateX(-20px);
-    display: none;
-}
-
-/* Ikon */
-.sidebar img.icon {
-    width: 24px;
-    height: 24px;
-    transition: transform 0.3s ease;
-}
-
-/* ======================================================= */
-/* ===== 2. TOMBOL SLIDE & NAVIGATION ===== */
-/* ======================================================= */
 
 .slide-btn {
-    width: 28px;
-    cursor: pointer;
-    margin-bottom: 30px;
-    transition: transform 0.3s ease;
+  width: 28px;
+  cursor: pointer;
+  margin-bottom: 30px;
+  transition: transform 0.3s ease;
 }
 
 .slide-btn:hover {
-    transform: scale(1.1);
+  transform: scale(1.1);
 }
 
 .nav {
-    width: 100%;
-    padding-left: 0;
-    margin-top: 8px;
+  width: 100%;
+  padding-left: 0;
+  margin-top: 8px;
 }
 
 .nav-item {
-    margin-bottom: 12px;
-    width: 100%;
+  width: 100%;
 }
 
 .nav-link {
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    border-radius: 10px;
-    transition: background 0.3s, transform 0.2s;
-    font-size: 15px;
-    font-weight: 500;
-    white-space: nowrap;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  transition: background 0.3s, transform 0.2s;
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 .nav-link:hover,
 .nav-link.active {
-    background-color: rgba(255,255,255,0.2);
-    transform: translateX(5px);
+  background-color: rgba(255, 255, 255, 0.25);
+  transform: translateX(5px);
 }
 
 .icon {
-    width: 28px;
-    height: 28px;
-    flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
 }
 
-/* Saat collapsed */
+/* Collapsed mode */
 .sidebar.collapsed .nav-link {
-    justify-content: center;
-    padding: 10px 0;
+  justify-content: center;
+  padding: 10px 0;
 }
 
-/* ======================================================= */
-/* ===== 3. KONTEN UTAMA ===== */
-/* ======================================================= */
-
-.main-content {
-    margin-left: 250px;
-    padding: 18px 28px;
-    transition: margin-left 0.35s ease;
-    background-color: transparent;
-    min-height: 100vh;
+.sidebar.collapsed .menu-text {
+  opacity: 0;
+  width: 0;
+  transition: opacity 0.2s ease, width 0.3s ease;
 }
 
-.sidebar.expanded ~ .main-content {
-    margin-left: 250px !important;
-}
-
-.sidebar.collapsed ~ .main-content {
-    margin-left: 80px !important;
-}
-
-/* ======================================================= */
-/* ===== 4. RESPONSIVE & MOBILE ===== */
-/* ======================================================= */
-
-@media (max-width: 768px) {
-    .main-content {
-        padding: 15px;
-        margin-left: 80px !important;
-    }
-
-    /* Default: sidebar collapse di mobile */
-    .sidebar {
-        width: 80px !important;
-    }
-
-    .sidebar.collapsed {
-        width: 80px !important;
-    }
-
-    .sidebar.expanded {
-        width: 250px !important;
-    }
-
-    .sidebar.expanded ~ .main-content {
-        margin-left: 250px !important;
-    }
-
-    /* Sembunyikan teks saat collapse */
-    .sidebar:not(.expanded) .menu-text {
-        opacity: 0;
-        transform: translateX(-20px);
-        display: none;
-    }
-
-    /* Nonaktifkan hover geser di mobile saat collapse */
-    .sidebar.collapsed .nav-link:hover {
-        transform: none !important;
-    }
-}
-
-/* ======================================================= */
-/* ===== 5. NON-HOVER DEVICES (TOUCH) ===== */
-/* ======================================================= */
-
-@media (hover: none) {
-    .slide-btn:hover,
-    .nav-link:hover {
-        transform: none !important;
-    }
+.sidebar.expanded .menu-text {
+  opacity: 1;
+  width: auto;
+  transition: opacity 0.3s ease, width 0.3s ease;
 }

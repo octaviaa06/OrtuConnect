@@ -1,3 +1,7 @@
+
+/* ====== STRUKTUR UMUM (TETAP SAMA) ====== */
+/* ======================================= */
+
 body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
@@ -28,6 +32,8 @@ body {
   align-items: center;
   margin-bottom: 25px;
   padding-top: 0;
+  position: relative;
+  z-index: 1030;
 }
 
 .profile-btn {
@@ -210,12 +216,11 @@ body {
 /* ===== RESPONSIVE - TABLET ===== */
 @media (max-width: 768px) {
   .main-content {
-    margin-left: 0;
-    padding: 0 15px;
+    margin-left: 0 !important;
+    padding: 15px !important;
   }
 
   .header-fixed {
-    padding-top: 0;
     margin-bottom: 20px;
   }
 

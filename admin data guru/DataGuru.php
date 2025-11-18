@@ -2,8 +2,7 @@
 session_name('SESS_ADMIN');
 session_start();
 $active_page = 'DataGuru';
-//include '../admin/sidebar.php';
-// Pastikan admin login
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   header("Location: ../login/index.php?error=Harap login sebagai admin!");
   exit;
@@ -41,7 +40,7 @@ $guruList = $data['data'] ?? [];
 <body>
 <div class="d-flex">
   <!-- SIDEBAR -->
-<?php include '../admin/sidebar.php'; ?>
+  <?php include '../admin/sidebar.php'; ?>
 
   <!-- MAIN CONTENT -->
   <div class="flex-grow-1 main-content" 
@@ -60,7 +59,6 @@ $guruList = $data['data'] ?? [];
           <img src="../assets/cari.png" alt="Cari" class="search-icon">
           <input type="text" id="searchInput" class="form-control search-input" placeholder="Cari guru berdasarkan nama, NIP, atau email...">
         </div>
-
         <button class="btn btn-primary rounded-3 px-4" id="btnTambahGuru">
           <span style="font-weight:600;">+ Tambah Guru</span>
         </button>
@@ -78,7 +76,7 @@ $guruList = $data['data'] ?? [];
               ? strtoupper(substr($kata[0], 0, 1) . substr($kata[1], 0, 1))
               : strtoupper(substr($kata[0], 0, 2));
           ?>
-            <div class="col-md-4 mb-3 guru-item">
+            <div class="col-md-4 mb-3 guru-item" data-id="<?= $guru['id_guru'] ?>">
               <div class="card guru-card shadow-sm border-0 p-3 d-flex flex-column justify-content-between" style="border-radius:16px; transition: all 0.2s;">
                 <div class="d-flex align-items-center mb-3">
                   <div class="avatar-inisial bg-primary text-white me-3" 
@@ -130,11 +128,26 @@ $guruList = $data['data'] ?? [];
       <form id="formGuru">
         <input type="hidden" name="id_guru" id="id_guru">
         <div class="modal-body">
-          <div class="mb-3"><label class="form-label">Nama Lengkap</label><input type="text" name="nama_guru" id="nama_guru" class="form-control" required></div>
-          <div class="mb-3"><label class="form-label">NIP</label><input type="text" name="nip" id="nip" class="form-control" required></div>
-          <div class="mb-3"><label class="form-label">Alamat</label><input type="text" name="alamat" id="alamat" class="form-control"></div>
-          <div class="mb-3"><label class="form-label">Nomor Telepon</label><input type="text" name="no_telp" id="no_telp" class="form-control"></div>
-          <div class="mb-3"><label class="form-label">Email</label><input type="email" name="email" id="email" class="form-control"></div>
+          <div class="mb-3">
+            <label class="form-label required-label">Nama Lengkap</label>
+            <input type="text" name="nama_guru" id="nama_guru" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label required-label">NIP</label>
+            <input type="text" name="nip" id="nip" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label required-label">Alamat</label>
+            <input type="text" name="alamat" id="alamat" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label required-label">Nomor Telepon</label>
+            <input type="text" name="no_telp" id="no_telp" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label required-label">Email</label>
+            <input type="email" name="email" id="email" class="form-control" required>
+          </div>
         </div>
         <div class="modal-footer border-0">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -146,7 +159,6 @@ $guruList = $data['data'] ?? [];
 </div>
 
 <!-- MODAL AKUN GURU -->
-<!-- MODAL AKUN -->
 <div class="modal fade" id="modalAkun" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -169,8 +181,32 @@ $guruList = $data['data'] ?? [];
   </div>
 </div>
 
+<!-- MODAL KONFIRMASI HAPUS -->
+<div class="modal fade" id="modalHapus" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">
+          <img src="../assets/Hapus.png" alt="Hapus" width="24" class="me-2">
+          Konfirmasi Hapus
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-0">Apakah Anda yakin ingin <strong>menghapus</strong> data guru ini?</p>
+        <p class="text-muted mt-2 mb-0"><small> <strong>tidak dapat dibatalkan</strong>.</small></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-danger" id="btnKonfirmasiHapus">Ya, Hapus</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Notifikasi -->
 <div id="notifBox" class="notif"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 
@@ -186,13 +222,25 @@ $guruList = $data['data'] ?? [];
     });
   });
 
+  // Modal
   const modalGuru = new bootstrap.Modal(document.getElementById('modalGuru'));
+  const modalHapus = new bootstrap.Modal(document.getElementById('modalHapus'));
   const formGuru = document.getElementById('formGuru');
   const idGuruInput = document.getElementById('id_guru');
   const judulModal = document.getElementById('judulModalGuru');
   const tombolSimpan = document.getElementById('btnSimpanGuru');
   const apiURL = "http://ortuconnect.atwebpages.com/api/admin/data_guru.php";
+  let idGuruHapus = null;
 
+  // Notifikasi
+  function showNotif(message, success = true) {
+    const notifBox = document.getElementById('notifBox');
+    notifBox.textContent = message;
+    notifBox.className = 'notif show ' + (success ? 'success' : 'error');
+    setTimeout(() => notifBox.classList.remove('show'), 3000);
+  }
+
+  // Tambah Guru
   document.getElementById('btnTambahGuru').addEventListener('click', () => {
     judulModal.textContent = "Tambah Guru Baru";
     formGuru.reset();
@@ -200,13 +248,25 @@ $guruList = $data['data'] ?? [];
     modalGuru.show();
   });
 
-  // === SIMPAN DATA (POST/PUT)
+  // Simpan (Tambah/Edit)
   formGuru.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    const nama = document.getElementById('nama_guru').value.trim();
+    const nip = document.getElementById('nip').value.trim();
+    const alamat = document.getElementById('alamat').value.trim();
+    const no_telp = document.getElementById('no_telp').value.trim();
+    const email = document.getElementById('email').value.trim();
+
+    if (!nama || !nip || !alamat || !no_telp || !email) {
+      showNotif("Semua field dengan tanda * wajib diisi!", false);
+      return;
+    }
+
     const id = idGuruInput.value.trim();
-    const formData = Object.fromEntries(new FormData(formGuru).entries());
-    const method = id ? "PUT" : "POST";
+    const formData = { nama_guru: nama, nip, alamat, no_telp, email };
     if (id) formData.id_guru = id;
+    const method = id ? "PUT" : "POST";
 
     tombolSimpan.disabled = true;
     tombolSimpan.textContent = "Menyimpan...";
@@ -218,23 +278,29 @@ $guruList = $data['data'] ?? [];
         body: JSON.stringify(formData)
       });
       const data = await res.json();
-      alert(data.message || "Berhasil disimpan!");
-      modalGuru.hide();
-      location.reload();
+
+      if (data.status === "success" || res.ok) {
+        showNotif(id ? "Data guru berhasil diperbarui!" : "Guru baru berhasil ditambahkan!", true);
+        modalGuru.hide();
+        setTimeout(() => location.reload(), 800);
+      } else {
+        showNotif(data.message || "Gagal menyimpan data.", false);
+      }
     } catch (err) {
-      alert("Terjadi kesalahan: " + err.message);
+      showNotif("Terjadi kesalahan: " + err.message, false);
     } finally {
       tombolSimpan.disabled = false;
       tombolSimpan.textContent = "Simpan";
     }
   });
 
-  // === EDIT DATA
+  // Edit Guru
   window.editGuru = async (id) => {
     try {
       const res = await fetch(apiURL + `?id_guru=${id}`);
       const data = await res.json();
-      if (!data.data) return alert("Data tidak ditemukan!");
+      if (!data.data) return showNotif("Data tidak ditemukan!", false);
+
       const g = data.data;
       idGuruInput.value = g.id_guru;
       document.getElementById('nama_guru').value = g.nama_guru;
@@ -245,27 +311,45 @@ $guruList = $data['data'] ?? [];
       judulModal.textContent = "Edit Data Guru";
       modalGuru.show();
     } catch (err) {
-      alert("Gagal memuat data guru: " + err.message);
+      showNotif("Gagal memuat data: " + err.message, false);
     }
   };
 
-  // === HAPUS DATA
-  window.hapusGuru = async (id) => {
-    if (!confirm("Yakin ingin menghapus data guru ini?")) return;
+  // Hapus Guru (Modal)
+  window.hapusGuru = (id) => {
+    idGuruHapus = id;
+    modalHapus.show();
+  };
+
+  document.getElementById('btnKonfirmasiHapus').addEventListener('click', async () => {
+    if (!idGuruHapus) return;
+
     try {
       const res = await fetch(apiURL, {
         method: "DELETE",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({ id_guru: id })
+        body: JSON.stringify({ id_guru: idGuruHapus })
       });
       const data = await res.json();
-      alert(data.message || "Data guru berhasil dihapus!");
-      location.reload();
+
+      modalHapus.hide();
+
+      if (data.status === "success" || res.ok) {
+        showNotif("Data guru berhasil dihapus!", true);
+        const card = document.querySelector(`.guru-item[data-id="${idGuruHapus}"]`);
+        if (card) card.remove();
+        else location.reload();
+      } else {
+        showNotif(data.message || "Gagal menghapus data.", false);
+      }
     } catch (err) {
-      alert("Gagal menghapus: " + err.message);
+      showNotif("Gagal menghapus: " + err.message, false);
+    } finally {
+      idGuruHapus = null;
     }
-  };
-// === GENERATE AKUN (dengan modal & notif)
+  });
+
+  // Generate Akun
   window.generateAkun = async (id) => {
     try {
       const res = await fetch(`http://ortuconnect.atwebpages.com/api/admin/generate_akun.php?tipe=guru&id=${id}`, { cache: "no-store" });

@@ -87,6 +87,16 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 </head>
 <body>
+  <!-- TOGGLE BUTTON MOBILE/TABLET -->
+  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <!-- OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
   <div class="d-flex">
 
     <!-- SIDEBAR -->
@@ -215,7 +225,7 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
             <div class="card border-primary shadow-sm h-100">
               <div class="card-body">
                 <h6 class="text-primary d-flex align-items-center gap-2 mb-3">
-                  <img src="../assets/Kalender.png" width="22" alt="Agenda"> Agenda Terdekat
+                  <img src="../assets/Kalender Biru.png" width="22" alt="Agenda"> Agenda Terdekat
                 </h6>
                 <ul class="list-group list-group-flush">
                   <?php if (empty($agenda)): ?>
