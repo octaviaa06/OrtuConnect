@@ -3,15 +3,12 @@ ob_start();
 session_name('SESS_GURU');
 session_start();
 
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'guru') {
+// Cek login - jika session role tidak ada atau bukan guru, redirect
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
     header("Location: ../login/index.php?error=Silakan login sebagai Guru");
     exit;
 }
 
-// Mulai buffer baru
-ob_start();
-
-// ============= API TETAP ADMIN SESUAI PERMINTAAN =============
 $api_url = "http://ortuconnect.atwebpages.com/api/admin/dashboard_admin.php";
 // =====================================
 
@@ -30,7 +27,7 @@ $siswa = $data['siswa'] ?? 0;
 $total_Kehadiran_Siswa = $data['Total hadir Siswa '] ?? 0; // Perhatikan spasi di key array
 $izin_list = $data['izin_menunggu'] ?? [];
 $izin_menunggu_count = count($izin_list);
-$agenda = $data['agenda_terdekat'] ?? [];
+$agenda = $data['agenda_terdekat'] ?? []
 
 ob_end_flush();
 ?>

@@ -34,6 +34,7 @@ $perizinanList = $data['data'] ?? [];
     <title>Perizinan | OrtuConnect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="../admin/sidebar.css" />
+    <link rel="stylesheet" href="../profil/profil.css">
     <link rel="stylesheet" href="Perizinan.css" /> 
 </head>
 <body>
@@ -45,18 +46,7 @@ $perizinanList = $data['data'] ?? [];
             <div class="container-fluid py-3">
                 <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
                     <h4 class="fw-bold text-primary m-0">Perizinan</h4>
-                    <div class="profile-btn" id="profileToggle">
-                        <div class="profile-avatar"><?= strtoupper(substr($_SESSION['username'], 0, 1)) ?></div>
-                        <span class="fw-semibold text-primary"><?= htmlspecialchars($_SESSION['username']) ?></span>
-                        <div class="profile-card" id="profileCard">
-                            <h6><?= ucfirst($_SESSION['role']) ?></h6>
-                            <p><?= htmlspecialchars($_SESSION['username']) ?>@gmail.com</p>
-                            <hr />
-                            <a href="../logout/logout.php?from=perizinan" class="logout-btn">
-                                <img src="../assets/keluar.png" alt="Logout" /> Logout
-                            </a>
-                        </div>
-                    </div>
+                   <?php include '../profil/profil.php'; ?>
                 </div>
 
                 <div class="card shadow-sm border-0 p-4" style="border-radius:16px;">
@@ -121,17 +111,6 @@ $perizinanList = $data['data'] ?? [];
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-  
-        // Profil Toggle
-        const profileBtn = document.getElementById("profileToggle");
-        const profileCard = document.getElementById("profileCard");
-        profileBtn.addEventListener("click", e => {
-            e.stopPropagation();
-            profileCard.classList.toggle("show");
-        });
-        document.addEventListener("click", e => {
-            if (!profileBtn.contains(e.target)) profileCard.classList.remove("show");
-        });
 
         // Pencarian
         const searchInput = document.getElementById("searchInput");
@@ -195,7 +174,6 @@ $perizinanList = $data['data'] ?? [];
             .then(data => {
                 if (data.success) {
                     showNotif("Status izin berhasil diperbarui", "success");
-                    // PERBAIKAN: Reload halaman untuk ambil data fresh dari PHP
                     setTimeout(() => {
                         window.location.reload();
                     }, 1500);
