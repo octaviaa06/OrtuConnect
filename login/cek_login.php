@@ -36,10 +36,10 @@ curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Timeout 10 detik
 
 $response = curl_exec($ch);
 $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
+$ch = null;
 
 if ($response === false || $http_code !== 200) {
-    $error = curl_error($ch) ?: "API tidak merespons (HTTP $http_code)";
+ 
     header("Location: index.php?error=" . urlencode("Gagal koneksi ke server: $error"));
     exit;
 }

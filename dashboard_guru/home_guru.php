@@ -19,8 +19,8 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 $response = curl_exec($ch);
 $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
 
+$ch = null;
 // 3. Pengolahan Data
 $data = ($http_code === 200 && $response) ? json_decode($response, true) : [];
 
@@ -108,7 +108,7 @@ ob_end_flush();
                         </a>
                     </div>
                     <div class="col-md-4">
-                        <a href="../guru_kalender/kalender.php" class="card text-center shadow-sm access-card link-underline-opacity-0">
+                        <a href="../guru kalender/kalender.php" class="card text-center shadow-sm access-card link-underline-opacity-0">
                             <div class="card-body">
                                 <img src="../assets/Kalender Biru.png" class="access-icon mb-2" alt="Kalender">
                                 <p class="mb-0 text-dark fw-semibold">Lihat Kalender</p>
@@ -165,51 +165,7 @@ ob_end_flush();
         </div>
     </div>
 
-  
-    <script>
-  // Sidebar toggle (desktop collapse button should add/remove class 'collapsed' to sidebar)
-  // If you have a desktop collapse button, add its handler to toggle .collapsed
-  const sidebar = document.querySelector('.sidebar');
-  const mainContent = document.querySelector('.main-content');
-  const mobileToggle = document.querySelector('.mobile-toggle');
-  const sidebarOverlay = document.querySelector('.sidebar-overlay');
 
-  // Mobile: open sidebar
-  if (mobileToggle) {
-    mobileToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      sidebar.classList.add('show');
-      sidebarOverlay.classList.add('show');
-    });
-  }
-
-  // Click overlay to close sidebar
-  if (sidebarOverlay) {
-    sidebarOverlay.addEventListener('click', () => {
-      sidebar.classList.remove('show');
-      sidebarOverlay.classList.remove('show');
-    });
-  }
-
-  // Optional: close sidebar if click outside on small screens
-  document.addEventListener('click', (e) => {
-    const isMobile = window.matchMedia('(max-width: 992px)').matches;
-    if (!isMobile) return;
-    if (!sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
-      sidebar.classList.remove('show');
-      sidebarOverlay.classList.remove('show');
-    }
-  });
-
-  // Optional: if you have a desktop collapse button (toggle width)
-  const desktopToggle = document.getElementById('toggleSidebar'); // your desktop toggle button id
-  if (desktopToggle) {
-    desktopToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('collapsed');
-      // adjust main-content margin if needed (CSS already handles .sidebar.collapsed ~ .main-content)
-    });
-  }
-</script>
 
 </body>
-</html>
+</html> 

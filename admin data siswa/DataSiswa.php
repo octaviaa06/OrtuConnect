@@ -34,6 +34,7 @@ $siswaList = $data['data'] ?? [];
   <title>Data Siswa | OrtuConnect</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="datasiswa.css">
+  <link rel="stylesheet" href="../profil/profil.css">
 </head>
 <body>
 <div class="d-flex">
@@ -48,18 +49,7 @@ $siswaList = $data['data'] ?? [];
       <!-- HEADER -->
       <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
         <h4 class="fw-bold text-primary m-0">Data Murid</h4>
-        <div class="profile-btn" id="profileToggle">
-          <div class="profile-avatar"><?= strtoupper(substr($_SESSION['username'], 0, 1)) ?></div>
-          <span class="fw-semibold text-primary"><?= htmlspecialchars($_SESSION['username']) ?></span>
-          <div class="profile-card" id="profileCard">
-            <h6><?= ucfirst($_SESSION['role']) ?></h6>
-            <p><?= htmlspecialchars($_SESSION['username']) ?>@gmail.com</p>
-            <hr>
-            <a href="../logout/logout.php?from=datasiswa" class="logout-btn">
-              <img src="../assets/keluar.png" alt="Logout"> Logout
-            </a>
-          </div>
-        </div>
+       <?php include '../profil/profil.php'; ?>
       </div>
 
       <!-- HEADER TAMBAH & PENCARIAN -->
@@ -211,16 +201,6 @@ if (toggleBtn) {
     sidebar.classList.toggle('expanded');
   });
 }
-
-// Profile dropdown toggle
-const profileToggle = document.getElementById('profileToggle');
-const profileCard = document.getElementById('profileCard');
-if (profileToggle) {
-  profileToggle.addEventListener('click', () => {
-    profileCard.classList.toggle('show');
-  });
-}
-
   // Tambah siswa
   document.getElementById('btnTambahSiswa').addEventListener('click', () => {
     document.getElementById('judulModalSiswa').textContent = "Tambah Murid Baru";

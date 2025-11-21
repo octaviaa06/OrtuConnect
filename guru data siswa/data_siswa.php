@@ -21,7 +21,7 @@ $response = curl_exec($ch);
 if (curl_errno($ch)) {
     $response = json_encode(["data" => []]);
 }
-curl_close($ch);
+$ch = null;
 
 $data = json_decode($response, true);
 $siswaList = $data['data'] ?? [];
@@ -35,16 +35,17 @@ $from_param = 'data_siswa';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Siswa | OrtuConnect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../guru/sidebar.css">
+   
     <link rel="stylesheet" href="data_siswa.css">
     <link rel="stylesheet" href="../profil/profil.css">
+     <link rel="stylesheet" href="../guru/sidebar.css">
 </head>
 <body>
 
 <div class="d-flex">
 
-    <!-- SIDEBAR SAMA PERSIS DENGAN DASHBOARD -->
-    <?php include('../guru/sidebar.php'); ?>
+    <!-- SIDEBAR (GUNAKAN SIDEBAR.PHP YANG BENAR) -->
+    <?php include'../guru/sidebar.php'; ?>
 
     <!-- MAIN CONTENT -->
     <div class="flex-grow-1 main-content"
@@ -52,10 +53,10 @@ $from_param = 'data_siswa';
 
         <div class="container-fluid py-3">
 
-            <!-- HEADER SAMA DENGAN DASHBOARD -->
-            <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center mb-4 page-header">
 
-                <h4 class="fw-bold text-primary m-0">Data Murid</h4>
+                <h4 class="fw-bold text-primary m-0 page-title">Data Murid</h4>
 
                 <div class="profile-area">
                     <?php 
@@ -140,7 +141,7 @@ $from_param = 'data_siswa';
 </div>
 
 <script>
-// Pencarian
+// ===== PENCARIAN SISWA =====
 const searchInput = document.getElementById('searchInput');
 const siswaContainer = document.getElementById('siswaContainer');
 
@@ -171,52 +172,6 @@ searchInput.addEventListener('input', () => {
         noMsg.remove();
     }
 });
-  // Sidebar toggle (desktop collapse button should add/remove class 'collapsed' to sidebar)
-  // If you have a desktop collapse button, add its handler to toggle .collapsed
-  const sidebar = document.querySelector('.sidebar');
-  const mainContent = document.querySelector('.main-content');
-  const mobileToggle = document.querySelector('.mobile-toggle');
-  const sidebarOverlay = document.querySelector('.sidebar-overlay');
-
-  // Mobile: open sidebar
-  if (mobileToggle) {
-    mobileToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      sidebar.classList.add('show');
-      sidebarOverlay.classList.add('show');
-    });
-  }
-
-  // Click overlay to close sidebar
-  if (sidebarOverlay) {
-    sidebarOverlay.addEventListener('click', () => {
-      sidebar.classList.remove('show');
-      sidebarOverlay.classList.remove('show');
-    });
-  }
-
-  // Optional: close sidebar if click outside on small screens
-  document.addEventListener('click', (e) => {
-    const isMobile = window.matchMedia('(max-width: 992px)').matches;
-    if (!isMobile) return;
-    if (!sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
-      sidebar.classList.remove('show');
-      sidebarOverlay.classList.remove('show');
-    }
-  });
-
-  // Optional: if you have a desktop collapse button (toggle width)
-  const desktopToggle = document.getElementById('toggleSidebar'); // your desktop toggle button id
-  if (desktopToggle) {
-    desktopToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('collapsed');
-      // adjust main-content margin if needed (CSS already handles .sidebar.collapsed ~ .main-content)
-    });
-  }
-
-
-
-
 </script>
 
 </body>

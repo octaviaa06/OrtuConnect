@@ -15,98 +15,12 @@ body {
 }
 
 /* ======================================================= */
-/* ===== SIDEBAR ===== */
-/* ======================================================= */
-
-.sidebar {
-    width: 240px;
-    background-color: #0d6efd;
-    transition: width 0.35s ease, transform 0.3s ease;
-    overflow: hidden;
-    height: 100vh;
-    padding-top: 50px;
-    border-radius: 0 20px 20px 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1040;
-}
-
-.sidebar.collapsed {
-    width: 80px;
-}
-
-.slide-btn {
-    width: 35px;
-    cursor: pointer;
-    margin-bottom: 40px;
-    transition: transform 0.3s ease;
-}
-
-.slide-btn:hover {
-    transform: scale(1.1);
-}
-
-.nav {
-    width: 100%;
-    padding-left: 0;
-    margin-top: 10px;
-}
-
-.nav-item {
-    margin-bottom: 18px;
-    width: 100%;
-}
-
-.nav-link {
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    padding: 14px 20px;
-    border-radius: 12px;
-    transition: background 0.3s, transform 0.2s;
-    font-size: 16px;
-    font-weight: 500;
-    white-space: nowrap;
-    text-decoration: none;
-}
-
-.nav-link:hover,
-.nav-link.active {
-    background-color: #ffffff33;
-    transform: translateX(5px);
-}
-
-.icon {
-    width: 32px;
-    height: 32px;
-    flex-shrink: 0;
-}
-
-.sidebar.collapsed .nav-link {
-    justify-content: center;
-    padding: 14px 0;
-}
-
-.sidebar.collapsed .nav-link span {
-    opacity: 0;
-    width: 0;
-    display: none;
-}
-
-/* ======================================================= */
 /* ===== MAIN CONTENT ===== */
 /* ======================================================= */
 
 .main-content {
-    margin-left: 240px;
     flex-grow: 1;
     padding: 24px 32px;
-    transition: margin-left 0.35s ease;
     min-height: 100vh;
     background-size: cover;
     background-position: center;
@@ -114,18 +28,9 @@ body {
     position: relative;
 }
 
-.sidebar.collapsed ~ .main-content {
-    margin-left: 80px;
-}
-
 /* ======================================================= */
-/* ===== PAGE HEADER (Tanpa Background Putih) ===== */
+/* ===== PAGE HEADER ===== */
 /* ======================================================= */
-
-/* Tombol hamburger - hidden di desktop */
-.mobile-toggle {
-    display: none;
-}
 
 .page-header {
     display: flex;
@@ -298,103 +203,13 @@ body {
 }
 
 /* ======================================================= */
-/* ===== SIDEBAR OVERLAY (Mobile) ===== */
-/* ======================================================= */
-
-.sidebar-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 1030;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.sidebar-overlay.show {
-    display: block;
-    opacity: 1;
-}
-
-/* ======================================================= */
 /* ===== RESPONSIVE - TABLET & MOBILE ===== */
 /* ======================================================= */
 
-/* Tablet (768px - 992px) */
-@media (max-width: 992px) {
-    /* Sidebar jadi overlay */
-    .sidebar {
-        transform: translateX(-100%);
-        z-index: 1040;
-    }
-    
-    .sidebar.show {
-        transform: translateX(0);
-    }
-    
-    /* Main content full width */
+/* Tablet (768px - 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
     .main-content {
-        margin-left: 0;
         padding: 20px 24px;
-    }
-    
-    .sidebar.collapsed ~ .main-content {
-        margin-left: 0;
-    }
-    
-    /* Tombol hamburger muncul */
-    .mobile-toggle {
-        display: flex !important;
-        align-items: center;
-        justify-content: center;
-        width: 44px;
-        height: 44px;
-        background: rgba(13, 110, 253, 0.9);
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        margin-right: 12px;
-        flex-shrink: 0;
-        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
-        transition: all 0.3s ease;
-    }
-    
-    .mobile-toggle:hover {
-        transform: scale(1.05);
-        box-shadow: 0 6px 16px rgba(13, 110, 253, 0.4);
-    }
-    
-    .mobile-toggle span {
-        display: block;
-        width: 22px;
-        height: 2.5px;
-        background: white;
-        position: relative;
-        transition: all 0.3s ease;
-        border-radius: 2px;
-    }
-    
-    .mobile-toggle span::before,
-    .mobile-toggle span::after {
-        content: '';
-        position: absolute;
-        width: 22px;
-        height: 2.5px;
-        background: white;
-        left: 0;
-        transition: all 0.3s ease;
-        border-radius: 2px;
-    }
-    
-    .mobile-toggle span::before {
-        top: -7px;
-    }
-    
-    .mobile-toggle span::after {
-        top: 7px;
     }
     
     /* Page Header */
@@ -430,8 +245,8 @@ body {
     }
 }
 
-/* Mobile (576px ke bawah) */
-@media (max-width: 576px) {
+/* Mobile (< 768px) */
+@media (max-width: 767px) {
     .main-content {
         padding: 16px 12px;
     }
@@ -447,25 +262,11 @@ body {
         font-weight: 700;
     }
     
-    .mobile-toggle {
-        width: 40px;
-        height: 40px;
-        margin-right: 8px;
-    }
-    
-    .mobile-toggle span {
-        width: 20px;
-    }
-    
-    .mobile-toggle span::before,
-    .mobile-toggle span::after {
-        width: 20px;
-    }
-    
     /* Search bar */
     .search-container {
         padding: 10px 14px;
         border-radius: 12px;
+        max-width: 100%;
     }
     
     .search-input {
@@ -512,31 +313,24 @@ body {
     .detail-value {
         font-size: 13px;
     }
+    
+    /* Cards grid */
+    .row.g-3 {
+        margin: 0 -6px;
+    }
+    
+    .col-lg-4,
+    .col-md-6,
+    .col-12 {
+        padding: 0 6px;
+        margin-bottom: 12px;
+    }
 }
 
-/* Extra Small Mobile (< 400px) */
-@media (max-width: 400px) {
+/* Extra Small Mobile (< 480px) */
+@media (max-width: 479px) {
     .page-title {
         font-size: 16px;
-    }
-    
-    .mobile-toggle {
-        width: 36px;
-        height: 36px;
-    }
-    
-    .mobile-toggle span {
-        width: 18px;
-    }
-    
-    .mobile-toggle span::before,
-    .mobile-toggle span::after {
-        width: 18px;
-        top: -6px;
-    }
-    
-    .mobile-toggle span::after {
-        top: 6px;
     }
     
     .siswa-card .card-body {
