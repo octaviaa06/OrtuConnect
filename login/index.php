@@ -21,7 +21,7 @@ session_start();
         <form action="cek_login.php" method="POST" class="login-box">
             <img src="../../assets/logo.png" alt="Logo OrtuConnect" class="logo-img">
 
-            <input type="text" name="username" placeholder="Username" required>
+            <input typgiye="text" name="username" placeholder="Username" required>
 
            <input type="password" name="password" id="password" placeholder="Password" required>
 

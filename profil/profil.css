@@ -138,9 +138,10 @@ body {
   border-bottom: 1px solid #e5e7eb;
   position: sticky;
   top: 0;
-  background-color: rgba(248, 249, 252, 0.9);
-  backdrop-filter: blur(6px);
-  z-index: 1000;
+  background-color: rgba(248, 249, 252, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 90; /* Dibawah sidebar (100) tapi diatas konten */
+  padding-top: 8px;
 }
 
 .page-title {
@@ -157,6 +158,7 @@ body {
 .profile-container {
   position: relative;
   display: inline-block;
+  z-index: 95; /* Dibawah sidebar tapi diatas header */
 }
 
 .user-profile {
@@ -195,6 +197,7 @@ body {
   box-shadow: 
     4px 4px 8px rgba(0, 0, 0, 0.1),
     -4px -4px 8px rgba(255, 255, 255, 0.8);
+  flex-shrink: 0;
 }
 
 .username-text {
@@ -215,10 +218,10 @@ body {
   visibility: hidden;
   transform: translateY(-12px) scale(0.94);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1000;
+  z-index: 1050; /* Diatas sidebar overlay (1040) */
   overflow: hidden;
   box-shadow: 
-    12px 12px 24px rgba(0, 0, 0, 0.1),
+    12px 12px 24px rgba(0, 0, 0, 0.15),
     -12px -12px 24px rgba(255, 255, 255, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.6);
 }
@@ -458,40 +461,101 @@ body {
 #notifBox.error { background-color: #dc3545; }
 
 /* ======================================================= */
-/* ===== RESPONSIVE - MOBILE FIRST ===== */
+/* ===== RESPONSIVE - MOBILE & TABLET FIX ===== */
 /* ======================================================= */
 
+/* Tablet & Mobile - Sidebar tetap dengan teks */
 @media (max-width: 992px) {
   .sidebar {
-    width: 80px !important;
+    width: 240px !important; /* Tetap lebar penuh */
   }
+  
+  .sidebar .nav-link span {
+    display: inline; /* Tampilkan teks menu */
+    opacity: 1;
+  }
+  
   .main-content {
-    margin-left: 90px !important;
+    margin-left: 250px !important; /* Sesuaikan dengan lebar sidebar */
     padding: 15px 20px;
   }
-  .slide-btn { display: none; }
+  
+  .slide-btn { 
+    display: none; 
+  }
+
+  /* PERBAIKAN HEADER & PROFIL - Horizontal Layout */
+  .page-header {
+    flex-direction: row !important;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background-color: rgba(248, 249, 252, 0.98);
+  }
+
+  .page-title {
+    font-size: 20px;
+    flex: 1;
+    min-width: 0; /* Allow text truncation */
+  }
+
+  /* Profile Container tetap di kanan */
+  .profile-container {
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  /* User Profile lebih compact */
+  .user-profile {
+    gap: 10px;
+    padding: 6px 12px;
+  }
+
+  .profile-avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 16px;
+  }
+
+  .username-text {
+    font-size: 14px;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Dropdown Card adjustment */
+  .dropdown-card {
+    width: 240px;
+    right: 0;
+    left: auto;
+  }
 }
 
+/* Tablet Medium (768px - 992px) */
 @media (max-width: 768px) {
   .page-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
+    padding: 10px 12px;
   }
+
   .page-title {
-    font-size: 22px;
+    font-size: 18px;
   }
-  .profile-container {
-    margin-left: auto;
+
+  .username-text {
+    max-width: 100px;
   }
 
   .search-action-bar {
     flex-direction: column;
     align-items: stretch;
   }
+  
   .search-box {
     max-width: 100%;
   }
+  
   .btn-tambah {
     width: 100%;
   }
@@ -499,50 +563,119 @@ body {
   .row.g-4 {
     margin: 0 -8px;
   }
+  
   .col-md-6, .col-lg-4 {
     padding: 0 8px;
     margin-bottom: 16px;
   }
 }
 
+/* Mobile Small (576px ke bawah) */
 @media (max-width: 576px) {
   .main-content {
     padding: 12px 15px;
+    margin-left: 0 !important; /* Full width di mobile */
   }
 
-  .user-profile {
-    gap: 8px;
-    padding: 6px 10px;
+  /* Sidebar hide di mobile kecil atau buat overlay */
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
   }
-  .profile-avatar {
-    width: 38px;
-    height: 38px;
+
+  .sidebar.show {
+    transform: translateX(0);
+    z-index: 1040;
+  }
+
+  /* Header kompak */
+  .page-header {
+    padding: 8px 10px;
+    flex-wrap: nowrap;
+  }
+
+  .page-title {
     font-size: 16px;
+    font-weight: 600;
   }
-  .username-text {
+
+  /* Profile ultra compact */
+  .user-profile {
+    gap: 6px;
+    padding: 4px 8px;
+  }
+
+  .profile-avatar {
+    width: 34px;
+    height: 34px;
     font-size: 14px;
   }
 
+  .username-text {
+    font-size: 13px;
+    max-width: 80px;
+  }
+
+  /* Dropdown lebih kecil */
   .dropdown-card {
     width: 220px;
     right: -10px;
+    top: calc(100% + 12px);
   }
+
   .card-header {
-    padding: 16px 18px;
+    padding: 14px 16px;
   }
+
+  .card-header .text-primary {
+    font-size: 14px;
+  }
+
+  .card-header .text-muted {
+    font-size: 12px;
+  }
+
   .logout-link {
-    padding: 12px 18px;
+    padding: 12px 16px;
     font-size: 13px;
   }
 
-  .guru-card .card-body {
-    padding: 16px;
+  .logout-link img {
+    width: 16px;
+    height: 16px;
   }
+
+  /* Card adjustments */
+  .guru-card .card-body {
+    padding: 14px;
+  }
+
   .d-flex.justify-content-between.mt-4 {
     flex-direction: column;
     gap: 10px;
   }
+
   .btn-primary {
     width: 100%;
+  }
+}
+
+/* Extra Small Mobile (< 400px) */
+@media (max-width: 400px) {
+  .page-title {
+    font-size: 14px;
+  }
+
+  .username-text {
+    display: none; /* Hanya tampilkan avatar */
+  }
+
+  .user-profile {
+    padding: 4px;
+  }
+
+  .dropdown-card {
+    width: 200px;
+    right: -15px;
   }
 }

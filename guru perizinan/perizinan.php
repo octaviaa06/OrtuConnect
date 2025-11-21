@@ -13,7 +13,6 @@ $debug_mode = true;
 
 // Fungsi untuk fetch API dengan error handling
 function fetchPerizinanData($debug = false) {
-    // PENTING: Gunakan API endpoint yang SAMA dengan code asli
     $api_url = "http://ortuconnect.atwebpages.com/api/admin/perizinan.php";
     
     $ch = curl_init();
@@ -75,7 +74,8 @@ $_GET['from'] = $from_param;
     <title>Perizinan | OrtuConnect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="../guru/sidebar.css" /> 
-    <link rel="stylesheet" href="../profil/profil.css" /> <link rel="stylesheet" href="style.css" />   
+    <link rel="stylesheet" href="../profil/profil.css" />
+     <link rel="stylesheet" href="style.css" />   
 </head>
 
 <body>
@@ -151,13 +151,15 @@ $_GET['from'] = $from_param;
                                                     <button
                                                         class="btn btn-sm btn-success me-2 btn-setujui"
                                                         data-id="<?= htmlspecialchars($izin['id_izin'] ?? '') ?>"
-                                                        data-id-siswa="<?= htmlspecialchars($izin['id_siswa'] ?? '') ?>">
+                                                        data-id-siswa="<?= htmlspecialchars($izin['id_siswa'] ?? '') ?>"
+                                                        type="button">
                                                         Setujui
                                                     </button>
                                                     <button
                                                         class="btn btn-sm btn-danger btn-tolak"
                                                         data-id="<?= htmlspecialchars($izin['id_izin'] ?? '') ?>"
-                                                        data-id-siswa="<?= htmlspecialchars($izin['id_siswa'] ?? '') ?>">
+                                                        data-id-siswa="<?= htmlspecialchars($izin['id_siswa'] ?? '') ?>"
+                                                        type="button">
                                                         Tolak
                                                     </button>
                                                 <?php endif; ?>
@@ -223,6 +225,11 @@ $_GET['from'] = $from_param;
 
             // Handle Approve/Reject Actions
             const handleAksi = async (idIzin, idSiswa, aksi) => {
+                console.log("=== DEBUG START ===");
+                console.log("ID Izin:", idIzin);
+                console.log("ID Siswa:", idSiswa);
+                console.log("Aksi:", aksi);
+                
                 const aksiText = aksi === "Setujui" ? "menyetujui" : "menolak";
                 
                 if (!confirm(`Yakin ingin ${aksiText} perizinan untuk siswa ${idSiswa}?`)) {
@@ -233,40 +240,85 @@ $_GET['from'] = $from_param;
 
                 const apiUrl = "http://ortuconnect.atwebpages.com/api/admin/perizinan.php";
                 
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            id_izin: idIzin,
-                            aksi: aksi,
-                        }),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                // Coba berbagai format payload
+                const payloads = [
+                    // Format 1: Original
+                    {
+                        id_izin: idIzin,
+                        aksi: aksi,
+                    },
+                    // Format 2: Dengan status
+                    {
+                        id_izin: idIzin,
+                        status: aksi === "Setujui" ? "Disetujui" : "Ditolak",
+                    },
+                    // Format 3: Dengan action
+                    {
+                        id_izin: idIzin,
+                        action: aksi.toLowerCase(),
+                    },
+                    // Format 4: Dengan approve/reject
+                    {
+                        id_izin: idIzin,
+                        approve: aksi === "Setujui" ? 1 : 0,
                     }
+                ];
 
-                    const data = await response.json();
+                let success = false;
+                let lastError = null;
 
-                    if (data.success) {
-                        showNotif(data.message || `Perizinan berhasil di${aksiText}!`, true);
+                for (let i = 0; i < payloads.length && !success; i++) {
+                    const payload = payloads[i];
+                    console.log(`Trying payload ${i + 1}:`, payload);
+                    
+                    try {
+                        const response = await fetch(apiUrl, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(payload),
+                        });
+
+                        console.log("Response status:", response.status);
                         
-                        // Reload page after short delay
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1500);
-                    } else {
-                        showNotif(data.message || `Gagal ${aksiText} perizinan.`, false);
+                        const responseText = await response.text();
+                        console.log("Response text:", responseText);
+
+                        let data;
+                        try {
+                            data = JSON.parse(responseText);
+                        } catch (e) {
+                            console.error("JSON parse error:", e);
+                            data = { success: false, message: "Invalid JSON response" };
+                        }
+
+                        console.log("Parsed data:", data);
+
+                        if (data.success || response.ok) {
+                            success = true;
+                            showNotif(data.message || `Perizinan berhasil di${aksiText}!`, true);
+                            
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                            break;
+                        } else {
+                            lastError = data.message || "Unknown error";
+                        }
+                    } catch (error) {
+                        console.error(`Attempt ${i + 1} failed:`, error);
+                        lastError = error.message;
                     }
-                } catch (error) {
-                    console.error("Fetch error:", error);
-                    showNotif("Terjadi kesalahan koneksi. Silakan coba lagi.", false);
-                } finally {
-                    showLoading(false);
                 }
+
+                if (!success) {
+                    console.error("All attempts failed. Last error:", lastError);
+                    showNotif(lastError || "Gagal memproses perizinan. Silakan coba lagi.", false);
+                }
+
+                showLoading(false);
+                console.log("=== DEBUG END ===");
             };
 
             // Event Delegation for Action Buttons
@@ -276,18 +328,24 @@ $_GET['from'] = $from_param;
                 tableBody.addEventListener("click", (e) => {
                     const target = e.target;
                     
+                    console.log("Button clicked:", target.className);
+                    
                     if (target.classList.contains("btn-setujui")) {
                         e.preventDefault();
                         const idIzin = target.dataset.id;
                         const idSiswa = target.dataset.idSiswa;
+                        console.log("Setujui button - ID:", idIzin, "ID Siswa:", idSiswa);
                         handleAksi(idIzin, idSiswa, "Setujui");
                     } else if (target.classList.contains("btn-tolak")) {
                         e.preventDefault();
                         const idIzin = target.dataset.id;
                         const idSiswa = target.dataset.idSiswa;
+                        console.log("Tolak button - ID:", idIzin, "ID Siswa:", idSiswa);
                         handleAksi(idIzin, idSiswa, "Tolak");
                     }
                 });
+            } else {
+                console.error("Table body not found!");
             }
         });
     </script>

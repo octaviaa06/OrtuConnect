@@ -1,19 +1,17 @@
 <?php
-ob_start();
+// 1. Pengaturan Awal dan Proteksi Sesi
+ob_start(); // Memulai output buffering
 session_name('SESS_GURU');
 session_start();
 
-if (!isset($_SESSION['username']) || $_SESSION['role'] !== 'guru') {
+// Cek login - jika session role tidak ada atau bukan guru, redirect
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
     header("Location: ../login/index.php?error=Silakan login sebagai Guru");
     exit;
 }
 
-// Mulai buffer baru
-ob_start();
-
-// ============= API TETAP ADMIN SESUAI PERMINTAAN =============
+// 2. Pengambilan Data API
 $api_url = "http://ortuconnect.atwebpages.com/api/admin/dashboard_admin.php";
-// =====================================
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url);
@@ -23,16 +21,20 @@ $response = curl_exec($ch);
 $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);
 
+// 3. Pengolahan Data
 $data = ($http_code === 200 && $response) ? json_decode($response, true) : [];
 
 // Penyesuaian variabel berdasarkan respons API Admin (diasumsikan sama)
+// Pastikan semua variabel diinisialisasi untuk menghindari error jika API gagal
 $siswa = $data['siswa'] ?? 0;
-$total_Kehadiran_Siswa = $data['Total hadir Siswa '] ?? 0; // Perhatikan spasi di key array
+// Perhatikan: Menggunakan 'Total hadir Siswa ' sesuai kode asli, namun sebaiknya cek dan perbaiki API key jika ada spasi
+$total_Kehadiran_Siswa = $data['Total hadir Siswa '] ?? 0; 
 $izin_list = $data['izin_menunggu'] ?? [];
 $izin_menunggu_count = count($izin_list);
 $agenda = $data['agenda_terdekat'] ?? [];
 
-ob_end_flush();
+// Mengakhiri output buffering dan mengirim output
+ob_end_flush(); 
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -42,7 +44,8 @@ ob_end_flush();
     <title>Dashboard Guru | OrtuConnect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="guru.css">
-    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="../profil/profil.css">
+    <link rel="stylesheet" href="../guru/sidebar.css">
 </head>
 <body>
     <div class="d-flex">
@@ -52,20 +55,11 @@ ob_end_flush();
             <div class="container-fluid py-3">
                 <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
                     <h4 class="fw-bold text-primary m-0">Dashboard Guru</h4>
-                    <div class="profile-btn" id="profileToggle">
-                        <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center profile-avatar">
-                            <?= strtoupper(substr($_SESSION['username'], 0, 1)) ?>
-                        </div>
-                        <span class="fw-semibold text-primary"><?= htmlspecialchars($_SESSION['username']) ?></span>
-                        <div class="profile-card" id="profileCard">
-                            <h6><?= ucfirst($_SESSION['role']) ?></h6>
-                            <p><?= htmlspecialchars($_SESSION['username']) ?>@gmail.com</p>
-                            <hr>
-                            <a href="../logout/logout.php?from=dashboard%20guru" class="text-danger d-flex align-items-center gap-2 text-decoration-none">
-                                <img src="../assets/keluar.png" width="20" alt="Logout"> Logout
-                            </a>
-                            </div>
-                    </div>
+                 
+                    <div class="profile-area">
+    <?php include "../profil/profil.php"; ?>
+</div>
+
                 </div>
 
                 <div class="row g-3 mb-4 mt-3">
@@ -171,20 +165,51 @@ ob_end_flush();
         </div>
     </div>
 
+  
     <script>
-        const profileBtn = document.getElementById('profileToggle');
-        const profileCard = document.getElementById('profileCard');
-        if (profileBtn) {
-            profileBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                profileCard.classList.toggle('show');
-            });
-            document.addEventListener('click', (e) => {
-                if (!profileBtn.contains(e.target)) {
-                    profileCard.classList.remove('show');
-                }
-            });
-        }
-    </script>
+  // Sidebar toggle (desktop collapse button should add/remove class 'collapsed' to sidebar)
+  // If you have a desktop collapse button, add its handler to toggle .collapsed
+  const sidebar = document.querySelector('.sidebar');
+  const mainContent = document.querySelector('.main-content');
+  const mobileToggle = document.querySelector('.mobile-toggle');
+  const sidebarOverlay = document.querySelector('.sidebar-overlay');
+
+  // Mobile: open sidebar
+  if (mobileToggle) {
+    mobileToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sidebar.classList.add('show');
+      sidebarOverlay.classList.add('show');
+    });
+  }
+
+  // Click overlay to close sidebar
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', () => {
+      sidebar.classList.remove('show');
+      sidebarOverlay.classList.remove('show');
+    });
+  }
+
+  // Optional: close sidebar if click outside on small screens
+  document.addEventListener('click', (e) => {
+    const isMobile = window.matchMedia('(max-width: 992px)').matches;
+    if (!isMobile) return;
+    if (!sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
+      sidebar.classList.remove('show');
+      sidebarOverlay.classList.remove('show');
+    }
+  });
+
+  // Optional: if you have a desktop collapse button (toggle width)
+  const desktopToggle = document.getElementById('toggleSidebar'); // your desktop toggle button id
+  if (desktopToggle) {
+    desktopToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('collapsed');
+      // adjust main-content margin if needed (CSS already handles .sidebar.collapsed ~ .main-content)
+    });
+  }
+</script>
+
 </body>
 </html>
