@@ -33,7 +33,7 @@ $number_of_days = date('t', $first_day_of_month);
 $date_components = getdate($first_day_of_month);
 $day_of_week = $date_components['wday'];
 
-$api_agenda_url = "https://ortuconnect.atwebpages.com/api/admin/agenda.php?month={$current_month}&year={$current_year}";
+$api_agenda_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/agenda.php?month={$current_month}&year={$current_year}";
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_agenda_url);

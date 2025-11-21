@@ -21,7 +21,7 @@ $payload = [
 ];
 
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, "http://ortuconnect.atwebpages.com/api/admin/absensi.php");
+curl_setopt($ch, CURLOPT_URL, "https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php");
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));

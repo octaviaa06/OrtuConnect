@@ -11,7 +11,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
 
 // === Fungsi ambil daftar kelas ===
 function getDaftarKelas() {
-    $api_url = "http://ortuconnect.atwebpages.com/api/admin/absensi.php?mode=kelas";
+    $api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php?mode=kelas";
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $api_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

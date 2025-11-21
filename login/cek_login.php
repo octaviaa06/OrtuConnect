@@ -19,7 +19,7 @@ if ($username === '' || $password === '') {
     exit;
 }
 
-$api_url = "http://ortuconnect.atwebpages.com/api/login.php";
+$api_url = "https://ortuconnect.pbltifnganjuk.com/api/login.php";
 $data = [
     "username" => $username,
     "password" => $password
