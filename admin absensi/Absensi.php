@@ -11,7 +11,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 
 // Ambil daftar kelas dari API
 function getDaftarKelas() {
-    $api_url = "http://ortuconnect.atwebpages.com/api/admin/absensi.php?mode=kelas";
+    $api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php?mode=kelas";
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $api_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -37,7 +37,7 @@ $kelasList = getDaftarKelas();
 // Ambil daftar absensi dari API
 $absensiList = [];
 if ($selected_class) {
-    $api_absensi_url = "http://ortuconnect.atwebpages.com/api/admin/absensi.php?kelas=" . urlencode($selected_class) . "&tanggal=" . urlencode($selected_date);
+    $api_absensi_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php?kelas=" . urlencode($selected_class) . "&tanggal=" . urlencode($selected_date);
     
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $api_absensi_url);

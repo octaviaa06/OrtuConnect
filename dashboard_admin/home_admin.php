@@ -4,66 +4,48 @@ session_start();
 $active_page = 'dashboard';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-  header("Location: ../login/index.php?error=Harap login sebagai admin!");
-  exit;
+    header("Location: ../login/index.php?error=Harap login sebagai admin!");
+    exit;
+}
+
+// Function untuk call API
+function callAPI($url) {
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_TIMEOUT => 10
+    ]);
+    $response = curl_exec($ch);
+    curl_close($ch);
+    return json_decode($response, true);
 }
 
 // Ambil data dashboard
-$api_url = "http://ortuconnect.atwebpages.com/api/admin/dashboard_admin.php";
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $api_url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-$response = curl_exec($ch);
-curl_close($ch);
-
-$data = json_decode($response, true);
+$data = callAPI("https://ortuconnect.pbltifnganjuk.com/api/admin/dashboard_admin.php");
 $guru = $data['guru'] ?? 0;
 $siswa = $data['siswa'] ?? 0;
 $izin = $data['izin_menunggu'] ?? [];
 $agenda = $data['agenda_terdekat'] ?? [];
-$today = date('Y-m-d');
-$api_kelas_url = "http://ortuconnect.atwebpages.com/api/admin/absensi.php?mode=kelas";
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $api_kelas_url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-$response = curl_exec($ch);
-curl_close($ch);
-
-$kelas_data = json_decode($response, true);
+// Ambil data kelas
+$kelas_data = callAPI("https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php?mode=kelas");
 $kelas_list = $kelas_data['data'] ?? [];
 
-// Loop semua kelas dan hitung siswa yang masuk
+// Hitung siswa masuk hari ini
 $siswa_masuk_hari_ini = 0;
-$total_absensi_recorded = 0;
+$today = date('Y-m-d');
 
 foreach ($kelas_list as $kelas) {
-    // Ambil data absensi per kelas untuk hari ini
-    $api_absensi_url = "http://ortuconnect.atwebpages.com/api/admin/absensi.php?kelas=" . urlencode($kelas) . "&tanggal=" . urlencode($today);
+    $absensi_data = callAPI(
+        "https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php?kelas=" . 
+        urlencode($kelas) . "&tanggal=" . urlencode($today)
+    );
     
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $api_absensi_url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    $response = curl_exec($ch);
-    curl_close($ch);
-    
-    $absensi_data = json_decode($response, true);
-    $absensi_list = $absensi_data['data'] ?? [];
-    
-    // Hitung siswa yang masuk dari API
-    foreach ($absensi_list as $abs) {
-        if (!empty($abs['status_absensi'])) {
-            $total_absensi_recorded++;
-            // Hitung yang masuk (Hadir, Izin, Sakit = dianggap masuk)
-            if (in_array($abs['status_absensi'], ['Hadir'])) {
-                $siswa_masuk_hari_ini++;
-            }
+    foreach ($absensi_data['data'] ?? [] as $abs) {
+        if (!empty($abs['status_absensi']) && $abs['status_absensi'] === 'Hadir') {
+            $siswa_masuk_hari_ini++;
         }
     }
 }
@@ -94,7 +76,6 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   <div class="d-flex">
-
     <!-- SIDEBAR -->
     <?php include '../admin/sidebar.php'; ?>
 
@@ -107,8 +88,6 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
         <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
           <h4 class="fw-bold text-primary m-0 d-none d-md-block">Dashboard Admin</h4>
           <h5 class="fw-bold text-primary m-0 d-md-none">Dashboard Admin</h5>
-
-          <!-- PROFIL INCLUDED -->
           <?php include '../profil/profil.php'; ?>
         </div>
 
@@ -117,7 +96,6 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
           <div class="col-6 col-md-4">
             <div class="card stat-card shadow-sm">
               <div class="card-body stat-card-body p-4">
-                <div class="icon-stat"></div>
                 <p class="stat-label">Jumlah Guru</p>
                 <p class="stat-value"><?= $guru ?></p>
                 <div class="stat-change">
@@ -130,7 +108,6 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
           <div class="col-6 col-md-4">
             <div class="card stat-card shadow-sm">
               <div class="card-body stat-card-body p-4">
-                <div class="icon-stat"></div>
                 <p class="stat-label">Jumlah Siswa</p>
                 <p class="stat-value"><?= $siswa ?></p>
                 <div class="stat-change">
@@ -155,36 +132,26 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
         <!-- AKSES CEPAT -->
         <h5 class="fw-bold text-primary mb-3">Akses Cepat</h5>
         <div class="row g-3 mb-4">
+          <?php
+          $quick_links = [
+              ['url' => '../admin data guru/DataGuru.php?action=generate', 'icon' => '../assets/Data_Guru_Biru.png', 'text' => 'Buat Akun Guru'],
+              ['url' => '../admin data siswa/DataSiswa.php?action=generate', 'icon' => '../assets/Data_Siswa_Biru.png', 'text' => 'Buat Akun Orang Tua'],
+              ['url' => '../admin kalender/Kalender.php', 'icon' => '../assets/Kalender_biru.png', 'text' => 'Buat Agenda']
+          ];
+          
+          foreach ($quick_links as $link):
+          ?>
           <div class="col-6 col-md-4">
-            <a href="../admin data guru/DataGuru.php?action=generate" class="text-decoration-none">
+            <a href="<?= $link['url'] ?>" class="text-decoration-none">
               <div class="card access-card shadow-sm h-100">
                 <div class="card-body d-flex flex-column justify-content-center align-items-center text-center w-100">
-                  <img src="../assets/Data Guru biru.png" class="access-icon" alt="Guru">
-                  <p class="access-text">Buat Akun Guru</p>
+                  <img src="<?= $link['icon'] ?>" class="access-icon" alt="<?= $link['text'] ?>">
+                  <p class="access-text"><?= $link['text'] ?></p>
                 </div>
               </div>
             </a>
           </div>
-          <div class="col-6 col-md-4">
-            <a href="../admin data siswa/DataSiswa.php?action=generate" class="text-decoration-none">
-              <div class="card access-card shadow-sm h-100">
-                <div class="card-body d-flex flex-column justify-content-center align-items-center text-center w-100">
-                  <img src="../assets/Data Siswa biru.png" class="access-icon" alt="Siswa">
-                  <p class="access-text">Buat Akun Orang Tua</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-12 col-md-4">
-            <a href="../admin kalender/Kalender.php" class="text-decoration-none">
-              <div class="card access-card shadow-sm h-100">
-                <div class="card-body d-flex flex-column justify-content-center align-items-center text-center w-100">
-                  <img src="../assets/Kalender biru.png" class="access-icon" alt="Kalender">
-                  <p class="access-text">Buat Agenda</p>
-                </div>
-              </div>
-            </a>
-          </div>
+          <?php endforeach; ?>
         </div>
 
         <!-- IZIN & AGENDA -->
@@ -221,7 +188,7 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
             <div class="card border-primary shadow-sm h-100">
               <div class="card-body">
                 <h6 class="text-primary d-flex align-items-center gap-2 mb-3">
-                  <img src="../assets/Kalender Biru.png" width="22" alt="Agenda"> Agenda Terdekat
+                  <img src="../assets/Kalender_Biru.png" width="22" alt="Agenda"> Agenda Terdekat
                 </h6>
                 <ul class="list-group list-group-flush">
                   <?php if (empty($agenda)): ?>
@@ -244,64 +211,50 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
     </div>
   </div>
 
-  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const masuk = <?= $siswa_masuk_hari_ini ?>;      // Data siswa masuk dari API
-    const tidakMasuk = <?= $siswa_tidak_masuk ?>;    // Data siswa tidak masuk (kalkulasi)
-    const total = <?= $siswa ?>;                     // Total siswa dari API
-
     document.addEventListener('DOMContentLoaded', function() {
       const ctx = document.getElementById('attendanceChart');
-      
-      if (ctx) {
-        new Chart(ctx, {
-          type: 'doughnut',
-          data: {
-            labels: ['Masuk', 'Tidak Masuk'],
-            datasets: [{
-              data: [masuk, tidakMasuk],
-              backgroundColor: ['#0d6efd', '#e9ecef'],
-              borderColor: ['#0d6efd', '#e9ecef'],
-              borderWidth: 2,
-              cutout: '70%'
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                display: false
-              },
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    return context.label + ': ' + context.parsed;
-                  }
-                }
-              }
-            }
-          },
-          plugins: [{
-            id: 'textCenter',
-            beforeDatasetsDraw(chart) {
-              const {width, height, ctx} = chart;
-              ctx.restore();
-              const fontSize = (height / 200).toFixed(2);
-              ctx.font = `bold ${fontSize}em sans-serif`;
-              ctx.textBaseline = "middle";
-              ctx.fillStyle = '#0d6efd';
-              
-              const text = masuk + "/" + total; 
-              const textX = Math.round((width - ctx.measureText(text).width) / 2);
-              const textY = height / 2;
-              ctx.fillText(text, textX, textY);
-              ctx.save();
-            }
+      if (!ctx) return;
+
+      const masuk = <?= $siswa_masuk_hari_ini ?>;
+      const tidakMasuk = <?= $siswa_tidak_masuk ?>;
+      const total = <?= $siswa ?>;
+
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Masuk', 'Tidak Masuk'],
+          datasets: [{
+            data: [masuk, tidakMasuk],
+            backgroundColor: ['#0d6efd', '#e9ecef'],
+            borderColor: ['#0d6efd', '#e9ecef'],
+            borderWidth: 2,
+            cutout: '70%'
           }]
-        });
-      }
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } }
+        },
+        plugins: [{
+          id: 'textCenter',
+          beforeDatasetsDraw(chart) {
+            const {width, height, ctx} = chart;
+            ctx.restore();
+            ctx.font = `bold ${(height / 200).toFixed(2)}em sans-serif`;
+            ctx.textBaseline = "middle";
+            ctx.fillStyle = '#0d6efd';
+            
+            const text = `${masuk}/${total}`;
+            const textX = Math.round((width - ctx.measureText(text).width) / 2);
+            const textY = height / 2;
+            ctx.fillText(text, textX, textY);
+            ctx.save();
+          }
+        }]
+      });
     });
   </script>
 </body>

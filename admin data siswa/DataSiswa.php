@@ -9,7 +9,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   exit;
 }
 
-$api_url = "http://ortuconnect.atwebpages.com/api/admin/data_siswa.php";
+$api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/data_siswa.php";
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const modalSiswa = new bootstrap.Modal(document.getElementById('modalSiswa'));
   const formSiswa = document.getElementById('formSiswa');
   const idSiswa = document.getElementById('id_siswa');
-  const apiURL = "http://ortuconnect.atwebpages.com/api/admin/data_siswa.php";
+  const apiURL = "https://ortuconnect.pbltifnganjuk.com/api/admin/data_siswa.php";
 
   // Sidebar toggle
 const sidebar = document.getElementById('sidebar');
@@ -272,7 +272,7 @@ window.hapusSiswa = async function(id) {
 
 window.generateAkun = async function(id) {
   try {
-    const res = await fetch(`http://ortuconnect.atwebpages.com/api/admin/generate_akun.php?tipe=siswa&id=${id}`, { cache: "no-store" });
+    const res = await fetch(`https://ortuconnect.pbltifnganjuk.com/api/admin/generate_akun.php?tipe=siswa&id=${id}`, { cache: "no-store" });
     const data = await res.json();
     if (data.status === "success") {
       const d = data.data;

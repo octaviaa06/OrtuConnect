@@ -54,7 +54,7 @@ function getAbsensiDataRange($kelas, $startDate, $endDate) {
     while ($currentDate <= $endDateObj) {
         $dateStr = $currentDate->format('Y-m-d');
         $datesList[] = $dateStr;
-        $urls[] = "http://ortuconnect.atwebpages.com/api/admin/absensi.php?kelas=" . urlencode($kelas) . "&tanggal=" . urlencode($dateStr);
+        $urls[] = "https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php?kelas=" . urlencode($kelas) . "&tanggal=" . urlencode($dateStr);
         $currentDate->modify('+1 day');
     }
     

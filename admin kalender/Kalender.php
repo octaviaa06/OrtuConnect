@@ -33,7 +33,7 @@ $number_of_days     = date('t', $first_day_of_month);
 $date_components    = getdate($first_day_of_month);
 $month_name         = date('F Y', $first_day_of_month);
 $day_of_week        = $date_components['wday'];
-$api_agenda_url = "http://ortuconnect.atwebpages.com/api/admin/agenda.php?month={$current_month}&year={$current_year}";
+$api_agenda_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/agenda.php?month={$current_month}&year={$current_year}";
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_agenda_url);
@@ -222,103 +222,164 @@ $selected_agenda    = $agendaByDate[$selected_date_full] ?? [];
     </div>
 
     <!--  SCRIPT  -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const AGENDA_API = "http://ortuconnect.atwebpages.com/api/admin/agenda.php";
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const AGENDA_API = "https://ortuconnect.pbltifnganjuk.com/api/admin/agenda.php";
 
-        function showNotif(message, isSuccess = true) {
-            const notifBox = document.getElementById("notifBox");
-            notifBox.textContent = message;
-            notifBox.style.backgroundColor = isSuccess ? "#28a745" : "#dc3545";
-            notifBox.style.display = "block";
-            setTimeout(() => notifBox.style.display = "none", 3000);
+    function showNotif(message, isSuccess = true) {
+        const notifBox = document.getElementById("notifBox");
+        notifBox.textContent = message;
+        notifBox.style.backgroundColor = isSuccess ? "#28a745" : "#dc3545";
+        notifBox.style.display = "block";
+        setTimeout(() => notifBox.style.display = "none", 3000);
+    }
+
+    function openModalTambahAgenda() {
+        document.getElementById('agendaId').value = '';
+        document.getElementById('agendaNama').value = '';
+        document.getElementById('agendaTanggal').value = '<?= $selected_date_full ?>';
+        document.getElementById('agendaDeskripsi').value = '';
+        document.getElementById('agendaModalLabel').textContent = 'Tambah Agenda';
+        document.getElementById('btnSimpanAgenda').textContent = 'Simpan';
+        new bootstrap.Modal(document.getElementById('agendaModal')).show();
+    }
+
+    async function editAgenda(id) {
+        try {
+            const res = await fetch(`${AGENDA_API}?id=${id}`);
+            const data = await res.json();
+            if (data.status === 'success' && data.data) {
+                const a = data.data;
+                document.getElementById('agendaId').value = a.id;
+                document.getElementById('agendaNama').value = a.nama_kegiatan;
+                document.getElementById('agendaTanggal').value = a.tanggal;
+                document.getElementById('agendaDeskripsi').value = a.deskripsi || '';
+                document.getElementById('agendaModalLabel').textContent = 'Edit Agenda';
+                document.getElementById('btnSimpanAgenda').textContent = 'Perbarui';
+                new bootstrap.Modal(document.getElementById('agendaModal')).show();
+            } else showNotif('Gagal memuat data agenda.', false);
+        } catch (error) {
+            console.error('Edit error:', error);
+            showNotif("Terjadi kesalahan koneksi.", false);
         }
+    }
 
-        function openModalTambahAgenda() {
-            document.getElementById('agendaId').value = '';
-            document.getElementById('agendaNama').value = '';
-            document.getElementById('agendaTanggal').value = '<?= $selected_date_full ?>';
-            document.getElementById('agendaDeskripsi').value = '';
-            document.getElementById('agendaModalLabel').textContent = 'Tambah Agenda';
-            document.getElementById('btnSimpanAgenda').textContent = 'Simpan';
-            new bootstrap.Modal(document.getElementById('agendaModal')).show();
-        }
-
-        async function editAgenda(id) {
-            try {
-                const res = await fetch(`${AGENDA_API}?id=${id}`);
-                const data = await res.json();
-                if (data.status === 'success' && data.data) {
-                    const a = data.data;
-                    document.getElementById('agendaId').value = a.id;
-                    document.getElementById('agendaNama').value = a.nama_kegiatan;
-                    document.getElementById('agendaTanggal').value = a.tanggal;
-                    document.getElementById('agendaDeskripsi').value = a.deskripsi || '';
-                    document.getElementById('agendaModalLabel').textContent = 'Edit Agenda';
-                    document.getElementById('btnSimpanAgenda').textContent = 'Perbarui';
-                    new bootstrap.Modal(document.getElementById('agendaModal')).show();
-                } else showNotif('Gagal memuat data agenda.', false);
-            } catch {
-                showNotif("Terjadi kesalahan koneksi.", false);
+    async function deleteAgenda(id) {
+        if (!confirm("Yakin ingin menghapus agenda ini?")) return;
+        try {
+            const res = await fetch(AGENDA_API, {
+                method: 'DELETE',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: id })
+            });
+            const data = await res.json();
+            console.log('Delete response:', data);
+            if (data.status === 'success') {
+                showNotif(data.message || 'Agenda berhasil dihapus!');
+                setTimeout(() => location.reload(), 1000);
+            } else {
+                showNotif(data.message || 'Gagal menghapus agenda.', false);
             }
+        } catch (error) {
+            console.error('Delete error:', error);
+            showNotif("Terjadi kesalahan koneksi.", false);
+        }
+    }
+
+    // PERBAIKAN UTAMA: Form Submit Handler dengan data lengkap
+    document.getElementById('formAgenda').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const id = document.getElementById('agendaId').value;
+        const method = id ? 'PUT' : 'POST';
+        
+        // Siapkan data dengan field yang lengkap
+        const requestData = {
+            nama_kegiatan: document.getElementById('agendaNama').value.trim(),
+            tanggal: document.getElementById('agendaTanggal').value,
+            deskripsi: document.getElementById('agendaDeskripsi').value.trim() || '' // Pastikan tidak null
+        };
+
+        // Jika edit, tambahkan ID
+        if (id) {
+            requestData.id = id;
         }
 
-        async function deleteAgenda(id) {
-            if (!confirm("Yakin ingin menghapus agenda ini?")) return;
+        // Validasi data
+        if (!requestData.nama_kegiatan) {
+            showNotif('Nama kegiatan harus diisi!', false);
+            return;
+        }
+
+        if (!requestData.tanggal) {
+            showNotif('Tanggal harus diisi!', false);
+            return;
+        }
+
+        const btn = document.getElementById('btnSimpanAgenda');
+        const originalText = btn.textContent;
+        
+        btn.disabled = true;
+        btn.textContent = 'Loading...';
+
+        try {
+            console.log('Sending data:', requestData);
+
+            const res = await fetch(AGENDA_API, {
+                method: method,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            console.log('Response status:', res.status);
+            const textResponse = await res.text();
+            console.log('Raw response:', textResponse);
+
+            let data;
             try {
-                const res = await fetch(AGENDA_API, {
-                    method: 'DELETE',
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ id })
-                });
-                const data = await res.json();
-                if (data.status === 'success') {
-                    showNotif(data.message || 'Agenda berhasil dihapus!');
-                    location.reload();
-                } else showNotif(data.message || 'Gagal menghapus agenda.', false);
-            } catch {
-                showNotif("Terjadi kesalahan koneksi.", false);
+                data = JSON.parse(textResponse);
+            } catch (parseError) {
+                console.error('JSON parse error:', parseError);
+                throw new Error('Invalid JSON response from server');
             }
-        }
 
-        document.getElementById('formAgenda').addEventListener('submit', async e => {
-            e.preventDefault();
-            const id = document.getElementById('agendaId').value;
-            const method = id ? 'PUT' : 'POST';
-            const formData = {
-                id,
-                nama_kegiatan: document.getElementById('agendaNama').value,
-                tanggal: document.getElementById('agendaTanggal').value,
-                deskripsi: document.getElementById('agendaDeskripsi').value
-            };
+            console.log('Parsed data:', data);
 
-            const btn = document.getElementById('btnSimpanAgenda');
-            btn.disabled = true;
-            btn.textContent = 'Loading...';
-
-            try {
-                const res = await fetch(AGENDA_API, {
-                    method,
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(formData)
-                });
-                const data = await res.json();
-
-                if (data.status === 'success') {
-                    showNotif(data.message || (id ? 'Agenda diperbarui!' : 'Agenda ditambahkan!'));
-                    bootstrap.Modal.getInstance(document.getElementById('agendaModal')).hide();
+            if (data.status === 'success') {
+                showNotif(data.message || (id ? 'Agenda diperbarui!' : 'Agenda ditambahkan!'));
+                
+                // Tutup modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
+                if (modal) modal.hide();
+                
+                // Reload setelah delay
+                setTimeout(() => {
                     location.reload();
-                } else {
-                    showNotif(data.message || 'Gagal menyimpan agenda.', false);
+                }, 1500);
+                
+            } else {
+                // Tampilkan error message yang lebih spesifik
+                const errorMsg = data.message || 'Gagal menyimpan agenda.';
+                showNotif(errorMsg, false);
+                
+                // Debug tambahan
+                if (errorMsg.includes('tidak lengkap')) {
+                    console.error('Data yang dikirim:', requestData);
                 }
-            } catch {
-                showNotif("Terjadi kesalahan koneksi.", false);
-            } finally {
-                btn.disabled = false;
-                btn.textContent = id ? 'Perbarui' : 'Simpan';
             }
-        });
 
-    </script>
+        } catch (error) {
+            console.error('Submit error:', error);
+            showNotif("Terjadi kesalahan: " + error.message, false);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = originalText;
+        }
+    });
+
+</script>
 </body>
 </html>
