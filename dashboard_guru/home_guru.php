@@ -1,5 +1,6 @@
 <?php
-ob_start();
+// 1. Pengaturan Awal dan Proteksi Sesi
+ob_start(); // Memulai output buffering
 session_name('SESS_GURU');
 session_start();
 
@@ -9,8 +10,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
     exit;
 }
 
+// 2. Pengambilan Data API
 $api_url = "http://ortuconnect.atwebpages.com/api/admin/dashboard_admin.php";
-// =====================================
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url);
@@ -18,18 +19,22 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 $response = curl_exec($ch);
 $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
 
+$ch = null;
+// 3. Pengolahan Data
 $data = ($http_code === 200 && $response) ? json_decode($response, true) : [];
 
 // Penyesuaian variabel berdasarkan respons API Admin (diasumsikan sama)
+// Pastikan semua variabel diinisialisasi untuk menghindari error jika API gagal
 $siswa = $data['siswa'] ?? 0;
-$total_Kehadiran_Siswa = $data['Total hadir Siswa '] ?? 0; // Perhatikan spasi di key array
+// Perhatikan: Menggunakan 'Total hadir Siswa ' sesuai kode asli, namun sebaiknya cek dan perbaiki API key jika ada spasi
+$total_Kehadiran_Siswa = $data['Total hadir Siswa '] ?? 0; 
 $izin_list = $data['izin_menunggu'] ?? [];
 $izin_menunggu_count = count($izin_list);
-$agenda = $data['agenda_terdekat'] ?? []
+$agenda = $data['agenda_terdekat'] ?? [];
 
-ob_end_flush();
+// Mengakhiri output buffering dan mengirim output
+ob_end_flush(); 
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -39,7 +44,8 @@ ob_end_flush();
     <title>Dashboard Guru | OrtuConnect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="guru.css">
-    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="../profil/profil.css">
+    <link rel="stylesheet" href="../guru/sidebar.css">
 </head>
 <body>
     <div class="d-flex">
@@ -49,20 +55,11 @@ ob_end_flush();
             <div class="container-fluid py-3">
                 <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
                     <h4 class="fw-bold text-primary m-0">Dashboard Guru</h4>
-                    <div class="profile-btn" id="profileToggle">
-                        <div class="rounded-circle bg-primary text-white d-flex justify-content-center align-items-center profile-avatar">
-                            <?= strtoupper(substr($_SESSION['username'], 0, 1)) ?>
-                        </div>
-                        <span class="fw-semibold text-primary"><?= htmlspecialchars($_SESSION['username']) ?></span>
-                        <div class="profile-card" id="profileCard">
-                            <h6><?= ucfirst($_SESSION['role']) ?></h6>
-                            <p><?= htmlspecialchars($_SESSION['username']) ?>@gmail.com</p>
-                            <hr>
-                            <a href="../logout/logout.php?from=dashboard%20guru" class="text-danger d-flex align-items-center gap-2 text-decoration-none">
-                                <img src="../assets/keluar.png" width="20" alt="Logout"> Logout
-                            </a>
-                            </div>
-                    </div>
+                 
+                    <div class="profile-area">
+    <?php include "../profil/profil.php"; ?>
+</div>
+
                 </div>
 
                 <div class="row g-3 mb-4 mt-3">
@@ -111,7 +108,7 @@ ob_end_flush();
                         </a>
                     </div>
                     <div class="col-md-4">
-                        <a href="../guru_kalender/kalender.php" class="card text-center shadow-sm access-card link-underline-opacity-0">
+                        <a href="../guru kalender/kalender.php" class="card text-center shadow-sm access-card link-underline-opacity-0">
                             <div class="card-body">
                                 <img src="../assets/Kalender Biru.png" class="access-icon mb-2" alt="Kalender">
                                 <p class="mb-0 text-dark fw-semibold">Lihat Kalender</p>
@@ -168,20 +165,7 @@ ob_end_flush();
         </div>
     </div>
 
-    <script>
-        const profileBtn = document.getElementById('profileToggle');
-        const profileCard = document.getElementById('profileCard');
-        if (profileBtn) {
-            profileBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                profileCard.classList.toggle('show');
-            });
-            document.addEventListener('click', (e) => {
-                if (!profileBtn.contains(e.target)) {
-                    profileCard.classList.remove('show');
-                }
-            });
-        }
-    </script>
+
+
 </body>
-</html>
+</html> 

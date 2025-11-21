@@ -1,7 +1,13 @@
 /* ======================================= */
 /* ====== ABSENSI SISWA - STYLE ONLY ===== */
 /* ======================================= */
-
+.bg-absensi-guru {
+    background-image: url('../background/Data Guru(1).png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* optional */
+}
 /* Card Utama Absensi */
 .card-absensi {
     border-radius: 16px;
@@ -88,4 +94,132 @@
     .absensi-item .col-5 {
         font-size: 14px;
     }
+}
+/* ========================================= */
+/* ===== RESPONSIVE FIX - MOBILE & TABLET ==== */
+/* ========================================= */
+
+@media (max-width: 992px) {
+    /* Header atas (judul + profil) jadi vertikal */
+    .header-fixed {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+    }
+    .header-fixed h4 {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Filter bar jadi kolom */
+    #filterForm {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+    #filterForm .form-control,
+    #filterForm .form-select,
+    #filterForm .btn {
+        width: 100% !important;
+        max-width: none !important;
+        margin-bottom: 8px;
+    }
+    #filterForm .btn {
+        margin-bottom: 0;
+    }
+
+    /* Card absensi */
+    .card {
+        padding: 16px !important;
+    }
+
+    /* Item absensi jadi layout vertikal yang lebih lega */
+    .absensi-item {
+        flex-direction: column;
+        align-items: flex-start !important;
+        padding: 14px 10px !important;
+        gap: 8px;
+    }
+
+    .absensi-item > div {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    /* Nomor urut jadi lebih kecil */
+    .absensi-item .col-1 {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    /* Nama siswa jadi lebih besar dan bold */
+    .absensi-item .col-5 {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #212529;
+        word-break: break-word;
+    }
+
+    /* Status di paling bawah, full width */
+    .absensi-item .col-6 {
+        justify-content: flex-start !important;
+    }
+
+    .status-absensi-select,
+    .badge {
+        width: 100% !important;
+        max-width: 300px;
+        text-align: center;
+    }
+
+    /* Badge (sudah diabsen) juga full width */
+    .badge {
+        font-size: 0.95rem !important;
+        padding: 0.6rem 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-fixed h4 {
+        font-size: 1.25rem;
+    }
+
+    .card h5 {
+        font-size: 1.1rem;
+    }
+
+    .absensi-item {
+        padding: 12px 8px !important;
+    }
+
+    .status-absensi-select,
+    .badge {
+        font-size: 0.95rem;
+        padding: 10px 8px !important;
+    }
+
+    /* Notifikasi di HP agak lebih kecil */
+    .notif {
+        min-width: 260px;
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        bottom: 15px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Bonus: Tambah garis pemisah yang lebih jelas di mobile */
+@media (max-width: 768px) {
+    .absensi-item {
+        border-bottom: 1px dashed #dee2e6 !important;
+    }
+    .absensi-item:last-child {
+        border-bottom: none !important;
+    }
+}
+
+/* Hover tetap ada di mobile (tap feedback) */
+.absensi-item:active {
+    background-color: #f1f3f5 !important;
 }

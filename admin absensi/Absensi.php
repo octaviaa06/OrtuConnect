@@ -19,7 +19,7 @@ function getDaftarKelas() {
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
+  $ch = null;
 
     if (empty($response) || $httpCode !== 200) {
         error_log("API Error - Kelas: HTTP $httpCode - Response: $response");
@@ -47,8 +47,7 @@ if ($selected_class) {
     $response = curl_exec($ch);
     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if (curl_errno($ch)) $response = json_encode(['data' => []]);
-    curl_close($ch);
-
+ $ch = null;
     if ($httpCode === 200 && !empty($response)) {
         $data = json_decode($response, true);
         $absensiList = $data['data'] ?? [];
@@ -75,6 +74,7 @@ if ($selected_class) {
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="absensi.css">
 <link rel="stylesheet" href="../profil/profil.css">
+
 </head>
 <body>
 <div class="d-flex">
@@ -124,7 +124,7 @@ if ($selected_class) {
                             <div class="col-1 fw-bold"><?= $no++ ?></div>
                             <div class="col-5 fw-semibold"><?= htmlspecialchars($abs['nama_siswa'] ?? 'N/A') ?></div>
                             <div class="col-6 d-flex justify-content-end">
-                                <input type="hidden" name="absensi[<?= htmlspecialchars($siswaId) ?>][id_siswa]" value="<?= htmlspecialchars($siswaId) ?>">
+                                <input type="hidden" name="absensi[<?= htmlspecialchars($abs['id_murid']) ?>][id_murid]" value="<?= htmlspecialchars($abs['id_murid']) ?>">
                                 
                                 <?php if($isAbsentRecorded): ?>
                                     <!-- Jika sudah ada absensi, tampilkan badge bukan dropdown -->
@@ -137,8 +137,7 @@ if ($selected_class) {
                                     </span>
                                 <?php else: ?>
                                     <!-- Jika belum ada absensi, tampilkan dropdown -->
-                                    <select name="absensi[<?= htmlspecialchars($siswaId) ?>][status]" class="form-select status-absensi-select" onchange="updateStatusColor(this)">
-                                        <option value="">-- Pilih Status --</option>
+                                    <select name="absensi[<?= htmlspecialchars($abs['id_murid']) ?>][status]" class="form-select status-absensi-select" onchange="updateStatusColor(this)">
                                         <option value="Hadir">Hadir</option>
                                         <option value="Izin">Izin</option>
                                         <option value="Sakit">Sakit</option>

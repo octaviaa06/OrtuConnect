@@ -1,7 +1,7 @@
 <?php
 session_name('SESS_ADMIN');
 session_start();
-$active_page = 'kalender';
+$active_page = 'Kalender';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login/index.php?error=Harap login sebagai admin!");
@@ -42,7 +42,7 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-curl_close($ch);
+$ch = null;
 
 if ($httpCode !== 200 || empty($response)) {
     $response = json_encode(["data" => []]);

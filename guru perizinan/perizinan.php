@@ -2,169 +2,127 @@
 session_name('SESS_GURU');
 session_start();
 
-// Validasi guru login
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
     header("Location: ../login/index.php?error=Harap login sebagai guru!");
     exit;
 }
 
-// DEBUG MODE - Set ke false setelah selesai testing
-$debug_mode = true;
+// Ambil data perizinan (dengan cache buster)
+$api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/perizinan.php?t=" . time();
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $api_url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+$response = curl_exec($ch);
+$ch = null;
 
-// Fungsi untuk fetch API dengan error handling
-function fetchPerizinanData($debug = false) {
-    // PENTING: Gunakan API endpoint yang SAMA dengan code asli
-    $api_url = "http://ortuconnect.atwebpages.com/api/admin/perizinan.php";
-    
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $api_url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $curlError = curl_error($ch);
-    
-    if ($debug) {
-        echo "\n";
-    }
-    
-    if (curl_errno($ch)) {
-        if ($debug) echo "\n";
-        curl_close($ch);
-        return [];
-    }
-    
-    curl_close($ch);
-    
-    if ($httpCode !== 200) {
-        if ($debug) echo "\n";
-        return [];
-    }
-    
-    $data = json_decode($response, true);
-    
-    if ($debug) {
-        echo "\n";
-    }
-    
-    // Coba berbagai kemungkinan struktur response
-    if (isset($data['data'])) {
-        return $data['data'];
-    } elseif (is_array($data) && !empty($data)) {
-        return $data;
-    }
-    
-    return [];
-}
-
-$perizinanList = fetchPerizinanData($debug_mode);
-
-// Set parameter 'from' untuk profil.php
-$from_param = 'perizinan guru'; 
-$_GET['from'] = $from_param; 
+$data = json_decode($response, true) ?? [];
+$perizinanList = $data['data'] ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Perizinan | OrtuConnect</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="../guru/sidebar.css" /> 
-    <link rel="stylesheet" href="../profil/profil.css" /> <link rel="stylesheet" href="style.css" />   
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css"> <!-- CSS Anda yang sudah dipisah -->
+    <link rel="stylesheet" href="../profil/profil.css">
+    <link rel="stylesheet" href="../guru/sidebar.css">
 </head>
-
 <body>
 
-    <div class="d-flex">
-        <?php include '../guru/sidebar.php'; ?>
+<div class="d-flex position-relative">
+    <?php include '../guru/sidebar.php'; ?>
 
-        <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center; min-height:100vh;">
-            <div class="container-fluid py-3">
-                <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
-                    <h4 class="fw-bold text-primary m-0">Perizinan</h4>
-                    
-                    <?php include '../profil/profil.php'; ?>
-                    
-                </div>
+    <div class="main-content bg-perizinan-guru">
+        <div class="container-fluid py-3 py-md-4">
 
-                <div class="card shadow-sm border-0 p-4" style="border-radius:16px;">
-                    <h5 class="fw-bold mb-4">Daftar Perizinan Murid</h5>
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
+                <h4 class="fw-bold text-primary m-0">Perizinan Murid</h4>
+                <?php include '../profil/profil.php'; ?>
+            </div>
 
-                    <div class="d-flex justify-content-end mb-3">
-                        <div class="search-container position-relative" style="max-width: 400px; width: 100%;">
-                            <img src="../assets/cari.png" alt="Cari" class="search-icon" />
-                            <input
-                                type="text"
-                                id="searchInput"
-                                class="form-control search-input"
-                                placeholder="Cari berdasarkan ID siswa atau kelas..."
-                            />
+            <!-- CARD UTAMA -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4 p-md-5">
+
+                    <h5 class="fw-bold text-primary mb-4">Daftar Pengajuan Izin</h5>
+
+                    <!-- SEARCH BAR -->
+                    <div class="d-flex justify-content-end mb-4">
+                        <div class="search-container position-relative">
+                            <img src="../assets/cari.png" alt="Cari" class="search-icon">
+                            <input type="text" id="searchInput" class="form-control search-input" placeholder="Cari nama murid...">
                         </div>
                     </div>
 
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0" id="perizinanTable">
-                            <thead class="bg-light">
+                    <!-- TOMBOL SCROLL NAVIGATION (Muncul otomatis via JS di mobile) -->
+                    <div class="scroll-nav" id="scrollNav">
+                        <button class="scroll-btn" id="scrollLeft">
+                            <svg fill="currentColor" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                            </svg>
+                            Geser Kiri
+                        </button>
+                        <button class="scroll-btn" id="scrollRight">
+                            Geser Kanan
+                            <svg fill="currentColor" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- WRAPPER TABEL — SESUAI STYLE.CSS ANDA -->
+                    <div class="table-responsive" id="tableWrapper">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
                                 <tr>
-                                    <th style="width: 5%;">NO</th>
-                                    <th style="width: 15%;">ID Siswa</th>
-                                    <th style="width: 10%;">Kelas</th>
-                                    <th style="width: 20%;">Alasan</th>
-                                    <th style="width: 15%;">Tanggal Mulai</th>
-                                    <th style="width: 15%;">Tanggal Selesai</th>
-                                    <th style="width: 20%;">Status</th>
+                                    <th width="5%" class="text-center">NO</th>
+                                    <th>Nama Murid</th>
+                                    <th>Kelas</th>
+                                    <th>Jenis Izin</th>
+                                    <th>Keterangan</th>
+                                    <th>Tanggal</th>
+                                    <th width="20%" class="text-center">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="izinBody">
                                 <?php if (empty($perizinanList)): ?>
                                     <tr>
-                                        <td colspan="7" class="text-center text-muted py-4">
-                                            Tidak ada data perizinan.
+                                        <td colspan="7" class="text-center text-muted py-5">
+                                            <img src="../assets/empty-perizinan.png" alt="Kosong" width="80" class="mb-3 opacity-50">
+                                            <br>Belum ada pengajuan izin.
                                         </td>
                                     </tr>
-                                <?php else: ?>
-                                    <?php $no = 1; foreach ($perizinanList as $izin): ?>
-                                        <tr class="izin-item" 
-                                            data-id-siswa="<?= htmlspecialchars($izin['id_siswa'] ?? '') ?>"
-                                            data-kelas="<?= htmlspecialchars($izin['kelas'] ?? '') ?>">
-                                            <td><?= $no++ ?></td>
-                                            <td><?= htmlspecialchars($izin['id_siswa'] ?? 'N/A') ?></td> 
-                                            <td><?= htmlspecialchars($izin['kelas'] ?? 'N/A') ?></td>
-                                            <td><?= htmlspecialchars($izin['keterangan'] ?? 'N/A') ?></td> 
-                                            <td><?= htmlspecialchars($izin['tanggal_mulai'] ?? 'N/A') ?></td>
-                                            <td><?= htmlspecialchars($izin['tanggal_selesai'] ?? 'N/A') ?></td>
-                                            
-                                            <td>
-                                                <?php
-                                                $status = strtoupper($izin['status'] ?? 'MENUNGGU');
-                                                
-                                                if ($status === 'DISETUJUI'): ?>
-                                                    <span class="badge bg-success">Disetujui</span>
-                                                <?php elseif ($status === 'DITOLAK'): ?>
-                                                    <span class="badge bg-danger">Ditolak</span>
-                                                <?php else: ?>
-                                                    <button
-                                                        class="btn btn-sm btn-success me-2 btn-setujui"
-                                                        data-id="<?= htmlspecialchars($izin['id_izin'] ?? '') ?>"
-                                                        data-id-siswa="<?= htmlspecialchars($izin['id_siswa'] ?? '') ?>">
-                                                        Setujui
-                                                    </button>
-                                                    <button
-                                                        class="btn btn-sm btn-danger btn-tolak"
-                                                        data-id="<?= htmlspecialchars($izin['id_izin'] ?? '') ?>"
-                                                        data-id-siswa="<?= htmlspecialchars($izin['id_siswa'] ?? '') ?>">
-                                                        Tolak
-                                                    </button>
-                                                <?php endif; ?>
-                                            </td>
-                                            </tr>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
+                                <?php else: $no = 1; foreach ($perizinanList as $izin): 
+                                    $status = strtolower($izin['status'] ?? 'pending');
+                                ?>
+                                    <tr class="izin-item">
+                                        <td class="text-center fw-bold"><?= $no++ ?></td>
+                                        <td class="fw-semibold"><?= htmlspecialchars($izin['nama_siswa'] ?? '-', ENT_QUOTES, 'UTF-8') ?></td>
+                                        <td><?= htmlspecialchars($izin['kelas'] ?? '-', ENT_QUOTES, 'UTF-8') ?></td>
+                                        <td><span class="badge bg-info text-dark"><?= htmlspecialchars($izin['jenis_izin'] ?? '-', ENT_QUOTES, 'UTF-8') ?></span></td>
+                                        <td class="text-muted small"><?= htmlspecialchars($izin['keterangan'] ?? '-', ENT_QUOTES, 'UTF-8') ?></td>
+                                        <td class="text-muted small"><?= !empty($izin['tanggal_pengajuan']) ? date('d/m/Y', strtotime($izin['tanggal_pengajuan'])) : '-' ?></td>
+                                        <td class="text-center">
+                                            <?php if ($status === 'disetujui'): ?>
+                                                <span class="badge bg-success fs-6">Disetujui</span>
+                                            <?php elseif ($status === 'ditolak'): ?>
+                                                <span class="badge bg-danger fs-6">Ditolak</span>
+                                            <?php else: ?>
+                                                <button class="btn btn-sm btn-success me-1 btn-setujui" data-id="<?= (int)($izin['id_izin'] ?? 0) ?>">
+                                                    Setujui
+                                                </button>
+                                                <button class="btn btn-sm btn-danger btn-tolak" data-id="<?= (int)($izin['id_izin'] ?? 0) ?>">
+                                                    Tolak
+                                                </button>
+                                            <?php endif; ?>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; endif; ?>
                             </tbody>
                         </table>
                     </div>
@@ -172,124 +130,131 @@ $_GET['from'] = $from_param;
             </div>
         </div>
     </div>
+</div>
 
-    <div id="notifBox" class="notif"></div>
+<!-- NOTIFIKASI — SESUAI POSISI DI style.css (bottom center) -->
+<div id="notifBox" class="notif"></div>
 
-    <div id="loadingOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.8); justify-content: center; align-items: center; z-index: 1050;">
-        <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
+<!-- MODAL KONFIRMASI (Bootstrap Modal) -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="confirmModalLabel">Konfirmasi Verifikasi</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <p id="confirmText" class="mb-0">Apakah Anda yakin ingin <strong>menyetujui</strong> izin ini?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" id="confirmYesBtn" class="btn btn-primary">Ya, Lanjutkan</button>
+            </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Utility Functions
-        const showLoading = (show) => {
-            const loadingOverlay = document.getElementById("loadingOverlay");
-            if (loadingOverlay) {
-                loadingOverlay.style.display = show ? "flex" : "none";
-            }
-        };
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // === JS LOGIC (tanpa CSS inline) ===
+    const tableWrapper = document.getElementById('tableWrapper');
+    const scrollNav = document.getElementById('scrollNav');
+    const scrollLeftBtn = document.getElementById('scrollLeft');
+    const scrollRightBtn = document.getElementById('scrollRight');
 
-        const showNotif = (message, isSuccess = true) => {
-            const notifBox = document.getElementById("notifBox");
-            notifBox.textContent = message;
-            notifBox.style.backgroundColor = isSuccess ? "#28a745" : "#dc3545";
-            notifBox.style.display = "block";
-            
-            setTimeout(() => {
-                notifBox.style.display = "none";
-            }, 3000);
-        };
+    // Cek apakah butuh scroll nav (mobile only)
+    function checkScrollButtons() {
+        if (window.innerWidth <= 992) {
+            const hasScroll = tableWrapper.scrollWidth > tableWrapper.clientWidth;
+            scrollNav.classList.toggle('active', hasScroll);
+            if (hasScroll) updateButtonStates();
+        } else {
+            scrollNav.classList.remove('active');
+        }
+    }
 
-        // Main App Logic
-        document.addEventListener("DOMContentLoaded", () => {
+    function updateButtonStates() {
+        const scrollLeft = tableWrapper.scrollLeft;
+        const maxScroll = tableWrapper.scrollWidth - tableWrapper.clientWidth;
+        scrollLeftBtn.disabled = scrollLeft <= 5;
+        scrollRightBtn.disabled = scrollLeft >= maxScroll - 5;
+    }
 
-            // Search Functionality
-            const searchInput = document.getElementById("searchInput");
-            if (searchInput) {
-                searchInput.addEventListener("input", () => {
-                    const keyword = searchInput.value.toLowerCase().trim();
-                    const rows = document.querySelectorAll(".izin-item");
-                    
-                    rows.forEach((row) => {
-                        const idSiswa = row.dataset.idSiswa.toLowerCase();
-                        const kelas = row.dataset.kelas.toLowerCase();
-                        const shouldShow = idSiswa.includes(keyword) || kelas.includes(keyword);
-                        row.style.display = shouldShow ? "" : "none";
-                    });
-                });
-            }
+    scrollLeftBtn?.addEventListener('click', () => tableWrapper.scrollBy({ left: -250, behavior: 'smooth' }));
+    scrollRightBtn?.addEventListener('click', () => tableWrapper.scrollBy({ left: 250, behavior: 'smooth' }));
+    tableWrapper?.addEventListener('scroll', updateButtonStates);
 
-            // Handle Approve/Reject Actions
-            const handleAksi = async (idIzin, idSiswa, aksi) => {
-                const aksiText = aksi === "Setujui" ? "menyetujui" : "menolak";
-                
-                if (!confirm(`Yakin ingin ${aksiText} perizinan untuk siswa ${idSiswa}?`)) {
-                    return;
-                }
+    window.addEventListener('load', checkScrollButtons);
+    window.addEventListener('resize', checkScrollButtons);
 
-                showLoading(true);
-
-                const apiUrl = "http://ortuconnect.atwebpages.com/api/admin/perizinan.php";
-                
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify({
-                            id_izin: idIzin,
-                            aksi: aksi,
-                        }),
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        showNotif(data.message || `Perizinan berhasil di${aksiText}!`, true);
-                        
-                        // Reload page after short delay
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1500);
-                    } else {
-                        showNotif(data.message || `Gagal ${aksiText} perizinan.`, false);
-                    }
-                } catch (error) {
-                    console.error("Fetch error:", error);
-                    showNotif("Terjadi kesalahan koneksi. Silakan coba lagi.", false);
-                } finally {
-                    showLoading(false);
-                }
-            };
-
-            // Event Delegation for Action Buttons
-            const tableBody = document.querySelector("#perizinanTable tbody");
-            
-            if (tableBody) {
-                tableBody.addEventListener("click", (e) => {
-                    const target = e.target;
-                    
-                    if (target.classList.contains("btn-setujui")) {
-                        e.preventDefault();
-                        const idIzin = target.dataset.id;
-                        const idSiswa = target.dataset.idSiswa;
-                        handleAksi(idIzin, idSiswa, "Setujui");
-                    } else if (target.classList.contains("btn-tolak")) {
-                        e.preventDefault();
-                        const idIzin = target.dataset.id;
-                        const idSiswa = target.dataset.idSiswa;
-                        handleAksi(idIzin, idSiswa, "Tolak");
-                    }
-                });
-            }
+    // Pencarian real-time
+    document.getElementById('searchInput')?.addEventListener('input', function() {
+        const keyword = this.value.toLowerCase().trim();
+        document.querySelectorAll('.izin-item').forEach(row => {
+            const nama = row.cells[1]?.textContent?.toLowerCase() || '';
+            row.style.display = nama.includes(keyword) ? '' : 'none';
         });
-    </script>
+    });
+
+    // === MODAL & VERIFIKASI ===
+    const confirmModalEl = document.getElementById('confirmModal');
+    const confirmModal = confirmModalEl ? new bootstrap.Modal(confirmModalEl) : null;
+    let pendingAction = { id: null, status: null };
+
+    document.querySelectorAll('.btn-setujui, .btn-tolak').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const isSetujui = this.classList.contains('btn-success');
+            const status = isSetujui ? 'disetujui' : 'ditolak';
+            const actionText = isSetujui ? 'menyetujui' : 'menolak';
+            
+            document.getElementById('confirmText').innerHTML = 
+                `Apakah Anda yakin ingin <strong>${actionText}</strong> izin ini?`;
+            
+            pendingAction = { id, status };
+            confirmModal?.show();
+        });
+    });
+
+    document.getElementById('confirmYesBtn')?.addEventListener('click', function() {
+        if (pendingAction.id && pendingAction.status) {
+            updateStatus(pendingAction.id, pendingAction.status);
+            confirmModal?.hide();
+            pendingAction = { id: null, status: null };
+        }
+    });
+
+    function updateStatus(id_izin, status) {
+        fetch('https://ortuconnect.pbltifnganjuk.com/api/admin/perizinan.php', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id_izin: parseInt(id_izin),
+                status: status,
+                tanggal_verifikasi: new Date().toISOString().split('T')[0],
+                id_guru_verifikasi: <?= (int)($_SESSION['user_id'] ?? 0) ?>
+            })
+        })
+        .then(r => r.json())
+        .then(res => {
+            showNotif(res.success ? '✅ Berhasil diverifikasi!' : (res.message || '❌ Gagal'), res.success);
+            if (res.success) setTimeout(() => location.reload(), 1800);
+        })
+        .catch(() => showNotif('❌ Gagal terhubung ke server!', false));
+    }
+
+    function showNotif(msg, success = true) {
+        const box = document.getElementById('notifBox');
+        if (!box) return;
+        box.textContent = msg;
+        box.className = 'notif ' + (success ? 'success' : 'error');
+        box.style.display = 'block';
+
+        setTimeout(() => {
+            box.style.opacity = '0';
+            setTimeout(() => box.style.display = 'none', 300);
+        }, 2500);
+    }
+</script>
 </body>
 </html>

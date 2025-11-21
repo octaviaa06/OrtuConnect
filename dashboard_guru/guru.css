@@ -1,7 +1,4 @@
-
 /* ====== STRUKTUR UMUM (TETAP SAMA) ====== */
-/* ======================================= */
-
 body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
@@ -9,6 +6,7 @@ body {
   overflow-x: hidden;
 }
 
+/* ===== NAV ITEMS ===== */
 .nav {
   width: 100%;
   padding-left: 0;
@@ -30,6 +28,7 @@ body {
   transition: background 0.3s, transform 0.2s;
   font-size: 17px;
   font-weight: 500;
+  text-decoration: none;
 }
 
 .nav-link:hover,
@@ -61,14 +60,26 @@ body {
   height: 100vh;
   width: 240px;
   background: #1a1a2e;
-  transition: all 0.35s ease;
-  z-index: 1050;
+  transition: transform 0.35s ease, width 0.35s ease;
+  z-index: 1200; /* sidebar di atas konten, tapi di bawah profil dropdown */
   padding-top: 20px;
   overflow-y: auto;
+  transform: translateX(0); /* default muncul di desktop */
 }
 
+/* Versi collapsed (desktop) */
 .sidebar.collapsed {
   width: 60px;
+}
+
+/* Untuk mobile kita sembunyikan dengan translateX(-100%), lalu munculkan dengan class .show */
+.sidebar.hidden-mobile {
+  transform: translateX(-100%);
+}
+
+/* Jika sidebar dibuka di mobile, tambahkan class .show */
+.sidebar.show {
+  transform: translateX(0);
 }
 
 /* ===== MAIN CONTENT ===== */
@@ -81,14 +92,14 @@ body {
   min-height: 100vh;
 }
 
-/* PERINTAHMU #2 — PERKECIL JARAK SAAT COLLAPSED */
+/* Perkecilan jarak saat collapsed */
 .sidebar.collapsed ~ .main-content {
-  margin-left: 60px !important;
+  margin-left: 60px;
 }
 
-/* PERINTAHMU #1 — NAIKKAN JARAK HEADER */
+/* Perintah untuk jarak header */
 .main-content .container-fluid {
-  padding-top: 5px !important;
+  padding-top: 5px;
   padding-bottom: 20px;
 }
 
@@ -124,6 +135,7 @@ body {
   justify-content: center;
 }
 
+/* PROFIL DROPDOWN - pastikan z-index > sidebar */
 .profile-card {
   position: absolute;
   top: 70px;
@@ -134,7 +146,7 @@ body {
   padding: 15px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.15);
   display: none;
-  z-index: 1000;
+  z-index: 1300; /* lebih tinggi dari sidebar (1200) */
 }
 
 .profile-card.show {
@@ -156,38 +168,98 @@ body {
 
 /* ===== CARD DASHBOARD ===== */
 .dashboard-card {
-  border-radius: 16px;
-  padding: 25px;
-  min-height: 150px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  background: white;
-}
+            border-radius: 16px;
+            padding: 25px;
+            min-height: 150px;
+            /* Ubah shadow menjadi lebih kuat tapi lembut (Elevated/Floating look) */
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border: none; /* Hilangkan border-primary yang kaku */
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            color: #333;
+            
+            /* Tambahkan background gradien lembut */
+            background: linear-gradient(135deg, #ffffff 0%, #f7f9fc 100%);
+        }
 
-/* ===== AKSES CEPAT CARD ===== */
-.access-card {
-  border-radius: 16px;
-  padding: 20px 10px;
-  background-color: #e9ecef; 
-  border: none;
-  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
-  cursor: pointer;
-  height: 100%; 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
+        .dashboard-card:hover {
+            transform: translateY(-5px); /* Efek mengangkat */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15); /* Bayangan lebih intens */
+        }
 
-.access-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-  background-color: #dee2e6; 
-}
+        .dashboard-card h3 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-top: 5px;
+            color: #007bff; /* Warna utama */
+        }
 
-.access-icon {
-  width: 50px; 
-  height: 50px;
-}
+        .dashboard-card h6 {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #6c757d; 
+        }
+
+        /* Penataan untuk Izin Menunggu & Agenda Terdekat */
+        .card.border-primary.shadow-sm {
+            border: none !important;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .card.border-primary.shadow-sm:hover {
+            transform: translateY(-3px);
+        }
+
+        .list-group-item {
+            border-left: 3px solid #007bff; /* Penanda visual item agenda */
+            margin-bottom: 5px;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .list-group-item:hover {
+            background-color: #f0f8ff; /* Warna hover lembut */
+        }
+
+        /* ======================================= */
+        /* ====== AKSES CEPAT CARD (ESTETIK) ====== */
+        /* ======================================= */
+        .access-card {
+            border-radius: 16px;
+            padding: 25px 15px;
+            background-color: #ffffff; /* Latar putih agar lebih menonjol */
+            border: 1px solid #e9ecef;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+            cursor: pointer;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none; 
+        }
+
+        .access-card:hover {
+            transform: translateY(-6px); /* Efek mengangkat lebih jelas */
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15); /* Bayangan lebih intens */
+            background-color: #f8f9fa;
+        }
+
+        .access-icon {
+            width: 55px; /* Ukuran ikon sedikit lebih besar */
+            height: 55px;
+            margin-bottom: 15px !important;
+        }
+
+        .access-card p {
+            font-size: 16px;
+            color: #343a40 !important;
+            font-weight: 600;
+        }
 
 /* ===== HAMBURGER BUTTON (MOBILE) ===== */
 .mobile-toggle {
@@ -198,13 +270,14 @@ body {
   font-size: 24px;
   cursor: pointer;
   padding: 8px;
-  z-index: 1100;
+  z-index: 1400; /* paling atas supaya bisa di-klik */
   position: fixed;
   top: 15px;
   left: 15px;
 }
 
 /* ===== OVERLAY (MOBILE) ===== */
+/* Overlay ditampilkan saat sidebar mobile terbuka; z-index < sidebar so klik overlay menutup sidebar */
 .sidebar-overlay {
   position: fixed;
   top: 0;
@@ -212,12 +285,15 @@ body {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 1040;
+  z-index: 1100;
   display: none;
+  transition: opacity 0.25s ease;
+  opacity: 0;
 }
 
 .sidebar-overlay.show {
   display: block;
+  opacity: 1;
 }
 
 /* ===== SCROLLBAR SIDEBAR ===== */
@@ -236,40 +312,30 @@ body {
 /* ====== MOBILE & TABLET RESPONSIVE ====== */
 /* ======================================= */
 
-/* Tablet & Mobile: Tampilkan hamburger, sembunyikan sidebar */
+/* Tablet & Mobile: tampilkan hamburger & sembunyikan sidebar (mobile hidden by default) */
 @media (max-width: 992px) {
-  .mobile-toggle {
-    display: block;
-  }
-
   .sidebar {
+    width: 240px !important;
     transform: translateX(-100%);
+    padding-left: 0 !important;
+    padding-right: 0 !important;
   }
 
+  /* Saat dibuka */
   .sidebar.show {
     transform: translateX(0);
   }
 
-  .main-content {
-    margin-left: 0 !important;
-    padding: 15px !important;
-  }
-
-  .header-fixed {
-    margin-bottom: 20px;
-  }
-
-  .dashboard-card {
-    padding: 15px;
-    min-height: 120px;
+  /* Jangan gunakan ukuran collapsed di mobile */
+  .sidebar.collapsed {
+    width: 240px !important;
   }
 }
-
 /* Mobile Kecil (≤576px) – SESUAI PERMINTAAN ANDA */
 @media (max-width: 576px) {
   .main-content {
-    padding: 5px 12px !important;
-    margin-left: 0 !important;
+    padding: 5px 12px;
+    margin-left: 0;
   }
 
   .header-fixed {
@@ -279,11 +345,11 @@ body {
 
   .dashboard-card {
     min-height: 110px;
-    padding: 12px !important;
+    padding: 12px;
   }
 
   .access-card {
-    padding: 12px 6px !important;
+    padding: 12px 6px;
   }
 
   .profile-avatar {
@@ -297,38 +363,17 @@ body {
     left: 12px;
   }
 
-  /* Filter form jadi vertikal */
+  /* Filter form jadi vertikal (jika ada) */
   #filterForm {
     flex-direction: column;
-    align-items: stretch !important;
+    align-items: stretch;
   }
 
   #filterForm .form-control,
   #filterForm .form-select,
   #filterForm .btn {
     margin-bottom: 8px;
-    width: 100% !important;
-    max-width: none !important;
-  }
-
-  /* Absensi item jadi kolom */
-  .absensi-item {
-    flex-direction: column;
-    align-items: flex-start !important;
-    gap: 8px;
-    padding: 12px 8px;
-  }
-
-  .absensi-item > div {
-    width: 100% !important;
-    text-align: left !important;
-  }
-
-  .absensi-item .col-6 {
-    justify-content: flex-start !important;
-  }
-
-  .status-absensi-select {
-    width: 100% !important;
+    width: 100%;
+    max-width: none;
   }
 }
