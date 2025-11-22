@@ -124,7 +124,7 @@ if ($selected_class) {
                             <div class="col-1 fw-bold"><?= $no++ ?></div>
                             <div class="col-5 fw-semibold"><?= htmlspecialchars($abs['nama_siswa'] ?? 'N/A') ?></div>
                             <div class="col-6 d-flex justify-content-end">
-                                <input type="hidden" name="absensi[<?= htmlspecialchars($abs['id_murid']) ?>][id_murid]" value="<?= htmlspecialchars($abs['id_murid']) ?>">
+                                <input type="hidden" name="absensi[<?= htmlspecialchars($abs['id_siswa']) ?>][id_siswa]" value="<?= htmlspecialchars($abs['id_siswa']) ?>">
                                 
                                 <?php if($isAbsentRecorded): ?>
                                     <!-- Jika sudah ada absensi, tampilkan badge bukan dropdown -->
@@ -137,7 +137,7 @@ if ($selected_class) {
                                     </span>
                                 <?php else: ?>
                                     <!-- Jika belum ada absensi, tampilkan dropdown -->
-                                    <select name="absensi[<?= htmlspecialchars($abs['id_murid']) ?>][status]" class="form-select status-absensi-select" onchange="updateStatusColor(this)">
+                                    <select name="absensi[<?= htmlspecialchars($abs['id_siswa']) ?>][status]" class="form-select status-absensi-select" onchange="updateStatusColor(this)">
                                         <option value="Hadir">Hadir</option>
                                         <option value="Izin">Izin</option>
                                         <option value="Sakit">Sakit</option>
