@@ -30,33 +30,6 @@
     border-bottom: none !important;
 }
 
-/* Status Dropdown */
-.status-absensi-select {
-    width: 150px;
-    border-radius: 8px;
-    font-weight: bold;
-    text-align: center;
-    padding: 8px 12px;
-    border: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 10px 10px;
-    transition: all 0.2s ease;
-}
-
-/* Warna Status */
-.status-hadir { background-color: #e6f7eb; color: #28a745; }
-.status-izin  { background-color: #e6f7fb; color: #0d6efd; }
-.status-sakit { background-color: #fcf8e3; color: #ffc107; }
-.status-alpa  { background-color: #f8d7da; color: #dc3545; }
-
-/* Option di dalam dropdown (opsional) */
-.status-absensi-select option {
-    font-weight: bold;
-}
 
 /* Empty State */
 .empty-state {

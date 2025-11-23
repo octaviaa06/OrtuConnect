@@ -29,7 +29,7 @@ $kelasList      = getDaftarKelas();
 $absensiList    = [];
 
 if ($selected_class) {
-    $api = "http://ortuconnect.atwebpages.com/api/admin/absensi.php?kelas=".urlencode($selected_class)."&tanggal=".urlencode($selected_date);
+    $api = "https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php?kelas=".urlencode($selected_class)."&tanggal=".urlencode($selected_date);
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $api);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -58,7 +58,7 @@ $_GET['from'] = $from_param;
     <title>Absensi | OrtuConnect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
    
-    <link rel="stylesheet" href="absensi.css">
+    <link rel="stylesheet" href="absensi_siswa.css">
     <link rel="stylesheet" href="../profil/profil.css">
      <link rel="stylesheet" href="../guru/sidebar.css">
 </head>

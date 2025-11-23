@@ -40,43 +40,9 @@
     border-bottom: none !important;
 }
 
-/* Status Dropdown */
-.status-absensi-select {
-    width: 150px; /* Lebar sesuai screenshot */
-    border-radius: 8px;
-    font-weight: bold;
-    text-align: center;
-    padding: 8px 12px;
-    border: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    appearance: none; /* Menyembunyikan panah default */
-    /* Ikon panah ke bawah */
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E") !important;
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 10px 10px;
-}
 
-/* Warna Dropdown Berdasarkan Status Pilihan */
-.status-hadir {
-    background-color: #e6f7eb; /* Hijau muda */
-    color: #28a745;            /* Hijau teks */
-}
 
-.status-sakit {
-    background-color: #e6f7fb; /* Biru muda */
-    color: #0d6efd;            /* Biru teks */
-}
 
-.status-izin {
-    background-color: #fcf8e3; /* Kuning muda */
-    color: #ffc107;            /* Kuning teks */
-}
-
-.status-alpa {
-    background-color: #f8d7da; /* Merah muda */
-    color: #dc3545;            /* Merah teks */
-}
 
 /* Warna option di dropdown sesuai status (opsional, tergantung browser) */
 .status-absensi-select option.status-hadir { 
