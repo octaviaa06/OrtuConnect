@@ -16,7 +16,8 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 $response = curl_exec($ch);
-curl_close($ch);
+$ch = null;
+
 
 $data = json_decode($response, true);
 $guru = $data['guru'] ?? 0;
@@ -35,7 +36,8 @@ curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 $response = curl_exec($ch);
-curl_close($ch);
+$ch = null;
+
 
 $kelas_data = json_decode($response, true);
 $kelas_list = $kelas_data['data'] ?? [];
@@ -54,7 +56,8 @@ foreach ($kelas_list as $kelas) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_TIMEOUT, 10);
     $response = curl_exec($ch);
-    curl_close($ch);
+   $ch = null;
+
     
     $absensi_data = json_decode($response, true);
     $absensi_list = $absensi_data['data'] ?? [];
@@ -87,17 +90,7 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 </head>
 <body>
-  <!-- TOGGLE BUTTON MOBILE/TABLET -->
-  <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
-    <span></span>
-    <span></span>
-    <span></span>
-  </button>
 
-  <!-- OVERLAY -->
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-  <div class="d-flex">
 
     <!-- SIDEBAR -->
     <?php include '../admin/sidebar.php'; ?>

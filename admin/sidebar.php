@@ -1,65 +1,215 @@
-<!-- SIDEBAR -->
-<link rel="stylesheet" href="../admin/sidebar.css">
+<?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
 
-<div id="sidebar" class="sidebar expanded bg-primary text-white p-3">
-    <div class="text-center mb-4">
-        <img src="../assets/slide.png" id="toggleSidebar" alt="Slide" class="slide-btn">
+<!-- Hamburger Button untuk Mobile/Tablet -->
+<button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
+
+<!-- Overlay untuk Mobile/Tablet -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar -->
+<div id="sidebar" class="sidebar expanded">
+    <!-- Sidebar Header -->
+    <div class="sidebar-header text-center">
+        <img src="../assets/slide.png" id="toggleSidebar" alt="Collapse" class="slide-btn" onclick="toggleSidebar()">
+       
     </div>
 
-    <ul class="nav flex-column">
-        <li class="nav-item mb-2">
-            <a href="../dashboard_admin/home_admin.php"
-               class="nav-link text-white d-flex align-items-center gap-2 <?php echo basename($_SERVER['PHP_SELF']) == 'home_admin.php' ? 'active' : ''; ?>">
-                <img src="../assets/Dashboard.png" class="icon" />
+    <!-- Navigation Menu -->
+    <ul class="nav flex-column px-2">
+        <li class="nav-item">
+            <a href="../dashboard_admin/home_admin.php" class="nav-link">
+                <img src="../assets/Dashboard.png" class="icon" alt="Dashboard">
                 <span class="menu-text">Dashboard</span>
             </a>
-        </li>
-        <li class="nav-item mb-2">
-            <a href="../admin data guru/DataGuru.php"
-               class="nav-link text-white d-flex align-items-center gap-2 <?php echo basename($_SERVER['PHP_SELF']) == 'DataGuru.php' ? 'active' : ''; ?>">
-                <img src="../assets/Data Guru.png" class="icon" />
-                <span class="menu-text">Data Guru</span>
-            </a>
-        </li>
-        <li class="nav-item mb-2">
-            <a href="../admin data siswa/DataSiswa.php"
-               class="nav-link text-white d-flex align-items-center gap-2 <?php echo basename($_SERVER['PHP_SELF']) == 'DataSiswa.php' ? 'active' : ''; ?>">
-                <img src="../assets/Data Siswa.png" class="icon" />
+
+              </li>
+        <li class="nav-item">
+            <a href="../admin data guru/DataGuru.php" class="nav-link">
+                <img src="../assets/Data Guru.png" class="icon" alt="Data Siswa">
                 <span class="menu-text">Data Murid</span>
             </a>
         </li>
-        <li class="nav-item mb-2">
-            <a href="../admin absensi/Absensi.php"
-               class="nav-link text-white d-flex align-items-center gap-2 <?php echo basename($_SERVER['PHP_SELF']) == 'Absensi.php' ? 'active' : ''; ?>">
-                <img src="../assets/absensi.png" class="icon" />
+
+        </li>
+        <li class="nav-item">
+            <a href="../admin data siswa/DataSiswa.php" class="nav-link">
+                <img src="../assets/Data Siswa.png" class="icon" alt="Data Siswa">
+                <span class="menu-text">Data Murid</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="../admin absensi/Absensi.php" class="nav-link">
+                <img src="../assets/absensi.png" class="icon" alt="Absensi">
                 <span class="menu-text">Absensi</span>
             </a>
         </li>
-        <li class="nav-item mb-2">
-            <a href="../admin perizinan/Perizinan.php"
-               class="nav-link text-white d-flex align-items-center gap-2 <?php echo basename($_SERVER['PHP_SELF']) == 'Perizinan.php' ? 'active' : ''; ?>">
-                <img src="../assets/Perizinan.png" class="icon" />
+        <li class="nav-item">
+            <a href="../admin perizinan/Perizinan.php" class="nav-link">
+                <img src="../assets/Perizinan.png" class="icon" alt="Perizinan">
                 <span class="menu-text">Perizinan</span>
             </a>
         </li>
-        <li class="nav-item mb-2">
-            <a href="../admin kalender/Kalender.php"
-               class="nav-link text-white d-flex align-items-center gap-2 <?php echo basename($_SERVER['PHP_SELF']) == 'Kalender.php' ? 'active' : ''; ?>">
-                <img src="../assets/Kalender.png" class="icon" />
+        <li class="nav-item">
+            <a href="../admin kalender/Kalender.php" class="nav-link">
+                <img src="../assets/Kalender.png" class="icon" alt="Kalender">
                 <span class="menu-text">Kalender</span>
             </a>
         </li>
     </ul>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+       
+    </div>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const sidebar = document.getElementById("sidebar");
-    const toggleBtn = document.getElementById("toggleSidebar");
 
-    toggleBtn.addEventListener("click", () => {
-        sidebar.classList.toggle("collapsed");
-        sidebar.classList.toggle("expanded");
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const hamburger = document.getElementById('hamburgerBtn');
+
+    // Mobile/Tablet Mode (< 992px)
+    if (window.innerWidth < 992) {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+        hamburger.classList.toggle('active');
+        
+        // Prevent body scroll saat sidebar terbuka
+        if (sidebar.classList.contains('show')) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    } 
+    // Desktop Mode (>= 992px)
+    else {
+        sidebar.classList.toggle('collapsed');
+        sidebar.classList.toggle('expanded');
+    }
+}
+
+/**
+ * Initialize Sidebar on Page Load
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // Auto-close sidebar saat klik menu (Mobile/Tablet only)
+    document.querySelectorAll('#sidebar .nav-link').forEach(link => {
+        link.addEventListener('click', function() {
+            if (window.innerWidth < 992) {
+                const sidebar = document.getElementById('sidebar');
+                const overlay = document.getElementById('sidebarOverlay');
+                const hamburger = document.getElementById('hamburgerBtn');
+                
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+                hamburger.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
     });
+
+    // Highlight active menu berdasarkan current URL
+    const currentPath = window.location.pathname;
+    const currentPage = currentPath.split('/').pop();
+    
+    document.querySelectorAll('#sidebar .nav-link').forEach(link => {
+        const linkPage = link.getAttribute('href').split('/').pop();
+        if (linkPage === currentPage) {
+            link.classList.add('active');
+        }
+    });
+
+    // Ensure sidebar state on page load
+    const sidebar = document.getElementById('sidebar');
+    if (window.innerWidth >= 992) {
+        sidebar.classList.add('expanded');
+        sidebar.classList.remove('show');
+    }
+});
+
+/**
+ * Handle Window Resize
+ * Reset sidebar state saat resize window
+ */
+let resizeTimer;
+window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const hamburger = document.getElementById('hamburgerBtn');
+        
+        // Reset ke Desktop mode jika window >= 992px
+        if (window.innerWidth >= 992) {
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+            hamburger.classList.remove('active');
+            document.body.style.overflow = '';
+            
+            // Ensure expanded state di desktop
+            if (!sidebar.classList.contains('collapsed')) {
+                sidebar.classList.add('expanded');
+            }
+        } else {
+            // Remove desktop classes di mobile
+            sidebar.classList.remove('collapsed', 'expanded');
+        }
+    }, 250);
+});
+
+/**
+ * Close Sidebar dengan ESC Key (Mobile/Tablet)
+ */
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar.classList.contains('show')) {
+            toggleSidebar();
+        }
+    }
+});
+
+/**
+ * Prevent Scroll Chain pada Sidebar (Mobile Touch)
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar) {
+        sidebar.addEventListener('touchmove', function(e) {
+            e.stopPropagation();
+        }, { passive: true });
+    }
+});
+
+/**
+ * Handle Swipe Gesture untuk Close Sidebar (Mobile)
+ */
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('sidebar');
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    sidebar.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    sidebar.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+        // Swipe left untuk close sidebar
+        if (touchStartX - touchEndX > 50 && sidebar.classList.contains('show')) {
+            toggleSidebar();
+        }
+    }
 });
 </script>
