@@ -96,4 +96,4 @@ if ($httpCode === 200 && isset($apiResponse['status']) && $apiResponse['status']
         'message' => $apiResponse['message'] ?? 'Gagal menyimpan absensi'
     ]);
 }
-?>
+?> 
