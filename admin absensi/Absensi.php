@@ -5,7 +5,7 @@ $active_page = 'absensi_siswa';
 
 // Verifikasi role guru
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: ../login/index.php?error=Harap login sebagai guru!");
+    header("Location: ../login/index.php?error=Harap login sebagai admin!");
     exit;
 }
 
@@ -60,12 +60,12 @@ $_GET['from'] = $from_param;
    
     <link rel="stylesheet" href="absensi.css">
     <link rel="stylesheet" href="../profil/profil.css">
-     <link rel="stylesheet" href="../guru/sidebar.css">
+     <link rel="stylesheet" href="../admin/sidebar.css">
 </head>
 <body>
 
 <div class="d-flex">
-    <?php include '../guru/sidebar.php'; ?>
+    <?php include '../admin/sidebar.php'; ?>
 
     <!-- BACKGROUND DIPINDAH KE CLASS → INI YANG BIKIN SIDEBAR FULL SAMPAI BAWAH -->
     <div class="flex-grow-1 main-content bg-absensi-guru">
