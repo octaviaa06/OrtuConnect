@@ -5,7 +5,7 @@ $active_page = 'perizinan';
 
 // Pastikan admin login
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
-    header("Location: ../login/index.php?error=Harap login sebagai admin!");
+    header("Location: ../login/index.php?error=Harap login sebagai guru");
     exit;
 }
 
@@ -33,14 +33,14 @@ $perizinanList = $data['data'] ?? [];
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Perizinan | OrtuConnect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="../admin/sidebar.css" />
+    <link rel="stylesheet" href="../guru/sidebar.css" />
     <link rel="stylesheet" href="../profil/profil.css">
     <link rel="stylesheet" href="Perizinan.css" /> 
 </head>
 <body>
     <div class="d-flex">
         <!-- Sidebar -->
-        <?php include '../admin/sidebar.php'; ?>
+        <?php include '../guru/sidebar.php'; ?>
 
         <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">
             <div class="container-fluid py-3">
