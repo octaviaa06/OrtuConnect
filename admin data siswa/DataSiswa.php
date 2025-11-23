@@ -21,7 +21,7 @@ if (curl_errno($ch)) {
     echo "cURL Error: " . curl_error($ch);
     $response = json_encode(["data" => []]);
 }
-curl_close($ch);
+$ch=null;
 
 $data = json_decode($response, true);
 $siswaList = $data['data'] ?? [];
@@ -35,6 +35,8 @@ $siswaList = $data['data'] ?? [];
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="datasiswa.css">
   <link rel="stylesheet" href="../profil/profil.css">
+  <link rel="stylesheet" href="../admin/sidebar.css">
+
 </head>
 <body>
 <div class="d-flex">

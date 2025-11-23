@@ -1,124 +1,100 @@
 <?php
 session_name('SESS_GURU');
 session_start();
+$active_page = 'perizinan';
 
+// Pastikan admin login
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
-    header("Location: ../login/index.php?error=Harap login sebagai guru!");
+    header("Location: ../login/index.php?error=Harap login sebagai guru");
     exit;
 }
 
-// Ambil data perizinan (dengan cache buster)
+// PERBAIKAN: Tambahkan cache buster agar data selalu fresh
 $api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/perizinan.php?t=" . time();
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+// PERBAIKAN: Tambahkan fresh connection untuk mencegah cache
 curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+curl_setopt($ch, CURLOPT_FORBID_REUSE, true);
 $response = curl_exec($ch);
-$ch = null;
+if (curl_errno($ch)) $response = json_encode(["data" => []]);
+$ch=null;
 
-$data = json_decode($response, true) ?? [];
+$data = json_decode($response, true);
 $perizinanList = $data['data'] ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Perizinan | OrtuConnect</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css"> <!-- CSS Anda yang sudah dipisah -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../guru/sidebar.css" />
     <link rel="stylesheet" href="../profil/profil.css">
-    <link rel="stylesheet" href="../guru/sidebar.css">
+    <link rel="stylesheet" href="Perizinan.css" /> 
 </head>
 <body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <?php include '../guru/sidebar.php'; ?>
 
-<div class="d-flex position-relative">
-    <?php include '../guru/sidebar.php'; ?>
+        <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">
+            <div class="container-fluid py-3">
+                <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
+                    <h4 class="fw-bold text-primary m-0">Perizinan</h4>
+                   <?php include '../profil/profil.php'; ?>
+                </div>
 
-    <div class="main-content bg-perizinan-guru">
-        <div class="container-fluid py-3 py-md-4">
+                <div class="card shadow-sm border-0 p-4" style="border-radius:16px;">
+                    <h5 class="fw-bold mb-4">Daftar Perizinan Murid</h5>
 
-            <!-- HEADER -->
-            <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
-                <h4 class="fw-bold text-primary m-0">Perizinan Murid</h4>
-                <?php include '../profil/profil.php'; ?>
-            </div>
-
-            <!-- CARD UTAMA -->
-            <div class="card border-0 shadow-sm">
-                <div class="card-body p-4 p-md-5">
-
-                    <h5 class="fw-bold text-primary mb-4">Daftar Pengajuan Izin</h5>
-
-                    <!-- SEARCH BAR -->
-                    <div class="d-flex justify-content-end mb-4">
-                        <div class="search-container position-relative">
-                            <img src="../assets/cari.png" alt="Cari" class="search-icon">
-                            <input type="text" id="searchInput" class="form-control search-input" placeholder="Cari nama murid...">
+                    <div class="d-flex justify-content-end mb-3">
+                        <div class="search-container position-relative" style="max-width:400px;">
+                            <img src="../assets/cari.png" alt="Cari" class="search-icon" />
+                            <input type="text" id="searchInput" class="form-control search-input" placeholder="Cari perizinan berdasarkan nama..." />
                         </div>
                     </div>
 
-                    <!-- TOMBOL SCROLL NAVIGATION (Muncul otomatis via JS di mobile) -->
-                    <div class="scroll-nav" id="scrollNav">
-                        <button class="scroll-btn" id="scrollLeft">
-                            <svg fill="currentColor" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-                            </svg>
-                            Geser Kiri
-                        </button>
-                        <button class="scroll-btn" id="scrollRight">
-                            Geser Kanan
-                            <svg fill="currentColor" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- WRAPPER TABEL — SESUAI STYLE.CSS ANDA -->
-                    <div class="table-responsive" id="tableWrapper">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="perizinanTable">
+                            <thead class="bg-light">
                                 <tr>
-                                    <th width="5%" class="text-center">NO</th>
+                                    <th>NO</th>
                                     <th>Nama Murid</th>
                                     <th>Kelas</th>
                                     <th>Jenis Izin</th>
                                     <th>Keterangan</th>
                                     <th>Tanggal</th>
-                                    <th width="20%" class="text-center">Aksi</th>
+                                    <th>Status</th>
                                 </tr>
                             </thead>
-                            <tbody id="izinBody">
+                            <tbody>
                                 <?php if (empty($perizinanList)): ?>
-                                    <tr>
-                                        <td colspan="7" class="text-center text-muted py-5">
-                                            <img src="../assets/empty-perizinan.png" alt="Kosong" width="80" class="mb-3 opacity-50">
-                                            <br>Belum ada pengajuan izin.
-                                        </td>
-                                    </tr>
-                                <?php else: $no = 1; foreach ($perizinanList as $izin): 
-                                    $status = strtolower($izin['status'] ?? 'pending');
+                                    <tr><td colspan="7" class="text-center text-muted">Tidak ada data perizinan.</td></tr>
+                                <?php else: 
+                                    $no = 1; 
+                                    foreach ($perizinanList as $izin): 
+                                        $status = strtolower($izin['status'] ?? 'pending');
                                 ?>
                                     <tr class="izin-item">
-                                        <td class="text-center fw-bold"><?= $no++ ?></td>
-                                        <td class="fw-semibold"><?= htmlspecialchars($izin['nama_siswa'] ?? '-', ENT_QUOTES, 'UTF-8') ?></td>
-                                        <td><?= htmlspecialchars($izin['kelas'] ?? '-', ENT_QUOTES, 'UTF-8') ?></td>
-                                        <td><span class="badge bg-info text-dark"><?= htmlspecialchars($izin['jenis_izin'] ?? '-', ENT_QUOTES, 'UTF-8') ?></span></td>
-                                        <td class="text-muted small"><?= htmlspecialchars($izin['keterangan'] ?? '-', ENT_QUOTES, 'UTF-8') ?></td>
-                                        <td class="text-muted small"><?= !empty($izin['tanggal_pengajuan']) ? date('d/m/Y', strtotime($izin['tanggal_pengajuan'])) : '-' ?></td>
-                                        <td class="text-center">
+                                        <td><?= $no++ ?></td>
+                                        <td><?= htmlspecialchars($izin['nama_siswa'] ?? 'N/A') ?></td>
+                                        <td><?= htmlspecialchars($izin['kelas'] ?? 'N/A') ?></td>
+                                        <td><?= htmlspecialchars($izin['jenis_izin'] ?? 'N/A') ?></td>
+                                        <td><?= htmlspecialchars($izin['keterangan'] ?? '-') ?></td>
+                                        <td><?= htmlspecialchars($izin['tanggal_pengajuan'] ?? 'N/A') ?></td>
+                                        <td>
                                             <?php if ($status === 'disetujui'): ?>
-                                                <span class="badge bg-success fs-6">Disetujui</span>
+                                                <span class="badge bg-success">Disetujui</span>
                                             <?php elseif ($status === 'ditolak'): ?>
-                                                <span class="badge bg-danger fs-6">Ditolak</span>
+                                                <span class="badge bg-danger">Ditolak</span>
                                             <?php else: ?>
-                                                <button class="btn btn-sm btn-success me-1 btn-setujui" data-id="<?= (int)($izin['id_izin'] ?? 0) ?>">
-                                                    Setujui
-                                                </button>
-                                                <button class="btn btn-sm btn-danger btn-tolak" data-id="<?= (int)($izin['id_izin'] ?? 0) ?>">
-                                                    Tolak
-                                                </button>
+                                                <button class="btn btn-sm btn-success me-2 btn-setujui" data-id="<?= htmlspecialchars($izin['id_izin'] ?? '') ?>">Setujui</button>
+                                                <button class="btn btn-sm btn-danger btn-tolak" data-id="<?= htmlspecialchars($izin['id_izin'] ?? '') ?>">Tolak</button>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -130,131 +106,98 @@ $perizinanList = $data['data'] ?? [];
             </div>
         </div>
     </div>
-</div>
 
-<!-- NOTIFIKASI — SESUAI POSISI DI style.css (bottom center) -->
-<div id="notifBox" class="notif"></div>
+    <div id="notifBox" class="notif"></div>
 
-<!-- MODAL KONFIRMASI (Bootstrap Modal) -->
-<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="confirmModalLabel">Konfirmasi Verifikasi</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body py-4">
-                <p id="confirmText" class="mb-0">Apakah Anda yakin ingin <strong>menyetujui</strong> izin ini?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" id="confirmYesBtn" class="btn btn-primary">Ya, Lanjutkan</button>
-            </div>
-        </div>
-    </div>
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // === JS LOGIC (tanpa CSS inline) ===
-    const tableWrapper = document.getElementById('tableWrapper');
-    const scrollNav = document.getElementById('scrollNav');
-    const scrollLeftBtn = document.getElementById('scrollLeft');
-    const scrollRightBtn = document.getElementById('scrollRight');
-
-    // Cek apakah butuh scroll nav (mobile only)
-    function checkScrollButtons() {
-        if (window.innerWidth <= 992) {
-            const hasScroll = tableWrapper.scrollWidth > tableWrapper.clientWidth;
-            scrollNav.classList.toggle('active', hasScroll);
-            if (hasScroll) updateButtonStates();
-        } else {
-            scrollNav.classList.remove('active');
-        }
-    }
-
-    function updateButtonStates() {
-        const scrollLeft = tableWrapper.scrollLeft;
-        const maxScroll = tableWrapper.scrollWidth - tableWrapper.clientWidth;
-        scrollLeftBtn.disabled = scrollLeft <= 5;
-        scrollRightBtn.disabled = scrollLeft >= maxScroll - 5;
-    }
-
-    scrollLeftBtn?.addEventListener('click', () => tableWrapper.scrollBy({ left: -250, behavior: 'smooth' }));
-    scrollRightBtn?.addEventListener('click', () => tableWrapper.scrollBy({ left: 250, behavior: 'smooth' }));
-    tableWrapper?.addEventListener('scroll', updateButtonStates);
-
-    window.addEventListener('load', checkScrollButtons);
-    window.addEventListener('resize', checkScrollButtons);
-
-    // Pencarian real-time
-    document.getElementById('searchInput')?.addEventListener('input', function() {
-        const keyword = this.value.toLowerCase().trim();
-        document.querySelectorAll('.izin-item').forEach(row => {
-            const nama = row.cells[1]?.textContent?.toLowerCase() || '';
-            row.style.display = nama.includes(keyword) ? '' : 'none';
+        // Pencarian
+        const searchInput = document.getElementById("searchInput");
+        searchInput.addEventListener("keyup", () => {
+            const keyword = searchInput.value.toLowerCase();
+            document.querySelectorAll(".izin-item").forEach(item => {
+                const nama = item.querySelector("td:nth-child(2)").textContent.toLowerCase();
+                item.style.display = nama.includes(keyword) ? "" : "none";
+            });
         });
-    });
 
-    // === MODAL & VERIFIKASI ===
-    const confirmModalEl = document.getElementById('confirmModal');
-    const confirmModal = confirmModalEl ? new bootstrap.Modal(confirmModalEl) : null;
-    let pendingAction = { id: null, status: null };
+        // Button Setujui & Tolak
+        attachButtonListeners();
 
-    document.querySelectorAll('.btn-setujui, .btn-tolak').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const id = this.dataset.id;
-            const isSetujui = this.classList.contains('btn-success');
-            const status = isSetujui ? 'disetujui' : 'ditolak';
-            const actionText = isSetujui ? 'menyetujui' : 'menolak';
-            
-            document.getElementById('confirmText').innerHTML = 
-                `Apakah Anda yakin ingin <strong>${actionText}</strong> izin ini?`;
-            
-            pendingAction = { id, status };
-            confirmModal?.show();
-        });
-    });
+        function attachButtonListeners() {
+            document.querySelectorAll(".btn-setujui").forEach(btn => {
+                btn.addEventListener("click", function() {
+                    const id_izin = this.getAttribute("data-id");
+                    if (!id_izin) {
+                        showNotif("Error: ID izin tidak ditemukan", "error");
+                        return;
+                    }
+                    if (confirm("Apakah Anda yakin ingin menyetujui izin ini?")) {
+                        updateStatusIzin(id_izin, "disetujui");
+                    }
+                });
+            });
 
-    document.getElementById('confirmYesBtn')?.addEventListener('click', function() {
-        if (pendingAction.id && pendingAction.status) {
-            updateStatus(pendingAction.id, pendingAction.status);
-            confirmModal?.hide();
-            pendingAction = { id: null, status: null };
+            document.querySelectorAll(".btn-tolak").forEach(btn => {
+                btn.addEventListener("click", function() {
+                    const id_izin = this.getAttribute("data-id");
+                    if (!id_izin) {
+                        showNotif("Error: ID izin tidak ditemukan", "error");
+                        return;
+                    }
+                    if (confirm("Apakah Anda yakin ingin menolak izin ini?")) {
+                        updateStatusIzin(id_izin, "ditolak");
+                    }
+                });
+            });
         }
-    });
 
-    function updateStatus(id_izin, status) {
-        fetch('https://ortuconnect.pbltifnganjuk.com/api/admin/perizinan.php', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+        function updateStatusIzin(id_izin, status) {
+            const apiUrl = "https://ortuconnect.pbltifnganjuk.com/api/admin/perizinan.php";
+            
+            const payload = {
                 id_izin: parseInt(id_izin),
                 status: status,
                 tanggal_verifikasi: new Date().toISOString().split('T')[0],
-                id_guru_verifikasi: <?= (int)($_SESSION['user_id'] ?? 0) ?>
+                id_guru_verifikasi: <?= isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0 ?>
+            };
+
+            fetch(apiUrl, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
             })
-        })
-        .then(r => r.json())
-        .then(res => {
-            showNotif(res.success ? '✅ Berhasil diverifikasi!' : (res.message || '❌ Gagal'), res.success);
-            if (res.success) setTimeout(() => location.reload(), 1800);
-        })
-        .catch(() => showNotif('❌ Gagal terhubung ke server!', false));
-    }
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotif("Status izin berhasil diperbarui", "success");
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    showNotif(data.message || "Gagal memperbarui status", "error");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                showNotif("Terjadi kesalahan: " + error, "error");
+            });
+        }
 
-    function showNotif(msg, success = true) {
-        const box = document.getElementById('notifBox');
-        if (!box) return;
-        box.textContent = msg;
-        box.className = 'notif ' + (success ? 'success' : 'error');
-        box.style.display = 'block';
-
-        setTimeout(() => {
-            box.style.opacity = '0';
-            setTimeout(() => box.style.display = 'none', 300);
-        }, 2500);
-    }
-</script>
+        function showNotif(message, type) {
+            const notifBox = document.getElementById("notifBox");
+            notifBox.textContent = message;
+            notifBox.className = "notif " + type;
+            notifBox.style.display = "block";
+            
+            setTimeout(() => {
+                notifBox.style.display = "none";
+            }, 3000);
+        }
+        
+    </script>
 </body>
 </html>

@@ -39,7 +39,7 @@ if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $tanggal)) {
 }
 
 // Kirim ke API
-$api_url = "http://ortuconnect.atwebpages.com/api/admin/absensi.php";
+$api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php";
 
 // Transformasi data sesuai struktur API
 $absensiData = [];
@@ -71,7 +71,7 @@ curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $curlError = curl_error($ch);
-curl_close($ch);
+$ch=null;
 
 if (!$response) {
     http_response_code(500);

@@ -1,9 +1,9 @@
 <?php
-session_name('SESS_GURU');
+session_name('SESS_ADMIN');
 session_start();
 
 // Cek login
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     http_response_code(401);
     exit;
 }
@@ -54,7 +54,7 @@ function getAbsensiDataRange($kelas, $startDate, $endDate) {
     while ($currentDate <= $endDateObj) {
         $dateStr = $currentDate->format('Y-m-d');
         $datesList[] = $dateStr;
-        $urls[] = "http://ortuconnect.atwebpages.com/api/admin/absensi.php?kelas=" . urlencode($kelas) . "&tanggal=" . urlencode($dateStr);
+        $urls[] = "https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php?kelas=" . urlencode($kelas) . "&tanggal=" . urlencode($dateStr);
         $currentDate->modify('+1 day');
     }
     
@@ -84,7 +84,8 @@ function getAbsensiDataRange($kelas, $startDate, $endDate) {
         $response = curl_multi_getcontent($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_multi_remove_handle($mh, $ch);
-        curl_close($ch);
+      $ch=null;
+      
         
         if ($httpCode === 200 && !empty($response)) {
             $responseData = json_decode($response, true);
@@ -107,10 +108,10 @@ $absensiData = getAbsensiDataRange($kelas, $dateRange['start'], $dateRange['end'
 $statistics = [];
 if (!empty($absensiData)) {
     foreach ($absensiData as $item) {
-        $namaId = $item['id_murid'];
+        $namaId = $item['id_siswa'];
         if (!isset($statistics[$namaId])) {
             $statistics[$namaId] = [
-                'nama' => $item['nama_murid'],
+                'nama' => $item['nama_siswa'],
                 'Hadir' => 0,
                 'Izin' => 0,
                 'Sakit' => 0,

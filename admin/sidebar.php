@@ -30,7 +30,7 @@
         <li class="nav-item">
             <a href="../admin data guru/DataGuru.php" class="nav-link">
                 <img src="../assets/Data Guru.png" class="icon" alt="Data Siswa">
-                <span class="menu-text">Data Murid</span>
+                <span class="menu-text">Data Guru</span>
             </a>
         </li>
 

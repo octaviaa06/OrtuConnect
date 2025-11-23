@@ -1,225 +1,66 @@
-/* ======================================= */
-/* ====== ABSENSI SISWA - STYLE ONLY ===== */
-/* ======================================= */
-.bg-absensi-guru {
-    background-image: url('../background/Data Guru(1).png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed; /* optional */
-}
-/* Card Utama Absensi */
-.card-absensi {
-    border-radius: 16px;
-    background: white;
+.main-content {
+    margin-left: 240px;
+    flex-grow: 1;
+    padding: 20px 40px;
+    transition: margin-left 0.35s ease;
+    background-color: transparent;
+    position: relative;
+    min-height: 100vh;
 }
 
-/* Item Absensi */
+
+
+/* ======================================= */
+/* ====== CUSTOM STYLE ABSENSI =========== */
+/* ======================================= */
+
+/* Kontrol Tanggal dan Kelas */
+.custom-control-absensi {
+    border-radius: 12px;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    font-weight: 500;
+}
+
+/* Tombol Simpan Absensi */
+.btn-simpan-absensi {
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: bold;
+}
+
+/* Item Daftar Absensi */
 .absensi-item {
     padding-left: 10px;
     padding-right: 10px;
     border-color: #eee !important;
-    transition: background 0.2s ease;
-}
-
-.absensi-item:hover {
-    background-color: #f8f9fa;
 }
 
 .absensi-item:last-child {
     border-bottom: none !important;
 }
 
-/* Status Dropdown */
-.status-absensi-select {
-    width: 150px;
-    border-radius: 8px;
-    font-weight: bold;
-    text-align: center;
-    padding: 8px 12px;
-    border: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 10px 10px;
-    transition: all 0.2s ease;
+
+
+
+
+/* Warna option di dropdown sesuai status (opsional, tergantung browser) */
+.status-absensi-select option.status-hadir { 
+    color: #28a745; 
+    font-weight: bold; 
 }
 
-/* Warna Status */
-.status-hadir { background-color: #e6f7eb; color: #28a745; }
-.status-izin  { background-color: #e6f7fb; color: #0d6efd; }
-.status-sakit { background-color: #fcf8e3; color: #ffc107; }
-.status-alpa  { background-color: #f8d7da; color: #dc3545; }
-
-/* Option di dalam dropdown (opsional) */
-.status-absensi-select option {
-    font-weight: bold;
+.status-absensi-select option.status-sakit { 
+    color: #0d6efd; 
+    font-weight: bold; 
 }
 
-/* Empty State */
-.empty-state {
-    font-style: italic;
-    color: #6c757d;
+.status-absensi-select option.status-izin { 
+    color: #ffc107; 
+    font-weight: bold; 
 }
 
-/* Notifikasi */
-.notif {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    min-width: 300px;
-    padding: 12px 20px;
-    color: white;
-    font-weight: 500;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 9999;
-    display: none;
-    animation: slideIn 0.3s ease;
-}
-
-@keyframes slideIn {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-}
-
-/* Responsive */
-@media (max-width: 576px) {
-    .status-absensi-select {
-        width: 120px;
-        font-size: 14px;
-    }
-    .absensi-item .col-5 {
-        font-size: 14px;
-    }
-}
-/* ========================================= */
-/* ===== RESPONSIVE FIX - MOBILE & TABLET ==== */
-/* ========================================= */
-
-@media (max-width: 992px) {
-    /* Header atas (judul + profil) jadi vertikal */
-    .header-fixed {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 12px;
-    }
-    .header-fixed h4 {
-        font-size: 1.4rem;
-    }
-}
-
-@media (max-width: 768px) {
-    /* Filter bar jadi kolom */
-    #filterForm {
-        flex-direction: column;
-        align-items: stretch !important;
-    }
-    #filterForm .form-control,
-    #filterForm .form-select,
-    #filterForm .btn {
-        width: 100% !important;
-        max-width: none !important;
-        margin-bottom: 8px;
-    }
-    #filterForm .btn {
-        margin-bottom: 0;
-    }
-
-    /* Card absensi */
-    .card {
-        padding: 16px !important;
-    }
-
-    /* Item absensi jadi layout vertikal yang lebih lega */
-    .absensi-item {
-        flex-direction: column;
-        align-items: flex-start !important;
-        padding: 14px 10px !important;
-        gap: 8px;
-    }
-
-    .absensi-item > div {
-        width: 100% !important;
-        padding: 0 !important;
-    }
-
-    /* Nomor urut jadi lebih kecil */
-    .absensi-item .col-1 {
-        font-size: 0.9rem;
-        color: #6c757d;
-    }
-
-    /* Nama siswa jadi lebih besar dan bold */
-    .absensi-item .col-5 {
-        font-size: 1.05rem;
-        font-weight: 600;
-        color: #212529;
-        word-break: break-word;
-    }
-
-    /* Status di paling bawah, full width */
-    .absensi-item .col-6 {
-        justify-content: flex-start !important;
-    }
-
-    .status-absensi-select,
-    .badge {
-        width: 100% !important;
-        max-width: 300px;
-        text-align: center;
-    }
-
-    /* Badge (sudah diabsen) juga full width */
-    .badge {
-        font-size: 0.95rem !important;
-        padding: 0.6rem 0 !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .header-fixed h4 {
-        font-size: 1.25rem;
-    }
-
-    .card h5 {
-        font-size: 1.1rem;
-    }
-
-    .absensi-item {
-        padding: 12px 8px !important;
-    }
-
-    .status-absensi-select,
-    .badge {
-        font-size: 0.95rem;
-        padding: 10px 8px !important;
-    }
-
-    /* Notifikasi di HP agak lebih kecil */
-    .notif {
-        min-width: 260px;
-        left: 50%;
-        right: auto;
-        transform: translateX(-50%);
-        bottom: 15px;
-        font-size: 0.9rem;
-    }
-}
-
-/* Bonus: Tambah garis pemisah yang lebih jelas di mobile */
-@media (max-width: 768px) {
-    .absensi-item {
-        border-bottom: 1px dashed #dee2e6 !important;
-    }
-    .absensi-item:last-child {
-        border-bottom: none !important;
-    }
-}
-
-/* Hover tetap ada di mobile (tap feedback) */
-.absensi-item:active {
-    background-color: #f1f3f5 !important;
+.status-absensi-select option.status-alpa { 
+    color: #dc3545; 
+    font-weight: bold; 
 }
