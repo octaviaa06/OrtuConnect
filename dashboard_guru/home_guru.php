@@ -11,7 +11,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
 }
 
 // 2. Pengambilan Data API
-$api_url = "http://ortuconnect.atwebpages.com/api/admin/dashboard_admin.php";
+$api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/dashboard_admin.php";
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url);
@@ -94,7 +94,7 @@ ob_end_flush();
                     <div class="col-md-4">
                         <a href="../guru_absensi/absensi_siswa.php" class="card text-center shadow-sm access-card link-underline-opacity-0">
                             <div class="card-body">
-                                <img src="../assets/absensi.png" class="access-icon mb-2" alt="Absensi">
+                                <img src="../assets/Absensi.png" class="access-icon mb-2" alt="Absensi">
                                 <p class="mb-0 text-dark fw-semibold">Kelola Absensi</p>
                             </div>
                         </a>
@@ -110,7 +110,7 @@ ob_end_flush();
                     <div class="col-md-4">
                         <a href="../guru kalender/kalender.php" class="card text-center shadow-sm access-card link-underline-opacity-0">
                             <div class="card-body">
-                                <img src="../assets/Kalender Biru.png" class="access-icon mb-2" alt="Kalender">
+                                <img src="../assets/Kalender_Biru.png" class="access-icon mb-2" alt="Kalender">
                                 <p class="mb-0 text-dark fw-semibold">Lihat Kalender</p>
                             </div>
                         </a>

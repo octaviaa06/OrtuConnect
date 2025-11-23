@@ -9,7 +9,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
 }
 
 // Ambil data API
-$api_url = "http://ortuconnect.atwebpages.com/api/admin/data_siswa.php";
+$api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/data_siswa.php";
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url);

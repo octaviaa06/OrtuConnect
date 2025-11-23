@@ -54,7 +54,7 @@ function getAbsensiDataRange($kelas, $startDate, $endDate) {
     while ($currentDate <= $endDateObj) {
         $dateStr = $currentDate->format('Y-m-d');
         $datesList[] = $dateStr;
-        $urls[] = "http://ortuconnect.atwebpages.com/api/admin/absensi.php?kelas=" . urlencode($kelas) . "&tanggal=" . urlencode($dateStr);
+        $urls[] = "https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php?kelas=" . urlencode($kelas) . "&tanggal=" . urlencode($dateStr);
         $currentDate->modify('+1 day');
     }
     
@@ -107,10 +107,10 @@ $absensiData = getAbsensiDataRange($kelas, $dateRange['start'], $dateRange['end'
 $statistics = [];
 if (!empty($absensiData)) {
     foreach ($absensiData as $item) {
-        $namaId = $item['id_murid'];
+        $namaId = $item['id_siswa'];
         if (!isset($statistics[$namaId])) {
             $statistics[$namaId] = [
-                'nama' => $item['nama_murid'],
+                'nama' => $item['nama_siswa'],
                 'Hadir' => 0,
                 'Izin' => 0,
                 'Sakit' => 0,

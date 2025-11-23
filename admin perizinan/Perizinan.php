@@ -10,7 +10,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 
 // PERBAIKAN: Tambahkan cache buster agar data selalu fresh
-$api_url = "http://ortuconnect.atwebpages.com/api/admin/perizinan.php?t=" . time();
+$api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/perizinan.php?t=" . time();
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -154,7 +154,7 @@ $perizinanList = $data['data'] ?? [];
         }
 
         function updateStatusIzin(id_izin, status) {
-            const apiUrl = "http://ortuconnect.atwebpages.com/api/admin/perizinan.php";
+            const apiUrl = "https://ortuconnect.pbltifnganjuk.com/api/admin/perizinan.php";
             
             const payload = {
                 id_izin: parseInt(id_izin),

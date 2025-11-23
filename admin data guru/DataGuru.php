@@ -9,7 +9,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 
 // Ambil data guru dari API
-$api_url = "http://ortuconnect.atwebpages.com/api/admin/data_guru.php";
+$api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/data_guru.php";
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -229,7 +229,7 @@ $guruList = $data['data'] ?? [];
   const idGuruInput = document.getElementById('id_guru');
   const judulModal = document.getElementById('judulModalGuru');
   const tombolSimpan = document.getElementById('btnSimpanGuru');
-  const apiURL = "http://ortuconnect.atwebpages.com/api/admin/data_guru.php";
+  const apiURL = "https://ortuconnect.pbltifnganjuk.com/api/admin/data_guru.php";
   let idGuruHapus = null;
 
   // Notifikasi
@@ -352,7 +352,7 @@ $guruList = $data['data'] ?? [];
   // Generate Akun
   window.generateAkun = async (id) => {
     try {
-      const res = await fetch(`http://ortuconnect.atwebpages.com/api/admin/generate_akun.php?tipe=guru&id=${id}`, { cache: "no-store" });
+      const res = await fetch(`https://ortuconnect.pbltifnganjuk.com/api/admin/generate_akun.php?tipe=guru&id=${id}`, { cache: "no-store" });
       const data = await res.json();
       if (data.status === "success") {
         const d = data.data;
