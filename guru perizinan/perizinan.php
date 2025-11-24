@@ -3,24 +3,90 @@ session_name('SESS_GURU');
 session_start();
 $active_page = 'perizinan';
 
+// Set timezone Indonesia
+date_default_timezone_set('Asia/Jakarta');
+
 // Pastikan admin login
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
-    header("Location: ../login/index.php?error=Harap login sebagai guru");
+    header("Location: ../login/index.php?error=Harap login sebagai guru!");
     exit;
 }
 
-// PERBAIKAN: Tambahkan cache buster agar data selalu fresh
-$api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/perizinan.php?t=" . time();
+// Helper function untuk format tanggal Indonesia
+function formatTanggalID($tanggal, $withTime = false) {
+    if (empty($tanggal) || $tanggal === '0000-00-00' || $tanggal === '0000-00-00 00:00:00') {
+        return '-';
+    }
+    
+    $bulan = [
+        '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
+        '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
+        '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+    ];
+    
+    $datetime = new DateTime($tanggal);
+    $hari = $datetime->format('d');
+    $bulanNum = $datetime->format('m');
+    $tahun = $datetime->format('Y');
+    
+    $hasil = $hari . ' ' . $bulan[$bulanNum] . ' ' . $tahun;
+    
+    if ($withTime) {
+        $jam = $datetime->format('H:i');
+        $hasil .= ' pukul ' . $jam;
+    }
+    
+    return $hasil;
+}
+
+function formatRangeTanggal($tanggal_mulai, $tanggal_selesai = null) {
+    if (empty($tanggal_mulai)) {
+        return '-';
+    }
+    
+    if (empty($tanggal_selesai) || $tanggal_selesai === $tanggal_mulai) {
+        return formatTanggalID($tanggal_mulai);
+    }
+    
+    $bulan = [
+        '01' => 'Januari', '02' => 'Februari', '03' => 'Maret', '04' => 'April',
+        '05' => 'Mei', '06' => 'Juni', '07' => 'Juli', '08' => 'Agustus',
+        '09' => 'September', '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+    ];
+    
+    $dt_mulai = new DateTime($tanggal_mulai);
+    $dt_selesai = new DateTime($tanggal_selesai);
+    
+    $hari_mulai = $dt_mulai->format('d');
+    $bulan_mulai = $dt_mulai->format('m');
+    $tahun_mulai = $dt_mulai->format('Y');
+    
+    $hari_selesai = $dt_selesai->format('d');
+    $bulan_selesai = $dt_selesai->format('m');
+    $tahun_selesai = $dt_selesai->format('Y');
+    
+    if ($bulan_mulai === $bulan_selesai && $tahun_mulai === $tahun_selesai) {
+        return $hari_mulai . ' - ' . $hari_selesai . ' ' . $bulan[$bulan_mulai] . ' ' . $tahun_mulai;
+    }
+    
+    if ($tahun_mulai === $tahun_selesai) {
+        return $hari_mulai . ' ' . $bulan[$bulan_mulai] . ' - ' . $hari_selesai . ' ' . $bulan[$bulan_selesai] . ' ' . $tahun_mulai;
+    }
+    
+    return $hari_mulai . ' ' . $bulan[$bulan_mulai] . ' ' . $tahun_mulai . ' - ' . $hari_selesai . ' ' . $bulan[$bulan_selesai] . ' ' . $tahun_selesai;
+}
+
+// Ambil data perizinan dari API
+$api_url = "https://ortuconnect.pbltifnganjuk.com/api/perizinan.php?t=" . time();
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_url);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-// PERBAIKAN: Tambahkan fresh connection untuk mencegah cache
 curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
 curl_setopt($ch, CURLOPT_FORBID_REUSE, true);
 $response = curl_exec($ch);
-if (curl_errno($ch)) $response = json_encode(["data" => []]);
+if (curl_errno($ch)) $response = json_encode(["success" => false, "data" => []]);
 curl_close($ch);
 
 $data = json_decode($response, true);
@@ -50,7 +116,7 @@ $perizinanList = $data['data'] ?? [];
                 </div>
 
                 <div class="card shadow-sm border-0 p-4" style="border-radius:16px;">
-                    <h5 class="fw-bold mb-4">Daftar Perizinan Murid</h5>
+                    <h5 class="fw-bold mb-4">Daftar Perizinan Murid (Total: <?= count($perizinanList) ?>)</h5>
 
                     <div class="d-flex justify-content-end mb-3">
                         <div class="search-container position-relative" style="max-width:400px;">
@@ -67,34 +133,49 @@ $perizinanList = $data['data'] ?? [];
                                     <th>Nama Murid</th>
                                     <th>Kelas</th>
                                     <th>Jenis Izin</th>
-                                    <th>Keterangan</th>
                                     <th>Tanggal</th>
+                                    <th>Keterangan</th>
                                     <th>Status</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php if (empty($perizinanList)): ?>
-                                    <tr><td colspan="7" class="text-center text-muted">Tidak ada data perizinan.</td></tr>
+                                    <tr><td colspan="8" class="text-center text-muted">Tidak ada data perizinan.</td></tr>
                                 <?php else: 
                                     $no = 1; 
                                     foreach ($perizinanList as $izin): 
-                                        $status = strtolower($izin['status'] ?? 'pending');
+                                        $status = $izin['status'] ?? 'Menunggu';
                                 ?>
-                                    <tr class="izin-item">
+                                    <tr class="izin-item" data-id="<?= htmlspecialchars($izin['id_izin'] ?? '') ?>">
                                         <td><?= $no++ ?></td>
                                         <td><?= htmlspecialchars($izin['nama_siswa'] ?? 'N/A') ?></td>
                                         <td><?= htmlspecialchars($izin['kelas'] ?? 'N/A') ?></td>
                                         <td><?= htmlspecialchars($izin['jenis_izin'] ?? 'N/A') ?></td>
-                                        <td><?= htmlspecialchars($izin['keterangan'] ?? '-') ?></td>
-                                        <td><?= htmlspecialchars($izin['tanggal_pengajuan'] ?? 'N/A') ?></td>
                                         <td>
-                                            <?php if ($status === 'disetujui'): ?>
+                                            <small><?= formatRangeTanggal($izin['tanggal_mulai'] ?? '', $izin['tanggal_selesai'] ?? '') ?></small><br>
+                                            <span style="font-size: 0.85em; color: #666;">Diajukan: <?= formatTanggalID($izin['tanggal_pengajuan'] ?? '', true) ?></span>
+                                        </td>
+                                        <td><?= htmlspecialchars($izin['keterangan'] ?? '-') ?></td>
+                                        <td>
+                                            <?php if ($status === 'Disetujui'): ?>
                                                 <span class="badge bg-success">Disetujui</span>
-                                            <?php elseif ($status === 'ditolak'): ?>
+                                            <?php elseif ($status === 'Ditolak'): ?>
                                                 <span class="badge bg-danger">Ditolak</span>
                                             <?php else: ?>
-                                                <button class="btn btn-sm btn-success me-2 btn-setujui" data-id="<?= htmlspecialchars($izin['id_izin'] ?? '') ?>">Setujui</button>
-                                                <button class="btn btn-sm btn-danger btn-tolak" data-id="<?= htmlspecialchars($izin['id_izin'] ?? '') ?>">Tolak</button>
+                                                <span class="badge bg-warning text-dark">Menunggu</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td>
+                                            <?php if ($status === 'Menunggu'): ?>
+                                                <button class="btn btn-sm btn-success me-1 btn-setujui" type="button" data-id="<?= htmlspecialchars($izin['id_izin'] ?? '') ?>">
+                                                    ✓ Setujui
+                                                </button>
+                                                <button class="btn btn-sm btn-danger btn-tolak" type="button" data-id="<?= htmlspecialchars($izin['id_izin'] ?? '') ?>">
+                                                    ✕ Tolak
+                                                </button>
+                                            <?php else: ?>
+                                                <span class="text-muted">-</span>
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -107,61 +188,130 @@ $perizinanList = $data['data'] ?? [];
         </div>
     </div>
 
-    <div id="notifBox" class="notif"></div>
+    <!-- Modal Alasan Penolakan -->
+    <div class="modal fade" id="modalAlasanTolak" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Alasan Penolakan Izin</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formAlasanTolak">
+                        <div class="mb-3">
+                            <label for="alasanTolak" class="form-label">Masukkan Alasan Penolakan <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="alasanTolak" name="alasan" rows="4" placeholder="Contoh: Dokumen tidak lengkap, format tidak sesuai, dll..." required></textarea>
+                            <small class="text-muted d-block mt-2">Alasan ini akan dikirimkan ke orang tua siswa</small>
+                        </div>
+                        <input type="hidden" id="id_izin_tolak" value="">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-danger" id="btnKonfirmasiTolak">Tolak Izin</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notif Box -->
+    <div id="notifBox" class="notif" style="position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 8px; color: white; display: none; z-index: 9999;"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-
-        // Pencarian
+        // ============ PENCARIAN ============
         const searchInput = document.getElementById("searchInput");
-        searchInput.addEventListener("keyup", () => {
-            const keyword = searchInput.value.toLowerCase();
-            document.querySelectorAll(".izin-item").forEach(item => {
-                const nama = item.querySelector("td:nth-child(2)").textContent.toLowerCase();
-                item.style.display = nama.includes(keyword) ? "" : "none";
-            });
-        });
-
-        // Button Setujui & Tolak
-        attachButtonListeners();
-
-        function attachButtonListeners() {
-            document.querySelectorAll(".btn-setujui").forEach(btn => {
-                btn.addEventListener("click", function() {
-                    const id_izin = this.getAttribute("data-id");
-                    if (!id_izin) {
-                        showNotif("Error: ID izin tidak ditemukan", "error");
-                        return;
-                    }
-                    if (confirm("Apakah Anda yakin ingin menyetujui izin ini?")) {
-                        updateStatusIzin(id_izin, "disetujui");
-                    }
-                });
-            });
-
-            document.querySelectorAll(".btn-tolak").forEach(btn => {
-                btn.addEventListener("click", function() {
-                    const id_izin = this.getAttribute("data-id");
-                    if (!id_izin) {
-                        showNotif("Error: ID izin tidak ditemukan", "error");
-                        return;
-                    }
-                    if (confirm("Apakah Anda yakin ingin menolak izin ini?")) {
-                        updateStatusIzin(id_izin, "ditolak");
-                    }
+        if (searchInput) {
+            searchInput.addEventListener("keyup", function() {
+                const keyword = this.value.toLowerCase();
+                document.querySelectorAll(".izin-item").forEach(item => {
+                    const nama = item.querySelector("td:nth-child(2)").textContent.toLowerCase();
+                    item.style.display = nama.includes(keyword) ? "" : "none";
                 });
             });
         }
 
-        function updateStatusIzin(id_izin, status) {
-            const apiUrl = "https://ortuconnect.pbltifnganjuk.com/api/admin/perizinan.php";
+        // ============ MODAL & BUTTON LISTENERS ============
+        const modalAlasanTolak = new bootstrap.Modal(document.getElementById('modalAlasanTolak'));
+        const btnKonfirmasiTolak = document.getElementById('btnKonfirmasiTolak');
+
+        attachButtonListeners();
+
+        function attachButtonListeners() {
+            // SETUJUI
+            document.querySelectorAll(".btn-setujui").forEach(btn => {
+                btn.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    const id_izin = this.getAttribute("data-id");
+                    
+                    if (!id_izin) {
+                        showNotif("Error: ID izin tidak ditemukan", "error");
+                        return;
+                    }
+                    
+                    if (confirm("Apakah Anda yakin ingin MENYETUJUI izin ini?")) {
+                        updateStatusIzin(id_izin, "Disetujui", null);
+                    }
+                });
+            });
+
+            // TOLAK - Buka modal
+            document.querySelectorAll(".btn-tolak").forEach(btn => {
+                btn.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    const id_izin = this.getAttribute("data-id");
+                    
+                    if (!id_izin) {
+                        showNotif("Error: ID izin tidak ditemukan", "error");
+                        return;
+                    }
+                    
+                    // Set ID izin ke hidden input
+                    document.getElementById('id_izin_tolak').value = id_izin;
+                    // Clear textarea
+                    document.getElementById('alasanTolak').value = '';
+                    // Buka modal
+                    modalAlasanTolak.show();
+                });
+            });
+        }
+
+        // Konfirmasi penolakan
+        btnKonfirmasiTolak.addEventListener("click", function() {
+            const id_izin = document.getElementById('id_izin_tolak').value;
+            const alasan = document.getElementById('alasanTolak').value.trim();
+            
+            if (!alasan) {
+                showNotif("⚠️ Alasan penolakan harus diisi!", "error");
+                return;
+            }
+            
+            // Tutup modal
+            modalAlasanTolak.hide();
+            
+            // Update status
+            updateStatusIzin(id_izin, "Ditolak", alasan);
+        });
+
+        // ============ UPDATE STATUS ============
+        function updateStatusIzin(id_izin, status, alasan) {
+            const apiUrl = "https://ortuconnect.pbltifnganjuk.com/api/perizinan.php";
             
             const payload = {
                 id_izin: parseInt(id_izin),
                 status: status,
-                tanggal_verifikasi: new Date().toISOString().split('T')[0],
                 id_guru_verifikasi: <?= isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0 ?>
             };
+
+            // Tambahkan alasan jika ditolak
+            if (alasan) {
+                payload.alasan_penolakan = alasan;
+            }
+
+            // Disable button saat proses
+            document.querySelectorAll(`[data-id="${id_izin}"]`).forEach(btn => {
+                btn.disabled = true;
+            });
 
             fetch(apiUrl, {
                 method: "PUT",
@@ -173,30 +323,50 @@ $perizinanList = $data['data'] ?? [];
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showNotif("Status izin berhasil diperbarui", "success");
+                    const pesan = status === 'Disetujui' ? '✓ Izin Disetujui!' : '✗ Izin Ditolak!';
+                    showNotif(pesan, "success");
                     setTimeout(() => {
                         window.location.reload();
-                    }, 1500);
+                    }, 2000);
                 } else {
-                    showNotif(data.message || "Gagal memperbarui status", "error");
+                    showNotif("❌ " + (data.message || "Gagal memperbarui status"), "error");
+                    // Enable button lagi jika gagal
+                    document.querySelectorAll(`[data-id="${id_izin}"]`).forEach(btn => {
+                        btn.disabled = false;
+                    });
                 }
             })
             .catch(error => {
-                console.error("Error:", error);
-                showNotif("Terjadi kesalahan: " + error, "error");
+                showNotif("❌ Error: " + error.message, "error");
+                // Enable button lagi jika error
+                document.querySelectorAll(`[data-id="${id_izin}"]`).forEach(btn => {
+                    btn.disabled = false;
+                });
             });
         }
 
+        // ============ NOTIFIKASI ============
         function showNotif(message, type) {
             const notifBox = document.getElementById("notifBox");
+            
+            if (type === 'success') {
+                notifBox.style.backgroundColor = "#28a745";
+            } else if (type === 'error') {
+                notifBox.style.backgroundColor = "#dc3545";
+            }
+            
             notifBox.textContent = message;
-            notifBox.className = "notif " + type;
             notifBox.style.display = "block";
             
             setTimeout(() => {
                 notifBox.style.display = "none";
             }, 3000);
         }
+
+        // Re-attach listeners setelah modal ditutup
+        document.getElementById('modalAlasanTolak').addEventListener('hidden.bs.modal', function() {
+            attachButtonListeners();
+        });
         
     </script>
 </body>

@@ -14,7 +14,7 @@
 <div id="sidebar" class="sidebar expanded">
     <!-- Sidebar Header -->
     <div class="sidebar-header text-center">
-        <img src="../assets/slide.png" id="toggleSidebar" alt="Collapse" class="slide-btn" onclick="toggleSidebar()">
+        <img src="../assets/Slide.png" id="toggleSidebar" alt="Collapse" class="slide-btn" onclick="toggleSidebar()">
        
     </div>
 

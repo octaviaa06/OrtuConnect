@@ -1,5 +1,6 @@
 <!-- SIDEBAR -->
 <link rel="stylesheet" href="../admin/sidebar.css">
+<link rel="icon" type="image/x-icon" href="../favicon.ico">
 
 <div id="sidebar" class="sidebar expanded bg-primary text-white p-3">
     <div class="text-center mb-4">
