@@ -33,9 +33,11 @@ $perizinanList = $data['data'] ?? [];
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Perizinan | OrtuConnect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="../guru/sidebar.css" />
-    <link rel="stylesheet" href="../profil/profil.css">
     <link rel="stylesheet" href="Perizinan.css" /> 
+  <link rel="stylesheet" href="../profil/profil.css">  
+    <link rel="stylesheet" href="../guru/sidebar.css" />
+  
+
 </head>
 <body>
     <div class="d-flex">

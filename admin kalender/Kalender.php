@@ -33,7 +33,7 @@ $number_of_days     = date('t', $first_day_of_month);
 $date_components    = getdate($first_day_of_month);
 $month_name         = date('F', $first_day_of_month); // Hanya bulan, tanpa tahun
 $day_of_week        = $date_components['wday'];
-$api_agenda_url = "http://ortuconnect.atwebpages.com/api/admin/agenda.php?month={$current_month}&year={$current_year}";
+$api_agenda_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/agenda.php?month={$current_month}&year={$current_year}";
 
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $api_agenda_url);
@@ -297,7 +297,7 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const AGENDA_API = "http://ortuconnect.atwebpages.com/api/admin/agenda.php";
+        const AGENDA_API = "https://ortuconnect.pbltifnganjuk.com/api/admin/agenda.php";
 
         // =========================================================================
         // FUNGSI NOTIFIKASI TOAST (Menggunakan CSS yang Disediakan)
