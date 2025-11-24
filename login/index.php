@@ -1,5 +1,11 @@
 <?php
 session_start();
+$error_message = '';
+
+if (isset($_SESSION['error'])) {
+    $error_message = $_SESSION['error'];
+    unset($_SESSION['error']); // Hapus agar tidak muncul saat refresh
+}
 ?>
 
 <!DOCTYPE html>
@@ -10,8 +16,9 @@ session_start();
   <title>Login | OrtuConnect</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    
+
 <div class="container">
     <div class="left">
         <h1>Selamat Datang</h1>
@@ -19,30 +26,41 @@ session_start();
 
     <div class="right">
         <form action="cek_login.php" method="POST" class="login-box">
+            
             <img src="../../assets/logo.png" alt="Logo OrtuConnect" class="logo-img">
 
-            <input typgiye="text" name="username" placeholder="Username" required>
+            <input 
+                type="text" 
+                name="username" 
+                id="username" 
+                placeholder="Username" 
+                required
+            >
 
-           <input type="password" name="password" id="password" placeholder="Password" required>
+            <input 
+                type="password" 
+                name="password" 
+                id="password" 
+                placeholder="Password" 
+                required
+            >
 
             <button type="submit">Masuk</button>
 
-            <?php
-            if (isset($_GET['error'])) {
-                echo "<p class='error'>" . htmlspecialchars($_GET['error']) . "</p>";
-            }
-            ?>
+            <?php if ($error_message): ?>
+                <p class="error"><?= htmlspecialchars($error_message) ?></p>
+            <?php endif; ?>
+
         </form>
     </div>
 </div>
 
 <script>
-document.getElementById("togglePassword").addEventListener("click", function () {
-    const passwordField = document.getElementById("password");
-    const type = passwordField.getAttribute("type") === "password" ? "text" : "password";
-    passwordField.setAttribute("type", type);
-    this.classList.toggle("show");
+// Cegah spasi di awal username
+document.getElementById("username").addEventListener("input", function () {
+    this.value = this.value.replace(/^\s+/, "");
 });
 </script>
+
 </body>
 </html>
