@@ -21,7 +21,7 @@ if (curl_errno($ch)) {
     echo "cURL Error: " . curl_error($ch);
     $response = json_encode(["data" => []]);
 }
-curl_close($ch);
+$ch = null;
 
 $data = json_decode($response, true);
 $guruList = $data['data'] ?? [];
