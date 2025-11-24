@@ -173,40 +173,8 @@ $perizinanList = $data['data'] ?? [];
         }
     }
 
-    function updateButtonStates() {
-        const scrollLeft = tableWrapper.scrollLeft;
-        const maxScroll = tableWrapper.scrollWidth - tableWrapper.clientWidth;
-        scrollLeftBtn.disabled = scrollLeft <= 5;
-        scrollRightBtn.disabled = scrollLeft >= maxScroll - 5;
-    }
-
-    scrollLeftBtn?.addEventListener('click', () => tableWrapper.scrollBy({ left: -250, behavior: 'smooth' }));
-    scrollRightBtn?.addEventListener('click', () => tableWrapper.scrollBy({ left: 250, behavior: 'smooth' }));
-    tableWrapper?.addEventListener('scroll', updateButtonStates);
-
-    window.addEventListener('load', checkScrollButtons);
-    window.addEventListener('resize', checkScrollButtons);
-
-    // Pencarian real-time
-    document.getElementById('searchInput')?.addEventListener('input', function() {
-        const keyword = this.value.toLowerCase().trim();
-        document.querySelectorAll('.izin-item').forEach(row => {
-            const nama = row.cells[1]?.textContent?.toLowerCase() || '';
-            row.style.display = nama.includes(keyword) ? '' : 'none';
-        });
-    });
-
-    // === MODAL & VERIFIKASI ===
-    const confirmModalEl = document.getElementById('confirmModal');
-    const confirmModal = confirmModalEl ? new bootstrap.Modal(confirmModalEl) : null;
-    let pendingAction = { id: null, status: null };
-
-    document.querySelectorAll('.btn-setujui, .btn-tolak').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const id = this.dataset.id;
-            const isSetujui = this.classList.contains('btn-success');
-            const status = isSetujui ? 'disetujui' : 'ditolak';
-            const actionText = isSetujui ? 'menyetujui' : 'menolak';
+        function updateStatusIzin(id_izin, status) {
+            const apiUrl = "https://ortuconnect.pbltifnganjuk.com/api/admin/perizinan.php";
             
             document.getElementById('confirmText').innerHTML = 
                 `Apakah Anda yakin ingin <strong>${actionText}</strong> izin ini?`;

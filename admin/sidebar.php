@@ -25,19 +25,18 @@
                 <img src="../assets/Dashboard.png" class="icon" alt="Dashboard">
                 <span class="menu-text">Dashboard</span>
             </a>
-
-              </li>
-        <li class="nav-item">
-            <a href="../admin data guru/DataGuru.php" class="nav-link">
-                <img src="../assets/Data Guru.png" class="icon" alt="Data Siswa">
+        </li>
+        <li class="nav-item mb-2">
+            <a href="../admin data guru/DataGuru.php"
+               class="nav-link text-white d-flex align-items-center gap-2 <?php echo basename($_SERVER['PHP_SELF']) == 'DataGuru.php' ? 'active' : ''; ?>">
+                <img src="../assets/Data_Guru.png" class="icon" />
                 <span class="menu-text">Data Guru</span>
             </a>
         </li>
-
-        </li>
-        <li class="nav-item">
-            <a href="../admin data siswa/DataSiswa.php" class="nav-link">
-                <img src="../assets/Data Siswa.png" class="icon" alt="Data Siswa">
+        <li class="nav-item mb-2">
+            <a href="../admin data siswa/DataSiswa.php"
+               class="nav-link text-white d-flex align-items-center gap-2 <?php echo basename($_SERVER['PHP_SELF']) == 'DataSiswa.php' ? 'active' : ''; ?>">
+                <img src="../assets/Data_Siswa.png" class="icon" />
                 <span class="menu-text">Data Murid</span>
             </a>
         </li>

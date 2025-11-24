@@ -344,6 +344,7 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
             
             new bootstrap.Modal(document.getElementById('agendaModal')).show();
         }
+    }
 
         function lihatDetailAgenda(agenda) {
             document.getElementById('detailNamaKegiatan').textContent = agenda.nama_kegiatan || '-';
@@ -385,7 +386,11 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
             } catch {
                 showNotif("Terjadi kesalahan koneksi.", false);
             }
+        } catch (error) {
+            console.error('Delete error:', error);
+            showNotif("Terjadi kesalahan koneksi.", false);
         }
+    }
 
         async function deleteAgenda(id) {
             const confirmDelete = await showConfirmModal(
@@ -506,6 +511,29 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Loading...';
 
+        const btn = document.getElementById('btnSimpanAgenda');
+        const originalText = btn.textContent;
+        
+        btn.disabled = true;
+        btn.textContent = 'Loading...';
+
+        try {
+            console.log('Sending data:', requestData);
+
+            const res = await fetch(AGENDA_API, {
+                method: method,
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            console.log('Response status:', res.status);
+            const textResponse = await res.text();
+            console.log('Raw response:', textResponse);
+
+            let data;
             try {
                 const res = await fetch(AGENDA_API, {
                     method,
@@ -540,8 +568,16 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
                 btn.disabled = false;
                 btn.innerHTML = originalHTML;
             }
-        });
 
-    </script>
+        } catch (error) {
+            console.error('Submit error:', error);
+            showNotif("Terjadi kesalahan: " + error.message, false);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = originalText;
+        }
+    });
+
+</script>
 </body>
 </html>

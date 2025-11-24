@@ -9,36 +9,26 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
     exit;
 }
 
-// 2. Helper fetch API (reusable)
-function fetchApiData(string $url, array $options = []): ?array {
-    $defaults = [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_SSL_VERIFYPEER => false,
-        CURLOPT_TIMEOUT        => 10
-    ];
-    $ch = curl_init($url);
-    curl_setopt_array($ch, $defaults + $options);
-    $response = curl_exec($ch);
-    $error    = curl_error($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
+// 2. Pengambilan Data API
+$api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/dashboard_admin.php";
 
-    if ($error) {
-        error_log("cURL Error [$url]: $error");
-        return null;
-    }
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, $api_url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+$response = curl_exec($ch);
+$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-    $data = json_decode($response, true);
-    return ($httpCode === 200 && is_array($data)) ? $data : null;
-}
+$ch = null;
+// 3. Pengolahan Data
+$data = ($http_code === 200 && $response) ? json_decode($response, true) : [];
 
-// 3. Ambil jumlah siswa (dari dashboard_admin.php — opsional)
-$dashboard_data = fetchApiData("https://ortuconnect.pbltifnganjuk.com/api/admin/dashboard_admin.php");
-$siswa = $dashboard_data['siswa'] ?? 0;
-
-// 4. 🔥 Ambil data IZIN MENUNGGU
-$izin_data = fetchApiData("https://ortuconnect.pbltifnganjuk.com/api/admin/perizinan.php?status=menunggu");
-$izin_list = $izin_data['data'] ?? [];
+// Penyesuaian variabel berdasarkan respons API Admin (diasumsikan sama)
+// Pastikan semua variabel diinisialisasi untuk menghindari error jika API gagal
+$siswa = $data['siswa'] ?? 0;
+// Perhatikan: Menggunakan 'Total hadir Siswa ' sesuai kode asli, namun sebaiknya cek dan perbaiki API key jika ada spasi
+$total_Kehadiran_Siswa = $data['Total hadir Siswa '] ?? 0; 
+$izin_list = $data['izin_menunggu'] ?? [];
 $izin_menunggu_count = count($izin_list);
 
 // 5. 🗓️ Ambil data AGENDA dari endpoint khusus
@@ -146,7 +136,7 @@ ob_end_flush();
                     <div class="col-md-4">
                         <a href="../guru_absensi/absensi_siswa.php" class="card text-center shadow-sm access-card link-underline-opacity-0">
                             <div class="card-body">
-                                <img src="../assets/absensi.png" class="access-icon mb-2" alt="Absensi">
+                                <img src="../assets/Absensi.png" class="access-icon mb-2" alt="Absensi">
                                 <p class="mb-0 text-dark fw-semibold">Kelola Absensi</p>
                             </div>
                         </a>
@@ -162,7 +152,7 @@ ob_end_flush();
                     <div class="col-md-4">
                         <a href="../guru kalender/kalender.php" class="card text-center shadow-sm access-card link-underline-opacity-0">
                             <div class="card-body">
-                                <img src="../assets/Kalender Biru.png" class="access-icon mb-2" alt="Kalender">
+                                <img src="../assets/Kalender_Biru.png" class="access-icon mb-2" alt="Kalender">
                                 <p class="mb-0 text-dark fw-semibold">Lihat Kalender</p>
                             </div>
                         </a>

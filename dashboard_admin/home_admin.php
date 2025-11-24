@@ -18,7 +18,7 @@ function callAPI($url) {
         CURLOPT_TIMEOUT => 10
     ]);
     $response = curl_exec($ch);
-   $ch=null;
+    curl_close($ch);
     return json_decode($response, true);
 }
 
@@ -134,9 +134,9 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
         <div class="row g-3 mb-4">
           <?php
           $quick_links = [
-              ['url' => '../admin data guru/DataGuru.php?action=generate', 'icon' => '../assets/Data Guru Biru.png', 'text' => 'Buat Akun Guru'],
-              ['url' => '../admin data siswa/DataSiswa.php?action=generate', 'icon' => '../assets/Data Siswa Biru.png', 'text' => 'Buat Akun Orang Tua'],
-              ['url' => '../admin kalender/Kalender.php', 'icon' => '../assets/Kalender Biru.png', 'text' => 'Buat Agenda']
+              ['url' => '../admin data guru/DataGuru.php?action=generate', 'icon' => '../assets/Data_Guru_Biru.png', 'text' => 'Buat Akun Guru'],
+              ['url' => '../admin data siswa/DataSiswa.php?action=generate', 'icon' => '../assets/Data_Siswa_Biru.png', 'text' => 'Buat Akun Orang Tua'],
+              ['url' => '../admin kalender/Kalender.php', 'icon' => '../assets/Kalender_biru.png', 'text' => 'Buat Agenda']
           ];
           
           foreach ($quick_links as $link):
@@ -188,7 +188,7 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
             <div class="card border-primary shadow-sm h-100">
               <div class="card-body">
                 <h6 class="text-primary d-flex align-items-center gap-2 mb-3">
-                  <img src="../assets/Kalender Biru.png" width="22" alt="Agenda"> Agenda Terdekat
+                  <img src="../assets/Kalender_Biru.png" width="22" alt="Agenda"> Agenda Terdekat
                 </h6>
                 <ul class="list-group list-group-flush">
                   <?php if (empty($agenda)): ?>

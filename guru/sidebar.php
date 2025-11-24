@@ -28,7 +28,7 @@
         </li>
         <li class="nav-item">
             <a href="../guru data siswa/data_siswa.php" class="nav-link">
-                <img src="../assets/Data Siswa.png" class="icon" alt="Data Siswa">
+                <img src="../assets/Data_Siswa.png" class="icon" alt="Data Siswa">
                 <span class="menu-text">Data Murid</span>
             </a>
         </li>

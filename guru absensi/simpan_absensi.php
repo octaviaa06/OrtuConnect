@@ -58,7 +58,7 @@ $payload = json_encode([
 
 // Kirim ke API
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $api_url);
+curl_setopt($ch, CURLOPT_URL, "https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php");
 curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
 curl_setopt($ch, CURLOPT_HTTPHEADER, [

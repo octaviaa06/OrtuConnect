@@ -41,6 +41,100 @@
 }
 
 
+/* Empty State */
+.empty-state {
+    font-style: italic;
+    color: #6c757d;
+}
+
+/* Notifikasi */
+.notif {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    min-width: 300px;
+    padding: 12px 20px;
+    color: white;
+    font-weight: 500;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    display: none;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .status-absensi-select {
+        width: 120px;
+        font-size: 14px;
+    }
+    .absensi-item .col-5 {
+        font-size: 14px;
+    }
+}
+/* ========================================= */
+/* ===== RESPONSIVE FIX - MOBILE & TABLET ==== */
+/* ========================================= */
+
+@media (max-width: 992px) {
+    /* Header atas (judul + profil) jadi vertikal */
+    .header-fixed {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 12px;
+    }
+    .header-fixed h4 {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Filter bar jadi kolom */
+    #filterForm {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+    #filterForm .form-control,
+    #filterForm .form-select,
+    #filterForm .btn {
+        width: 100% !important;
+        max-width: none !important;
+        margin-bottom: 8px;
+    }
+    #filterForm .btn {
+        margin-bottom: 0;
+    }
+
+    /* Card absensi */
+    .card {
+        padding: 16px !important;
+    }
+
+    /* Item absensi jadi layout vertikal yang lebih lega */
+    .absensi-item {
+        flex-direction: column;
+        align-items: flex-start !important;
+        padding: 14px 10px !important;
+        gap: 8px;
+    }
+
+    .absensi-item > div {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    /* Nomor urut jadi lebih kecil */
+    .absensi-item .col-1 {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
 
 
 
