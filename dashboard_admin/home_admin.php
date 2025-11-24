@@ -18,7 +18,7 @@ function callAPI($url) {
         CURLOPT_TIMEOUT => 10
     ]);
     $response = curl_exec($ch);
-    curl_close($ch);
+    $ch=null;
     return json_decode($response, true);
 }
 

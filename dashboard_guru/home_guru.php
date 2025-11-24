@@ -9,46 +9,55 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
     exit;
 }
 
-// 2. Pengambilan Data API
+// 2. Fungsi Helper untuk Fetch API
+function fetchApiData($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $ch=null;
+    
+    if ($http_code === 200 && $response) {
+        return json_decode($response, true);
+    }
+    return [];
+}
+
+// 3. Pengambilan Data Dashboard dari API
 $api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/dashboard_admin.php";
+$data = fetchApiData($api_url);
 
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $api_url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-$response = curl_exec($ch);
-$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-$ch = null;
-// 3. Pengolahan Data
-$data = ($http_code === 200 && $response) ? json_decode($response, true) : [];
-
-// Penyesuaian variabel berdasarkan respons API Admin (diasumsikan sama)
-// Pastikan semua variabel diinisialisasi untuk menghindari error jika API gagal
+// Inisialisasi variabel untuk menghindari error
 $siswa = $data['siswa'] ?? 0;
-// Perhatikan: Menggunakan 'Total hadir Siswa ' sesuai kode asli, namun sebaiknya cek dan perbaiki API key jika ada spasi
-$total_Kehadiran_Siswa = $data['Total hadir Siswa '] ?? 0; 
+$total_Kehadiran_Siswa = $data['Total hadir Siswa'] ?? $data['Total hadir Siswa '] ?? 0;
 $izin_list = $data['izin_menunggu'] ?? [];
 $izin_menunggu_count = count($izin_list);
 
-// 5. 🗓️ Ambil data AGENDA dari endpoint khusus
+// 4. Ambil data AGENDA dari endpoint khusus
 $current_month = date('m');
-$current_year=date('Y');
-$agenda_data = fetchApiData("https://ortuconnect.pbltifnganjuk.com/api/admin/agenda.php?month={$current_month}&year={$current_year}");
-$all_agenda  = $agenda_data['data'] ?? [];
+$current_year = date('Y');
+$agenda_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/agenda.php?month={$current_month}&year={$current_year}";
+$agenda_data = fetchApiData($agenda_url);
+$all_agenda = $agenda_data['data'] ?? [];
 
-// Filter agenda: hanya yang tanggalnya >= hari ini, maks 7 hari ke depan
+// 5. Filter agenda: hanya yang tanggalnya >= hari ini, maks 7 hari ke depan
 $today = new DateTime();
 $upcoming_agenda = array_filter($all_agenda, function($item) use ($today) {
     $tgl_str = $item['tanggal'] ?? '';
     if (!$tgl_str) return false;
     
-    $tgl = DateTime::createFromFormat('Y-m-d', $tgl_str);
-    if (!$tgl) return false;
-
-    $diff = $today->diff($tgl);
-    $days = (int)$diff->format('%r%a'); // %r = + atau -, %a = absolute days
-    return $days >= 0 && $days <= 7;
+    try {
+        $tgl = new DateTime($tgl_str);
+        $diff = $today->diff($tgl);
+        $days = (int)$diff->format('%r%a');
+        return $days >= 0 && $days <= 7;
+    } catch (Exception $e) {
+        return false;
+    }
 });
 
 // Urutkan berdasarkan tanggal ascending
@@ -109,7 +118,7 @@ ob_end_flush();
                         <div class="card text-center shadow-sm border-primary dashboard-card">
                             <div class="card-body">
                                 <h6 class="text-primary">Jumlah Siswa</h6>
-                                <h3><?= htmlspecialchars($siswa) ?></h3>
+                                <h3><?= htmlspecialchars((string)$siswa) ?></h3>
                             </div>
                         </div>
                     </div>
@@ -117,7 +126,7 @@ ob_end_flush();
                         <div class="card text-center shadow-sm border-primary dashboard-card">
                             <div class="card-body">
                                 <h6 class="text-primary">Izin Menunggu</h6>
-                                <h3><?= (int)$izin_menunggu_count ?></h3>
+                                <h3><?= $izin_menunggu_count ?></h3>
                             </div>
                         </div>
                     </div>
@@ -134,7 +143,7 @@ ob_end_flush();
                 <h5 class="fw-bold text-primary mb-3 mt-4">Akses Cepat</h5>
                 <div class="row g-3 mb-4">
                     <div class="col-md-4">
-                        <a href="../guru_absensi/absensi_siswa.php" class="card text-center shadow-sm access-card link-underline-opacity-0">
+                        <a href="../guru_absensi/absensi_siswa.php" class="card text-center shadow-sm access-card text-decoration-none">
                             <div class="card-body">
                                 <img src="../assets/Absensi.png" class="access-icon mb-2" alt="Absensi">
                                 <p class="mb-0 text-dark fw-semibold">Kelola Absensi</p>
@@ -142,7 +151,7 @@ ob_end_flush();
                         </a>
                     </div>
                     <div class="col-md-4">
-                        <a href="../guru_perizinan/perizinan.php" class="card text-center shadow-sm access-card link-underline-opacity-0">
+                        <a href="../guru_perizinan/perizinan.php" class="card text-center shadow-sm access-card text-decoration-none">
                             <div class="card-body">
                                 <img src="../assets/Perizinan.png" class="access-icon mb-2" alt="Perizinan">
                                 <p class="mb-0 text-dark fw-semibold">Proses Perizinan</p>
@@ -150,7 +159,7 @@ ob_end_flush();
                         </a>
                     </div>
                     <div class="col-md-4">
-                        <a href="../guru kalender/kalender.php" class="card text-center shadow-sm access-card link-underline-opacity-0">
+                        <a href="../guru kalender/kalender.php" class="card text-center shadow-sm access-card text-decoration-none">
                             <div class="card-body">
                                 <img src="../assets/Kalender_Biru.png" class="access-icon mb-2" alt="Kalender">
                                 <p class="mb-0 text-dark fw-semibold">Lihat Kalender</p>
@@ -164,7 +173,7 @@ ob_end_flush();
                         <div class="card border-primary shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-primary d-flex align-items-center gap-2">
-                                    <img src="../assets/Pesan.png" width="22"> Izin Menunggu
+                                    <img src="../assets/Pesan.png" width="22" alt="Pesan"> Izin Menunggu
                                 </h6>
                                 <div class="border-top pt-2 mt-2" id="izinContainer">
                                 <?php if (empty($izin_list)): ?>
@@ -172,8 +181,8 @@ ob_end_flush();
                                 <?php else: ?>
                                     <?php foreach ($izin_list as $i): ?>
                                         <?php
-                                        // Deteksi nama field ID: coba 'id', lalu 'id_izin', lalu fallback ke 0
-                                        $id = $i['id'] ?? $i['id_siswa'] ?? $i['id_siswa'] ?? 0;
+                                        // Deteksi nama field ID dengan prioritas yang jelas
+                                        $id = $i['id'] ?? $i['id_izin'] ?? $i['id_siswa'] ?? 0;
                                         ?>
                                         <div class="izin-item mb-3 p-2 border rounded" data-id="<?= (int)$id ?>">
                                             <p class="mb-1">
@@ -206,7 +215,7 @@ ob_end_flush();
                         <div class="card border-primary shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-primary d-flex align-items-center gap-2">
-                                    <img src="../assets/Kalender Biru.png" width="22"> Agenda Terdekat
+                                    <img src="../assets/Kalender_Biru.png" width="22" alt="Kalender"> Agenda Terdekat
                                 </h6>
                                 <ul class="list-group list-group-flush">
                                 <?php if (empty($agenda)): ?>
@@ -216,7 +225,18 @@ ob_end_flush();
                                         <li class="list-group-item small py-2">
                                             <strong><?= htmlspecialchars($a['nama_kegiatan'] ?? '—') ?></strong><br>
                                             <span class="text-muted">
-                                                <?= !empty($a['tanggal']) ? date('d M Y', strtotime($a['tanggal'])) : '—' ?>
+                                                <?php 
+                                                if (!empty($a['tanggal'])) {
+                                                    try {
+                                                        $date = new DateTime($a['tanggal']);
+                                                        echo $date->format('d M Y');
+                                                    } catch (Exception $e) {
+                                                        echo '—';
+                                                    }
+                                                } else {
+                                                    echo '—';
+                                                }
+                                                ?>
                                                 <?php if (!empty($a['waktu_mulai'])): ?>
                                                     • <?= htmlspecialchars($a['waktu_mulai']) ?> WIB
                                                 <?php endif; ?>
@@ -236,7 +256,7 @@ ob_end_flush();
     <script>
         const API_PERIZINAN = "https://ortuconnect.pbltifnganjuk.com/api/admin/perizinan.php";
 
-        // 📢 Toast Notifikasi
+        // Toast Notifikasi
         function showToast(message, isSuccess = true) {
             const toast = document.getElementById('toast');
             if (!toast) return;
@@ -246,7 +266,7 @@ ob_end_flush();
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // ✅ Approve / Reject Izin
+        // Approve / Reject Izin
         async function updateIzin(id, status, button) {
             if (!confirm(`Yakin ingin ${status === 'disetujui' ? 'MENYETUJUI' : 'MENOLAK'} izin ini?`)) return;
 
@@ -262,9 +282,7 @@ ob_end_flush();
                 const res = await fetch(API_PERIZINAN, {
                     method: 'PUT',
                     headers: { 
-                        'Content-Type': 'application/json',
-                        // Tambahkan header auth jika diperlukan:
-                        // 'Authorization': 'Bearer your_token_here'
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ id: id, status: status })
                 });
@@ -273,24 +291,29 @@ ob_end_flush();
                 const data = await res.json();
 
                 if (data.status === 'success') {
-                    showToast(`Izin berhasil di${status}!`, true);
-                    item.remove();
-
-                    // Update counter di card "Izin Menunggu"
-                    const countEl = document.querySelector('.col-md-4:nth-child(2) h3');
-                    if (countEl) {
-                        let current = parseInt(countEl.textContent) || 0;
-                        current = Math.max(0, current - 1);
-                        countEl.textContent = current;
-
-                        // Jika tidak ada izin lagi, perbarui kontainer
-                        if (current === 0) {
-                            const container = document.getElementById('izinContainer');
-                            if (container) {
-                                container.innerHTML = '<p class="text-muted small">Tidak ada izin menunggu</p>';
-                            }
+                    showToast(`Izin berhasil ${status}!`, true);
+                    
+                    // Hapus item dengan animasi
+                    item.style.transition = 'opacity 0.3s';
+                    item.style.opacity = '0';
+                    setTimeout(() => {
+                        item.remove();
+                        
+                        // Update counter
+                        const countEl = document.querySelector('.col-md-4:nth-child(2) h3');
+                        if (countEl) {
+                            let current = parseInt(countEl.textContent) || 0;
+                            current = Math.max(0, current - 1);
+                            countEl.textContent = current;
                         }
-                    }
+
+                        // Cek apakah masih ada izin
+                        const container = document.getElementById('izinContainer');
+                        const remainingItems = container.querySelectorAll('.izin-item');
+                        if (remainingItems.length === 0) {
+                            container.innerHTML = '<p class="text-muted small">Tidak ada izin menunggu</p>';
+                        }
+                    }, 300);
                 } else {
                     showToast(data.message || 'Gagal memproses izin.', false);
                     resetButtons(item, buttons);
