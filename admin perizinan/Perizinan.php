@@ -95,35 +95,39 @@ $perizinanList = $data['data'] ?? [];
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Perizinan | OrtuConnect</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="../admin/sidebar.css" />
-    <link rel="stylesheet" href="../profil/profil.css">
-    <link rel="stylesheet" href="Perizinan.css" /> 
-</head>
-<body>
-    <div class="d-flex">
-        <!-- Sidebar -->
-        <?php include '../admin/sidebar.php'; ?>
 
-        <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">
-            <div class="container-fluid py-3">
-                <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
-                    <h4 class="fw-bold text-primary m-0">Perizinan</h4>
-                   <?php include '../profil/profil.php'; ?>
-                </div>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="Perizinan.css">
+    <link rel="stylesheet" href="../profil/profil.css">
+    <link rel="stylesheet" href="../admin/sidebar.css">
+</head>
+
+<body>
+<div class="d-flex">
+    <!-- Sidebar -->
+    <?php include '../admin/sidebar.php'; ?>
+
+    <!-- Content -->
+    <div class="flex-grow-1 main-content"
+         style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">
 
                 <div class="card shadow-sm border-0 p-4" style="border-radius:16px;">
                     <h5 class="fw-bold mb-4">Daftar Perizinan Murid (Total: <?= count($perizinanList) ?>)</h5>
 
-                    <div class="d-flex justify-content-end mb-3">
-                        <div class="search-container position-relative" style="max-width:400px;">
-                            <img src="../assets/cari.png" alt="Cari" class="search-icon" />
-                            <input type="text" id="searchInput" class="form-control search-input" placeholder="Cari perizinan berdasarkan nama..." />
-                        </div>
+            <div class="card shadow-sm border-0 p-4" style="border-radius:16px;">
+                <h5 class="fw-bold mb-4">Daftar Perizinan Murid (Total: <?= count($perizinanList) ?>)</h5>
+
+                <!-- Search -->
+                <div class="d-flex justify-content-end mb-3">
+                    <div class="search-container position-relative" style="max-width:400px;">
+                        <img src="../assets/cari.png" alt="Cari" class="search-icon">
+                        <input type="text" id="searchInput" class="form-control search-input"
+                               placeholder="Cari perizinan berdasarkan nama...">
                     </div>
+                </div>
 
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0" id="perizinanTable">
@@ -186,7 +190,19 @@ $perizinanList = $data['data'] ?? [];
                 </div>
             </div>
         </div>
+
     </div>
+</div>
+
+<!-- Modal Penolakan -->
+<div class="modal fade" id="modalAlasanTolak" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Alasan Penolakan Izin</h5>
+                <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
 
     <!-- Modal Alasan Penolakan -->
     <div class="modal fade" id="modalAlasanTolak" tabindex="-1" aria-hidden="true">

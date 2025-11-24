@@ -1,85 +1,270 @@
-/* ===== SIDEBAR ===== */
+/* ================================================
+   SIDEBAR RESPONSIVE - Menyesuaikan Desain Asli
+   ================================================ */
+
+/* ========== HAMBURGER BUTTON (Mobile/Tablet Only) ========== */
+.hamburger-btn {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1100;
+    background: #0d6efd;
+    border: none;
+    border-radius: 8px;
+    width: 45px;
+    height: 45px;
+    display: none; /* Hidden di desktop */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn span {
+    width: 25px;
+    height: 3px;
+    background: white;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburger-btn:hover {
+    background: #0b5ed7;
+    transform: scale(1.05);
+}
+
+.hamburger-btn.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger-btn.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-btn.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+}
+
+/* ========== SIDEBAR DEFAULT (TETAP SEPERTI ASLI) ========== */
 .sidebar {
-  width: 200px;
-  background-color: #0d6efd;
-  transition: width 0.35s ease;
-  overflow: hidden;
-  height: 100vh;
-  padding-top: 50px;
-  border-radius: 0 18px 18px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 100;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100vh;
+    background: #0d6efd;
+    transition: all 0.35s ease;
+    z-index: 1050;
+    padding-top: 20px;
+    border-radius: 0 18px 18px 0;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
-.sidebar.collapsed {
-  width: 70px;
+.sidebar.expanded { 
+    width: 200px; 
 }
 
+.sidebar.collapsed { 
+    width: 70px; 
+}
+
+/* ========== SLIDE BUTTON (Desktop) ========== */
 .slide-btn {
-  width: 28px;
-  cursor: pointer;
-  margin-bottom: 30px;
-  transition: transform 0.3s ease;
+    width: 32px;
+    cursor: pointer;
+    transition: transform 0.3s;
 }
 
-.slide-btn:hover {
-  transform: scale(1.1);
+.slide-btn:hover { 
+    transform: scale(1.15); 
 }
 
-.nav {
-  width: 100%;
-  padding-left: 0;
-  margin-top: 8px;
+/* ========== ICONS & NAV LINKS (TETAP ASLI) ========== */
+.icon { 
+    width: 28px; 
+    height: 28px; 
+    flex-shrink: 0; 
 }
 
-.nav-item {
-  width: 100%;
+.nav-link { 
+    padding: 12px 16px; 
+    border-radius: 12px; 
+    transition: all 0.3s;
 }
 
-.nav-link {
-  color: white;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  border-radius: 10px;
-  transition: background 0.3s, transform 0.2s;
-  font-size: 15px;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.nav-link:hover,
+.nav-link:hover, 
 .nav-link.active {
-  background-color: rgba(255, 255, 255, 0.25);
-  transform: translateX(5px);
+    background: rgba(255,255,255,0.25);
+    transform: translateX(6px);
 }
 
-.icon {
-  width: 28px;
-  height: 28px;
-  flex-shrink: 0;
+/* ========== COLLAPSED STATE (Desktop) ========== */
+.sidebar.collapsed .menu-text { 
+    opacity: 0; 
+    width: 0; 
+    overflow: hidden; 
 }
 
-/* Collapsed mode */
-.sidebar.collapsed .nav-link {
-  justify-content: center;
-  padding: 10px 0;
+.sidebar.collapsed .nav-link { 
+    justify-content: center; 
+    padding: 12px 0; 
 }
 
-.sidebar.collapsed .menu-text {
-  opacity: 0;
-  width: 0;
-  transition: opacity 0.2s ease, width 0.3s ease;
+/* ========== OVERLAY ========== */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(3px);
 }
 
-.sidebar.expanded .menu-text {
-  opacity: 1;
-  width: auto;
-  transition: opacity 0.3s ease, width 0.3s ease;
+.sidebar-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ========== DESKTOP MODE (>= 992px) - TETAP SEPERTI ASLI ========== */
+@media (min-width: 992px) {
+    /* Main content sesuai sidebar */
+    .main-content {
+        margin-left: 200px;
+        transition: margin-left 0.35s ease;
+    }
+
+    body:has(.sidebar.collapsed) .main-content {
+        margin-left: 70px;
+    }
+}
+
+/* ========== TABLET MODE (768px - 991px) ========== */
+@media (min-width: 768px) and (max-width: 991px) {
+    /* Show hamburger button */
+    .hamburger-btn {
+        display: flex;
+    }
+
+    /* Sidebar slide dari kiri */
+    .sidebar {
+        width: 260px;
+        transform: translateX(-100%);
+        transition: transform 0.35s ease;
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    /* Hide slide button di tablet */
+    .slide-btn {
+        display: none;
+    }
+
+    /* Main content full width */
+    .main-content {
+        margin-left: 0 !important;
+        padding: 15px;
+        padding-left: 65px; /* Space untuk hamburger */
+    }
+}
+
+/* ========== MOBILE MODE (< 768px) ========== */
+@media (max-width: 767px) {
+    /* Show hamburger button */
+    .hamburger-btn {
+        display: flex;
+        width: 42px;
+        height: 42px;
+        top: 12px;
+        left: 12px;
+    }
+
+    .hamburger-btn span {
+        width: 22px;
+    }
+
+    /* Sidebar slide dari kiri */
+    .sidebar {
+        width: 75%;
+        max-width: 280px;
+        transform: translateX(-100%);
+        transition: transform 0.35s ease;
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    /* Hide slide button */
+    .slide-btn {
+        display: none;
+    }
+
+    /* Main content full width */
+    .main-content {
+        margin-left: 0 !important;
+        padding: 12px;
+        padding-left: 60px;
+    }
+
+    /* Responsive nav links untuk mobile */
+    .nav-link {
+        padding: 10px 14px;
+    }
+
+    .icon {
+        width: 26px;
+        height: 26px;
+    }
+}
+
+/* ========== SMALL MOBILE (< 480px) ========== */
+@media (max-width: 479px) {
+    .hamburger-btn {
+        width: 38px;
+        height: 38px;
+        top: 10px;
+        left: 10px;
+    }
+
+    .sidebar {
+        width: 80%;
+        max-width: 260px;
+    }
+
+    .nav-link {
+        padding: 9px 12px;
+        font-size: 0.95rem;
+    }
+
+    .icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .main-content {
+        padding: 10px;
+        padding-left: 55px;
+    }
+}
+
+/* ========== ACCESSIBILITY ========== */
+@media (prefers-reduced-motion: reduce) {
+    .sidebar,
+    .sidebar-overlay,
+    .nav-link,
+    .hamburger-btn,
+    .slide-btn {
+        transition: none !important;
+    }
 }

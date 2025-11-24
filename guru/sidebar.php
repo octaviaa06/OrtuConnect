@@ -59,11 +59,7 @@
 </div>
 
 <script>
-/**
- * Toggle Sidebar Function
- * - Desktop: Collapse/Expand
- * - Mobile/Tablet: Slide In/Out dengan Overlay
- */
+
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');

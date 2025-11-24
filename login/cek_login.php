@@ -1,24 +1,40 @@
 <?php
-ob_start(); 
+session_start();
+ob_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: index.php?error=Invalid request");
+    $_SESSION['error'] = "Invalid request";
+    header("Location: index.php");
     exit;
 }
 
 if (!isset($_POST['username']) || !isset($_POST['password'])) {
-    header("Location: index.php?error=Data tidak lengkap");
+    $_SESSION['error'] = "Wajib memasukkan username dan password";
+    header("Location: index.php");
     exit;
 }
 
-$username = trim($_POST['username']);
+$username = $_POST['username'];
 $password = $_POST['password'];
 
-if ($username === '' || $password === '') {
-    header("Location: index.php?error=Username atau password kosong");
+// 1. Cek kosong
+if (trim($username) === '' || trim($password) === '') {
+    $_SESSION['error'] = "Wajib memasukkan username dan password";
+    header("Location: index.php");
     exit;
 }
 
+// 2. Cegah spasi diawal/akhir
+if ($username !== trim($username) || $password !== trim($password)) {
+    $_SESSION['error'] = "Username atau password tidak boleh ada spasi diawal/akhir";
+    header("Location: index.php");
+    exit;
+}
+
+$username = trim($username);
+$password = trim($password);
+
+// === API LOGIN ===
 $api_url = "https://ortuconnect.pbltifnganjuk.com/api/login.php";
 $data = [
     "username" => $username,
@@ -31,62 +47,52 @@ curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Jika SSL error
-curl_setopt($ch, CURLOPT_TIMEOUT, 10); // Timeout 10 detik
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
 $response = curl_exec($ch);
 $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$ch = null;
+$error = curl_error($ch);
+curl_close($ch);
 
+// Cek API error
 if ($response === false || $http_code !== 200) {
- 
-    header("Location: index.php?error=" . urlencode("Gagal koneksi ke server: $error"));
+    $_SESSION['error'] = "Gagal koneksi ke server: $error";
+    header("Location: index.php");
     exit;
 }
 
 $result = json_decode($response, true);
 
 if (!$result || !isset($result['success']) || $result['success'] !== true) {
-    $error_msg = $result['message'] ?? "Username atau password salah";
-    header("Location: index.php?error=" . urlencode($error_msg));
+    $_SESSION['error'] = $result['message'] ?? "Username atau password salah";
+    header("Location: index.php");
     exit;
 }
 
 $user = $result['user'] ?? null;
 if (!$user || !isset($user['role']) || !isset($user['id_akun'])) {
-    header("Location: index.php?error=Data user tidak lengkap dari API");
+    $_SESSION['error'] = "Data user tidak lengkap dari API";
+    header("Location: index.php");
     exit;
 }
 
-$role = $user['role']; 
+$role = $user['role'];
 
+// ===== SESSION LOGIN BERDASARKAN ROLE =====
 $session_name = 'SESS_' . strtoupper($role);
 session_name($session_name);
 session_start();
-
 session_regenerate_id(true);
-
-if (isset($_SESSION['role']) && $_SESSION['role'] === $role && $_SESSION['username'] === $user['username']) {
-    $redirect = $role === 'admin' 
-        ? '../dashboard_admin/home_admin.php' 
-        : '../dashboard_guru/home_guru.php';
-    header("Location: $redirect");
-    exit;
-}
 
 $_SESSION['id_akun'] = $user['id_akun'];
 $_SESSION['username'] = $user['username'];
-$_SESSION['role']     = $user['role'];
-$_SESSION['login_time'] = time(); 
+$_SESSION['role'] = $role;
+$_SESSION['login_time'] = time();
 
-$redirect = $role === 'admin' 
-    ? '../dashboard_admin/home_admin.php' 
+$redirect = ($role === 'admin') 
+    ? '../dashboard_admin/home_admin.php'
     : '../dashboard_guru/home_guru.php';
-
-if (!file_exists($redirect)) {
-    header("Location: index.php?error=Halaman tidak ditemukan: " . basename($redirect));
-    exit;
-}
 
 header("Location: $redirect");
 exit;

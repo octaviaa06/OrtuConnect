@@ -84,7 +84,8 @@ function getAbsensiDataRange($kelas, $startDate, $endDate) {
         $response = curl_multi_getcontent($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_multi_remove_handle($mh, $ch);
-        curl_close($ch);
+      $ch=null;
+      
         
         if ($httpCode === 200 && !empty($response)) {
             $responseData = json_decode($response, true);

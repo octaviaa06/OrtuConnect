@@ -1,194 +1,287 @@
-/* Sidebar dan tombol slide */
-.slide-btn {
-    width: 28px;
-    cursor: pointer;
-    margin-bottom: 30px;
-    transition: transform 0.3s ease;
+/* ===================================================== */
+/* PERIZINAN GURU – STYLE.CSS (FINAL & FULL MOBILE FIX) */
+/* ===================================================== */
+
+/* BACKGROUND PERIZINAN – AMAN DI SEMUA HP */
+.bg-perizinan-guru {
+    background-image: url('../background/Data Guru(1).png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
-.slide-btn:hover {
-    transform: scale(1.1);
+
+/* CARD UTAMA */
+.card {
+    border: none !important;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    background: white;
 }
-.nav {
-    width: 100%;
-    padding-left: 0;
-    margin-top: 8px;
+
+/* TABEL LEBIH RAPI & MODERN */
+.table {
+    margin-bottom: 0;
+    font-size: 0.95rem;
 }
-.nav-item {
-    margin-bottom: 12px;
-    width: 100%;
-}
-.nav-link {
+.table thead {
+    background: linear-gradient(135deg, #0d6efd, #0d8bfd);
     color: white;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 16px;
-    border-radius: 10px;
-    transition: background 0.3s, transform 0.2s;
-    font-size: 15px;
-    font-weight: 500;
-    white-space: nowrap;
+    font-weight: 600;
 }
-.nav-link:hover,
-.nav-link.active {
-    background-color: rgba(255,255,255,0.2);
-    transform: translateX(5px);
+.table thead th {
+    border: none !important;
+    padding: 14px 10px !important;
 }
-.icon {
-    width: 28px;
-    height: 28px;
-    flex-shrink: 0;
+.table tbody td {
+    padding: 14px 10px !important;
+    vertical-align: middle;
+}
+.table tbody tr:hover {
+    background-color: #f8f9ff !important;
+}
+.table .badge {
+    font-size: 0.8rem;
+    padding: 0.4em 0.8em;
 }
 
-/* Konten utama */
-.main-content {
-    margin-left: 250px;
-    padding: 18px 28px;
-    transition: margin-left 0.35s ease;
-    background-color: transparent;
-    position: relative;
-    min-height: 100vh;
-}
-
-/* Search box */
+/* SEARCH BOX CANTIK */
 .search-container {
-    background-color: #fff;
-    border-radius: 12px;
-    padding: 8px 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    background: white;
+    border-radius: 16px;
+    padding: 12px 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     display: flex;
     align-items: center;
-    height: 42px;
-    position: relative;
+    transition: all 0.3s ease;
+    max-width: 420px;
     width: 100%;
-    max-width: 450px;
 }
 .search-container:focus-within {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 8px 25px rgba(13,110,253,0.2);
+    transform: translateY(-2px);
 }
 .search-icon {
-    position: absolute;
-    left: 12px;
-    width: 20px;
-    height: 20px;
-    opacity: 0.6;
+    width: 22px;
+    height: 22px;
+    opacity: 0.7;
+    margin-right: 12px;
 }
 .search-input {
     border: none;
-    padding-left: 40px;
-    height: 100%;
-    font-size: 14px;
+    outline: none;
+    flex: 1;
+    font-size: 15px;
     background: transparent;
 }
-.search-input:focus {
-    outline: none;
-    border: none;
-    box-shadow: none !important;
+.search-input::placeholder {
+    color: #999;
+    font-style: italic;
 }
 
-/* Header & profil */
-.header-fixed {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    background-color: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(6px);
-    padding: 10px 0;
-    z-index: 1000;
-}
-.profile-btn {
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    position: relative;
-}
-.profile-avatar {
-    width: 50px;
-    height: 50px;
-    font-weight: 600;
-    font-size: 18px;
-    background-color: #0d6efd;
+/* NOTIFIKASI — POSISI DI BAWAH TENGAH (SEPANJANG DESAIN ANDA) */
+.notif {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 300px;
+    padding: 16px 28px;
+    border-radius: 16px;
     color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-.profile-card {
-    position: absolute;
-    top: 60px;
-    right: 0;
-    width: 210px;
-    background: #fff;
-    border-radius: 12px;
-    padding: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-    display: none;
-    z-index: 1050;
-}
-.profile-card.show {
-    display: block;
-    animation: fadeIn 0.2s ease;
-}
-.profile-card h6 {
-    margin-bottom: 4px;
-    color: #0d6efd;
     font-weight: 600;
     font-size: 15px;
+    z-index: 9999;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    display: none;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    opacity: 1;
+    transition: opacity 0.3s ease;
 }
-.profile-card p {
-    margin: 0;
-    font-size: 13px;
-    color: #6c757d;
+.notif.success { background: rgba(40, 167, 69, 0.95); }
+.notif.error   { background: rgba(220, 53, 69, 0.95); }
+.notif.fade-out {
+    opacity: 0;
 }
-.profile-card hr {
-    margin: 10px 0;
+
+/* TOMBOL SCROLL NAV (HORIZONTAL TABLE NAVIGATION) */
+.scroll-nav {
+    display: none;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
 }
-.profile-card a {
-    color: #d9534f !important;
+.scroll-nav.active {
+    display: flex;
+}
+.scroll-btn {
+    background: linear-gradient(135deg, #0d6efd, #0d8bfd);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 12px;
     font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(13,110,253,0.3);
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 8px;
-    text-decoration: none;
 }
-.profile-card a img {
+.scroll-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(13,110,253,0.4);
+}
+.scroll-btn:active {
+    transform: translateY(0);
+}
+.scroll-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+.scroll-btn svg {
     width: 18px;
+    height: 18px;
 }
 
-/* Kartu hover */
-.guru-card {
-    border-radius: 15px;
-    transition: all 0.3s ease;
-}
-.guru-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-}
+/* ===================================================== */
+/* RESPONSIVE – MOBILE & TABLET (INI YANG BIKIN TABEL FULL!) */
+/* ===================================================== */
+@media (max-width: 992px) {
+    html, body, .d-flex {
+        height: 100%;
+        min-height: 100dvh;
+        min-height: -webkit-fill-available;
+    }
 
-/* Responsive */
-@media (max-width: 768px) {
     .main-content {
-        padding: 15px;
-        margin-left: 0;
+        min-height: 100dvh;
+        min-height: -webkit-fill-available;
+        padding-top: env(safe-area-inset-top, 15px);
+        padding-bottom: env(safe-area-inset-bottom, 90px);
     }
+
+    /* Card full layar */
+    .card {
+        margin: 0 !important;
+        border-radius: 20px 20px 0 0 !important;
+        min-height: calc(100dvh - 100px);
+    }
+    .card-body {
+        padding: 20px 16px !important;
+    }
+
+    /* Header sticky di atas */
     .header-fixed {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
+       position: sticky;
+    top: 0;
+    /* HAPUS background putih & backdrop-filter */
+    /* background: rgba(255,255,255,0.97); */
+    /* backdrop-filter: blur(12px); */
+    z-index: 100;
+    padding: 16px 16px !important;
+    margin: -20px -16px 24px -16px !important;
+    /* Hapus border-bottom & border-radius jika tidak diperlukan */
+    /* border-bottom: 1px solid #e9ecef; */
+    /* border-radius: 20px 20px 0 0; */
     }
-    .profile-card {
-        right: 10px;
-    } 
+
+    /* Search full width */
+    .search-container {
+        max-width: 100% !important;
+        margin-bottom: 16px;
+    }
+
+    /* TABEL: BISA SCROLL HORIZONTAL & VERTIKAL — SESUAI style.css Anda */
+    .table-responsive {
+        max-height: calc(100dvh - 300px);
+        overflow-x: auto;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 14px;
+        background: white;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        margin-top: 8px;
+        scrollbar-width: thin;
+    }
+
+    /* Scrollbar halus (Webkit & Firefox) */
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+        width: 8px;
+    }
+    .table-responsive::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #c0c0c0;
+        border-radius: 4px;
+    }
+    .table-responsive {
+        scrollbar-color: #c0c0c0 transparent;
+    }
+
+    /* Tabel rapi di HP kecil */
+    .table {
+        font-size: 0.88rem;
+        min-width: 700px; /* Paksa scroll horizontal jika konten lebar */
+    }
+    .table th, .table td {
+        padding: 12px 6px !important;
+        white-space: nowrap;
+    }
+    .table .btn-sm {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.7rem;
+    }
+
+    /* Badge lebih kecil */
+    .badge {
+        font-size: 0.75rem !important;
+        padding: 0.35em 0.7em !important;
+    }
+
+    /* Tombol scroll nav lebih responsif */
+    .scroll-nav {
+        margin: 0 -16px 16px -16px;
+        padding: 0 16px;
+    }
+    .scroll-btn {
+        padding: 9px 16px;
+        font-size: 0.85rem;
+    }
 }
 
-/* Animasi */
-@keyframes fadeIn {
-    0% { opacity: 0; transform: translateY(-5px); }
-    100% { opacity: 1; transform: translateY(0); }
+/* Extra kecil (iPhone SE, dll) */
+@media (max-width: 576px) {
+    .header-fixed h4 {
+        font-size: 1.3rem;
+    }
+    .table-responsive {
+        max-height: calc(100dvh - 320px);
+    }
+    .notif {
+        min-width: 90%;
+        font-size: 0.95rem;
+        padding: 14px 20px;
+    }
+    .table {
+        min-width: 650px;
+    }
+    .scroll-btn span {
+        display: none; /* Sembunyikan teks "Geser Kiri/Kanan", biarkan ikon saja */
+    }
+    .scroll-btn {
+        padding: 10px;
+    }
+}
+
+/* Animasi fade-out untuk notif */
+.notif.fade-out {
+    opacity: 0;
 }
