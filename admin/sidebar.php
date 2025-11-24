@@ -1,4 +1,6 @@
-<?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
+<!-- SIDEBAR -->
+<link rel="stylesheet" href="../admin/sidebar.css">
+<link rel="icon" type="image/x-icon" href="../favicon.ico">
 
 <!-- Hamburger Button untuk Mobile/Tablet -->
 <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()">
