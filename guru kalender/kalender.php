@@ -1,7 +1,7 @@
 <?php
 session_name('SESS_GURU');
 session_start();
-$active_page = 'kalender';
+$active_page = 'kalender guru';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
     header("Location: ../login/index.php?error=Harap login sebagai guru!");

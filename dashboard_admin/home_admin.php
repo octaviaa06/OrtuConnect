@@ -18,7 +18,7 @@ function callAPI($url) {
         CURLOPT_TIMEOUT => 10
     ]);
     $response = curl_exec($ch);
-    $ch=null;
+    curl_close($ch);
     return json_decode($response, true);
 }
 
@@ -65,6 +65,9 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 </head>
 <body>
+  <!-- Toast Notification -->
+  <div id="toast" role="alert" aria-live="polite"></div>
+
   <!-- TOGGLE BUTTON MOBILE/TABLET -->
   <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
     <span></span>
@@ -162,19 +165,38 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
                 <h6 class="text-primary d-flex align-items-center gap-2 mb-3">
                   <img src="../assets/Pesan.png" width="22" alt="Izin"> Izin Menunggu
                 </h6>
-                <div class="border-top pt-2">
+                <div class="border-top pt-2" id="izinContainer">
                   <?php if (empty($izin)): ?>
                     <p class="text-muted small mb-0">Tidak ada izin menunggu</p>
                   <?php else: ?>
                     <?php foreach ($izin as $i): ?>
-                      <div class="mb-2">
+                      <?php
+                      // Deteksi ID izin dari berbagai kemungkinan field
+                      $id_izin = $i['id'] ?? $i['id_izin'] ?? $i['id_perizinan'] ?? 0;
+                      ?>
+                      <div class="mb-3 pb-2 border-bottom izin-item" data-id="<?= (int)$id_izin ?>">
                         <p class="mb-1 small">
-                          <strong><?= htmlspecialchars($i['nama_siswa']) ?></strong><br>
-                          <span class="text-muted"><?= htmlspecialchars($i['jenis_izin']) ?></span>
+                          <strong><?= htmlspecialchars($i['nama_siswa'] ?? '—') ?></strong>
+                          <?php if (!empty($i['kelas'])): ?>
+                            <span class="badge bg-secondary ms-1"><?= htmlspecialchars($i['kelas']) ?></span>
+                          <?php endif; ?>
+                          <br>
+                          <span class="text-muted">
+                            <?= htmlspecialchars($i['jenis_izin'] ?? 'Izin') ?>
+                            <?php if (!empty($i['tanggal_mulai'])): ?>
+                              • <?= date('d/m/Y', strtotime($i['tanggal_mulai'])) ?>
+                            <?php endif; ?>
+                          </span>
                         </p>
                         <div class="d-flex gap-1">
-                          <button class="btn btn-success btn-sm flex-fill">Setujui</button>
-                          <button class="btn btn-danger btn-sm flex-fill">Tolak</button>
+                          <button class="btn btn-success btn-sm flex-fill" 
+                                  onclick="updateIzin(<?= (int)$id_izin ?>, 'disetujui', this)">
+                            ✔ Setujui
+                          </button>
+                          <button class="btn btn-danger btn-sm flex-fill" 
+                                  onclick="updateIzin(<?= (int)$id_izin ?>, 'ditolak', this)">
+                            ✘ Tolak
+                          </button>
                         </div>
                       </div>
                     <?php endforeach; ?>
@@ -196,8 +218,17 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
                   <?php else: ?>
                     <?php foreach ($agenda as $a): ?>
                       <li class="list-group-item small py-2">
-                        <strong><?= htmlspecialchars($a['nama_kegiatan']) ?></strong><br>
-                        <span class="text-muted"><?= htmlspecialchars($a['tanggal']) ?></span>
+                        <strong><?= htmlspecialchars($a['nama_kegiatan'] ?? '—') ?></strong><br>
+                        <span class="text-muted">
+                          <?php 
+                          if (!empty($a['tanggal'])) {
+                              $date = date('d M Y', strtotime($a['tanggal']));
+                              echo htmlspecialchars($date);
+                          } else {
+                              echo '—';
+                          }
+                          ?>
+                        </span>
                       </li>
                     <?php endforeach; ?>
                   <?php endif; ?>
@@ -213,6 +244,83 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    const API_PERIZINAN = "https://ortuconnect.pbltifnganjuk.com/api/perizinan.php";
+
+    // Toast Notification Function
+    function showToast(message, isSuccess = true) {
+        const toast = document.getElementById('toast');
+        if (!toast) return;
+        
+        toast.textContent = message;
+        toast.className = isSuccess ? 'success' : 'error';
+        toast.classList.add('show');
+        
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // Update Izin Function (Setujui/Tolak)
+    async function updateIzin(id, status, button) {
+        if (!confirm(`Yakin ingin ${status === 'disetujui' ? 'MENYETUJUI' : 'MENOLAK'} izin ini?`)) return;
+
+        const item = button.closest('.izin-item');
+        if (!item) return;
+
+        // Disable buttons & show loading
+        const buttons = item.querySelectorAll('button');
+        buttons.forEach(btn => btn.disabled = true);
+        button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status"></span> ${status === 'disetujui' ? 'Menyetujui...' : 'Menolak...'}`;
+
+        try {
+            const res = await fetch(API_PERIZINAN, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    id: id, 
+                    status: status 
+                })
+            });
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                showToast(`Izin berhasil ${status}!`, true);
+                
+                // Hapus item dengan animasi
+                item.style.transition = 'opacity 0.3s';
+                item.style.opacity = '0';
+                
+                setTimeout(() => {
+                    item.remove();
+                    
+                    // Cek apakah masih ada izin
+                    const container = document.getElementById('izinContainer');
+                    const remainingItems = container.querySelectorAll('.izin-item');
+                    
+                    if (remainingItems.length === 0) {
+                        container.innerHTML = '<p class="text-muted small mb-0">Tidak ada izin menunggu</p>';
+                    }
+                }, 300);
+            } else {
+                showToast(data.message || 'Gagal memproses izin.', false);
+                resetButtons(buttons);
+            }
+        } catch (err) {
+            console.error('Error memproses izin:', err);
+            showToast('Gagal menghubungi server. Periksa koneksi.', false);
+            resetButtons(buttons);
+        }
+    }
+
+    function resetButtons(buttons) {
+        buttons[0].innerHTML = '✔ Setujui';
+        buttons[1].innerHTML = '✘ Tolak';
+        buttons.forEach(btn => btn.disabled = false);
+    }
+
+    // Chart.js - Attendance Doughnut
     document.addEventListener('DOMContentLoaded', function() {
       const ctx = document.getElementById('attendanceChart');
       if (!ctx) return;

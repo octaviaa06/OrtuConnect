@@ -152,3 +152,43 @@
         font-size: 1.3rem;
     }
 }
+/* ===================================================== */
+/* MODAL GRADIENT STYLE – SENADA DENGAN TEMA BIRU APLIKASI */
+/* ===================================================== */
+
+.modal-content {
+    background: linear-gradient(135deg, #ffffff, #eef5ff, #d7e7ff);
+    border-radius: 20px;
+    border: none;
+    color: #1a2b4c; /* biru gelap elegan */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    animation: popupFade 0.3s ease;
+}
+
+/* Header sedikit lebih bold agar jelas */
+.modal-header {
+    background: linear-gradient(135deg, #e8f1ff, #d0e2ff);
+    border-bottom: none;
+    border-radius: 20px 20px 0 0;
+    color: #0d47a1; /* biru tua branding */
+    font-weight: 600;
+}
+
+/* Footer light tone */
+.modal-footer {
+    background: linear-gradient(135deg, #f4f8ff, #e1ecff);
+    border-top: none;
+    border-radius: 0 0 20px 20px;
+}
+
+/* Smooth muncul */
+@keyframes popupFade {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

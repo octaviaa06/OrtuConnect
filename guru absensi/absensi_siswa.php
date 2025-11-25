@@ -1,7 +1,7 @@
 <?php
 session_name('SESS_GURU');
 session_start();
-$active_page = 'absensi_siswa';
+$active_page = 'absensiSiswa';
 
 // Verifikasi role guru
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {

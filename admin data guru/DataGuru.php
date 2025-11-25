@@ -37,6 +37,9 @@ function fetchApiData($url) {
 $api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/data_guru.php";
 $data = fetchApiData($api_url);
 $guruList = $data['data'] ?? [];
+$from_param = 'DataGuru';
+$_GET['from'] = $from_param;
+
 ?>
 <!DOCTYPE html>
 <html lang="id">
