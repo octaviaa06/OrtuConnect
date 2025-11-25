@@ -1,7 +1,7 @@
 <?php
 session_name('SESS_ADMIN');
 session_start();
-$active_page = 'Kalender';
+$active_page = 'kalender';
 
 // Cek autentikasi dan peran admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -78,6 +78,8 @@ $bulan_indonesia = [
     'October' => 'Oktober', 'November' => 'November', 'December' => 'Desember'
 ];
 $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
+$from_param = 'kalender';
+$_GET['from'] = $from_param;
 ?>
 <!DOCTYPE html>
 <html lang="id">

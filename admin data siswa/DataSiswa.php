@@ -1,8 +1,8 @@
 <?php
 session_name('SESS_ADMIN');
 session_start();
-$active_page = 'datasiswa';
-//include '../admin/sidebar.php';
+
+
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   header("Location: ../login/index.php?error=Harap login sebagai admin!");
@@ -25,6 +25,8 @@ $ch=null;
 
 $data = json_decode($response, true);
 $siswaList = $data['data'] ?? [];
+$from_param = 'data';
+$_GET['from'] = $from_param;
 ?>
 <!DOCTYPE html>
 <html lang="id">

@@ -1,7 +1,7 @@
 <?php
 session_name('SESS_GURU');
 session_start();
-$active_page = 'perizinan';
+
 
 // Set timezone Indonesia
 date_default_timezone_set('Asia/Jakarta');
@@ -91,6 +91,9 @@ curl_close($ch);
 
 $data = json_decode($response, true);
 $perizinanList = $data['data'] ?? [];
+
+
+$from_param = 'perizinan';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -99,7 +102,7 @@ $perizinanList = $data['data'] ?? [];
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Perizinan | OrtuConnect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-      <link rel="stylesheet" href="Perizinan.css" /> 
+      <link rel="stylesheet" href="style.css" /> 
     <link rel="stylesheet" href="../profil/profil.css">
       <link rel="stylesheet" href="../guru/sidebar.css" />
 </head>
@@ -108,12 +111,25 @@ $perizinanList = $data['data'] ?? [];
         <!-- Sidebar -->
         <?php include '../guru/sidebar.php'; ?>
 
-        <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">
-            <div class="container-fluid py-3">
-                <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
-                    <h4 class="fw-bold text-primary m-0">Perizinan</h4>
-                   <?php include '../profil/profil.php'; ?>
+ <!-- MAIN CONTENT -->
+    <div class="flex-grow-1 main-content"
+         style="background-image:url('../background/Data Siswa(1).png'); background-size:cover; background-position:center;">
+
+        <div class="container-fluid py-3">
+
+            <!-- HEADER -->
+            <div class="d-flex justify-content-between align-items-center mb-4 page-header">
+
+                <h4 class="fw-bold text-primary m-0 page-title">Perizinan</h4>
+
+                <div class="profile-area">
+                    <?php 
+                    $_GET['from'] = $from_param;
+                    include "../profil/profil.php"; 
+                    ?>
                 </div>
+            </div>
+
 
                 <div class="card shadow-sm border-0 p-4" style="border-radius:16px;">
                     <h5 class="fw-bold mb-4">Daftar Perizinan Murid (Total: <?= count($perizinanList) ?>)</h5>

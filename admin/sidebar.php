@@ -1,6 +1,4 @@
-<!-- SIDEBAR -->
-<link rel="stylesheet" href="../admin/sidebar.css">
-<link rel="icon" type="image/x-icon" href="../favicon.ico">
+<?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
 
 <!-- Hamburger Button untuk Mobile/Tablet -->
 <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()">
@@ -42,6 +40,7 @@
                 <span class="menu-text">Data Murid</span>
             </a>
         </li>
+
         <li class="nav-item">
             <a href="../admin absensi/Absensi.php" class="nav-link">
                 <img src="../assets/absensi.png" class="icon" alt="Absensi">

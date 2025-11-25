@@ -1,7 +1,7 @@
 <?php
 session_name('SESS_ADMIN');
 session_start();
-$active_page = 'absensi_siswa';
+$active_page = 'absensi';
 
 // Verifikasi role guru
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -47,7 +47,7 @@ if ($selected_class) {
 }
 
 // Untuk profil.php
-$from_param = 'absensi_siswa';
+$from_param = 'absensi';
 $_GET['from'] = $from_param;
 ?>
 <!DOCTYPE html>
@@ -71,11 +71,20 @@ $_GET['from'] = $from_param;
     <div class="flex-grow-1 main-content bg-absensi-guru">
         <div class="container-fluid py-3">
 
+
             <!-- HEADER -->
-            <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
-                <h4 class="fw-bold text-primary m-0">Absensi</h4>
-                <?php include '../profil/profil.php'; ?>
+            <div class="d-flex justify-content-between align-items-center mb-4 page-header">
+
+                <h4 class="fw-bold text-primary m-0 page-title">Absensi Admin</h4>
+
+                <div class="profile-area">
+                    <?php 
+                    $_GET['from'] = $from_param;
+                    include "../profil/profil.php"; 
+                    ?>
+                </div>
             </div>
+
 
             <!-- FILTER KELAS & TANGGAL -->
             <form id="filterForm" class="d-flex gap-3 align-items-center mb-5 flex-wrap" method="GET">

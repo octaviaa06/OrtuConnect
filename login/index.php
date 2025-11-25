@@ -4,7 +4,7 @@ $error_message = '';
 
 if (isset($_SESSION['error'])) {
     $error_message = $_SESSION['error'];
-    unset($_SESSION['error']); // Hapus agar tidak muncul saat refresh
+    unset($_SESSION['error']); 
 }
 ?>
 
