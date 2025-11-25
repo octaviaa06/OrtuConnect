@@ -1,115 +1,50 @@
-/* Main Content */
-.main-content {
-    margin-left: 240px;
-    transition: margin-left 0.3s ease;
-    min-height: 100vh;
-    padding: 20px;
-    overflow-x: hidden;
-    max-width: 100%;
-    position: relative;
-}
-.sidebar.collapsed ~ .main-content {
-    margin-left: 80px;
+/* ===================================================== */
+/* KALENDER GURU – STYLE (MOBILE-FRIENDLY + SIDEBAR FULL) */
+/* ===================================================== */
+
+/* Background kalender */
+.kalender-bg {
+    background-image: url('../background/Data Guru(1).png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
-/* Hilangkan overflow yang bikin garis */
-body {
-    overflow-x: hidden;
-    max-width: 100vw;
-    position: relative;
-}
-
-html {
-    overflow-x: hidden;
-    max-width: 100vw;
-}
-
-.d-flex {
-    overflow-x: hidden;
-    max-width: 100%;
-}
-
-/* Header */
+/* Header tetap transparan */
 .header-fixed {
-    position: relative;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 16px 16px !important;
+    margin: -20px -16px 24px -16px !important;
 }
-.profile-btn {
+
+/* Kalender */
+.kalender-container {
+    border-radius: 18px;
+}
+.kalender-nav-buttons {
     display: flex;
-    align-items: center;
-    background: #fff;
-    padding: 8px 14px;
-    border-radius: 10px;
-    cursor: pointer;
-    position: relative;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    gap: 8px;
 }
-.profile-avatar {
-    background-color: #1a73e8;
-    color: white;
-    font-weight: bold;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+.nav-arrow {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 10px;
-}
-.profile-card {
-    display: none;
-    position: absolute;
-    right: 0;
-    top: 55px;
-    background: #fff;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    border-radius: 10px;
-    width: 220px;
-    padding: 15px;
-    z-index: 999;
-}
-.profile-card.show {
-    display: block;
-}
-.logout-btn {
-    display: flex;
-    align-items: center;
-    color: #dc3545;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e9ecef;
+    color: #495057;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: bold;
+    transition: all 0.2s;
 }
-.logout-btn img {
-    width: 20px;
-    margin-right: 8px;
-}
-
-/* Tombol Tambah Agenda */
-button.btn-primary {
-    background-color: #1a73e8;
-    border: none;
-    transition: all 0.3s ease;
-}
-button.btn-primary:hover {
-    background-color: #1456b8;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(26, 115, 232, 0.3);
+.nav-arrow:hover {
+    background: #0d6efd;
+    color: white;
 }
 
-.btn-tambah-agenda {
-    border-radius: 12px;
-    font-size: 1.1rem;
-    padding: 14px;
-}
-
-/* Kalender Grid */
-.kalender-container {
-    background: #ffffffb0;
-    border-radius: 16px;
-    backdrop-filter: blur(6px);
-    transition: all 0.3s ease;
-}
-.kalender-container:hover {
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
-}
 .kalender-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -117,401 +52,143 @@ button.btn-primary:hover {
 }
 .hari-header {
     text-align: center;
+    padding: 10px 0;
     font-weight: 600;
-    color: #1a73e8;
-    padding: 8px 0;
-    background: #eaf2ff;
-    border-radius: 8px;
-    font-size: 0.9rem;
+    color: #6c757d;
+}
+.hari-header.minggu {
+    color: #dc3545;
+}
+.tanggal-kosong {
+    padding: 12px 0;
 }
 .tanggal-item {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 65px;
+    width: 100%;
+    height: 68px;
     border-radius: 10px;
     text-decoration: none;
     color: #333;
-    background: #fff;
-    font-weight: 500;
-    transition: all 0.2s ease;
     position: relative;
+    font-weight: 500;
+    transition: all 0.2s;
 }
 .tanggal-item:hover {
-    background-color: #dbe9ff;
-    transform: scale(1.05);
+    background-color: #f1f8ff;
+}
+.tanggal-item.minggu {
+    color: #dc3545;
 }
 .tanggal-item.today {
-    border: 2px solid #1a73e8;
+    background-color: #e3f2fd;
+    border: 2px solid #0d6efd;
 }
 .tanggal-item.selected-day {
-    background-color: #1a73e8;
-    color: white;
-    font-weight: 600;
+    background-color: #d1e7ff;
+    border: 2px solid #0d6efd;
+    font-weight: bold;
 }
 .tanggal-item.has-agenda::after {
-    content: "";
+    content: '';
     position: absolute;
     bottom: 6px;
     width: 6px;
     height: 6px;
-    background-color: #28a745;
+    background: #28a745;
     border-radius: 50%;
-}
-.tanggal-kosong {
-    height: 65px;
-    background: transparent;
-}
-.nav-arrow {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 8px;
-    background: #f0f0f0;
-    text-decoration: none;
-    color: #1a73e8;
-    font-weight: bold;
-    font-size: 1.2rem;
-    transition: all 0.2s ease;
-}
-.nav-arrow:hover {
-    background: #1a73e8;
-    color: white;
-    transform: scale(1.1);
 }
 
 /* Daftar Kegiatan */
 .daftar-kegiatan-container {
-    background: #ffffffb0;
-    border-radius: 16px;
-    backdrop-filter: blur(6px);
-    transition: all 0.3s ease;
-    min-height: 400px;
-}
-.daftar-kegiatan-container:hover {
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12) !important;
+    border-radius: 18px;
 }
 .kegiatan-item {
-    background-color: #fff;
-    border-left: 4px solid #1a73e8 !important;
-    border-radius: 12px;
-    transition: all 0.2s ease;
-    cursor: pointer;
+    transition: all 0.2s;
 }
 .kegiatan-item:hover {
-    transform: translateX(5px);
-    background-color: #f7fbff;
-    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.15);
-}
-.action-buttons {
-    display: flex;
-    gap: 8px;
+    background-color: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
 }
 
-/* Notifikasi Toast - MODERN & ESTETIK (Diperbarui untuk Transisi) */
-.notif {
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    padding: 12px 20px;
-    color: #fff;
-    border-radius: 8px;
-    font-weight: 500;
-    font-size: 0.9rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 99999 !important;
-    max-width: 320px;
-    width: auto;
-    min-width: 200px;
-    backdrop-filter: blur(10px);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    
-    /* Aturan untuk menyembunyikan secara default */
-    transform: translateX(400px); 
-    opacity: 0;
-    transition: transform 0.4s ease, opacity 0.4s ease; /* Transisi CSS untuk sembunyi/muncul */
-}
+/* ===================== */
+/* MODAL BACKDROP FIX — HILANGKAN DI MOBILE */
+/* ===================== */
 
-/* Kelas yang akan ditambahkan JS untuk menampilkannya */
-.notif.show {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-.notif::before {
-    content: '';
-    font-size: 1.2rem;
-}
-
-.notif.success {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Gradient Biru/Ungu */
-    border-left: 4px solid #5a67d8;
-}
-
-.notif.success::before {
-    content: '✓';
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.3);
-    font-weight: bold;
-}
-
-.notif.error {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); /* Gradient Merah/Pink */
-    border-left: 4px solid #f5576c;
-}
-
-.notif.error::before {
-    content: '✕';
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.3);
-    font-weight: bold;
-}
-
-/* Hapus keyframes slideInRight dan slideOutRight karena sekarang pakai transisi CSS */
-
-
-/* Modal */
-.modal-content {
-    border-radius: 16px;
-    border: none;
-    overflow: hidden;
-}
-.modal-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-}
-.modal-header .btn-close {
-    filter: brightness(0) invert(1);
-}
-.modal-body {
-    padding: 1.5rem;
-}
-.modal-footer {
-    border-top: 1px solid #e9ecef;
-    padding: 1rem 1.5rem;
-}
-
-/* Form Styling */
-.form-control:focus {
-    border-color: #1a73e8;
-    box-shadow: 0 0 0 0.2rem rgba(26, 115, 232, 0.25);
-}
-
-/* Responsif Tablet */
-@media (min-width: 769px) and (max-width: 1024px) {
-    .kalender-container, .daftar-kegiatan-container {
-        min-height: 450px;
-    }
-    
-    .tanggal-item {
-        height: 60px;
-        font-size: 0.95rem;
-    }
-    
-    .btn-tambah-agenda {
-        font-size: 1rem;
-        padding: 12px;
-    }
-    
-    .notif {
-        max-width: 450px;
-        bottom: 25px;
-    }
-}
-
-/* Responsif Desktop Besar */
-@media (min-width: 1400px) {
-    .kalender-container, .daftar-kegiatan-container {
-        min-height: 550px;
-    }
-}
-
-/* Responsif Laptop/Desktop Kecil */
 @media (max-width: 992px) {
-    .main-content {
-        margin-left: 80px;
-    }
-    /* ... (CSS sidebar yang relevan) ... */
-    
-    .tanggal-item {
-        height: 58px;
-    }
-    
-    .hari-header {
-        font-size: 0.85rem;
-        padding: 6px 0;
-    }
-}
-
-/* Responsif Mobile */
-@media (max-width: 768px) {
-    .main-content {
-        margin-left: 0;
-        padding: 15px;
-        width: 100%;
-        max-width: 100vw;
-    }
-    
-    body, html {
-        overflow-x: hidden;
-        max-width: 100vw;
-    }
-    
-    .d-flex {
-        overflow-x: hidden;
-        max-width: 100vw;
-    }
-    
-    .container-fluid {
-        padding-left: 15px;
-        padding-right: 15px;
-        max-width: 100%;
-    }
-    
-    .row {
-        margin-left: 0;
-        margin-right: 0;
-    }
-    
-    .col-lg-6, .col-md-12 {
-        padding-left: 0;
-        padding-right: 0;
-    }
-    
-    .btn-tambah-agenda {
-        font-size: 0.95rem;
-        padding: 12px;
-    }
-    
-    .kalender-grid {
-        gap: 4px;
-        font-size: 0.85rem;
-    }
-    
-    .tanggal-item {
-        height: 48px;
-        font-size: 0.85rem;
-    }
-    
-    .tanggal-item span {
-        width: 32px;
-        height: 32px;
-        line-height: 32px;
-    }
-    
-    .hari-header {
-        font-size: 0.75rem;
-        padding: 6px 4px;
-    }
-    
-    .kegiatan-item {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 12px;
-        padding: 12px !important;
-    }
-    
-    .action-buttons {
-        width: 100%;
-    }
-    
-    .action-buttons button {
-        flex: 1;
-        font-size: 0.85rem;
-    }
-    
-    .nav-arrow {
-        width: 32px;
-        height: 32px;
-        font-size: 1rem;
-    }
-    
-    .notif {
-        bottom: 20px;
-        right: auto; /* Hapus right: 20px */
-        left: 50%;
-        transform: translateX(-50%);
-        max-width: calc(100vw - 40px);
-        width: auto;
-        min-width: 200px;
-        text-align: center;
-        padding: 12px 20px;
-        font-size: 0.9rem;
-        white-space: normal;
-        word-wrap: break-word;
-    }
-    .notif.show { /* Pastikan show di mobile juga disesuaikan */
-         transform: translateX(-50%);
-         opacity: 1;
-    }
-    
-    .modal-dialog {
-        margin: 0.5rem;
-    }
-    
-    .modal-body {
-        padding: 1rem;
-    }
-    
-    .daftar-kegiatan-container {
-        min-height: auto;
-    }
-}
-
-/* Responsif Mobile Kecil */
-@media (max-width: 576px) {
-    .tanggal-item {
-        height: 42px;
-        font-size: 0.8rem;
-    }
-    
-    .hari-header {
-        font-size: 0.7rem;
-        padding: 5px 2px;
-    }
-    
-    .kalender-grid {
-        gap: 3px;
-    }
-    
-    .profile-btn {
-        padding: 6px 10px;
-    }
-    
-    .profile-avatar {
-        width: 32px;
-        height: 32px;
-        margin-right: 6px;
-    }
-}
-
-/* Print Styling */
-@media print {
-    .sidebar, .btn-tambah-agenda, .action-buttons, .nav-arrow {
+    .modal-backdrop {
         display: none !important;
     }
-    
-    .main-content {
-        margin-left: 0 !important;
+}
+
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 1rem;
+        max-width: 95%;
     }
-    
-    .kalender-container, .daftar-kegiatan-container {
-        background: white !important;
-        box-shadow: none !important;
+    .modal-content {
+        border-radius: 16px;
+    }
+    .modal-header {
+        padding: 1rem 1.5rem;
+    }
+    .modal-body {
+        padding: 1.5rem;
+    }
+}
+
+/* RESPONSIVE MOBILE */
+@media (max-width: 768px) {
+    .kalender-grid {
+        gap: 4px;
+    }
+    .tanggal-item {
+        height: 56px;
+        font-size: 0.9rem;
+    }
+    .header-fixed h4 {
+        font-size: 1.3rem;
+    }
+}
+/* ===================================================== */
+/* MODAL GRADIENT STYLE – SENADA DENGAN TEMA BIRU APLIKASI */
+/* ===================================================== */
+
+.modal-content {
+    background: linear-gradient(135deg, #ffffff, #eef5ff, #d7e7ff);
+    border-radius: 20px;
+    border: none;
+    color: #1a2b4c; /* biru gelap elegan */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    animation: popupFade 0.3s ease;
+}
+
+/* Header sedikit lebih bold agar jelas */
+.modal-header {
+    background: linear-gradient(135deg, #e8f1ff, #d0e2ff);
+    border-bottom: none;
+    border-radius: 20px 20px 0 0;
+    color: #0d47a1; /* biru tua branding */
+    font-weight: 600;
+}
+
+/* Footer light tone */
+.modal-footer {
+    background: linear-gradient(135deg, #f4f8ff, #e1ecff);
+    border-top: none;
+    border-radius: 0 0 20px 20px;
+}
+
+/* Smooth muncul */
+@keyframes popupFade {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
     }
 }

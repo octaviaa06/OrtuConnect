@@ -8,52 +8,59 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   exit;
 }
 
-// Ambil data guru dari API
-$api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/data_guru.php";
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $api_url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-$response = curl_exec($ch);
-
-if (curl_errno($ch)) {
-    echo "cURL Error: " . curl_error($ch);
-    $response = json_encode(["data" => []]);
+// Fungsi Helper untuk Fetch API
+function fetchApiData($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    
+    if (curl_errno($ch)) {
+        error_log("cURL Error: " . curl_error($ch));
+        curl_close($ch);
+        return ["data" => []];
+    }
+    
+    curl_close($ch);
+    
+    if ($http_code === 200 && $response) {
+        return json_decode($response, true);
+    }
+    return ["data" => []];
 }
-$ch = null;
 
-$data = json_decode($response, true);
+$api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/data_guru.php";
+$data = fetchApiData($api_url);
 $guruList = $data['data'] ?? [];
 ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Data Guru | OrtuConnect</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="notification.css">
   <link rel="stylesheet" href="../profil/profil.css">
   <link rel="stylesheet" href="../admin/sidebar.css">
 </head>
 <body>
 <div class="d-flex">
-  <!-- SIDEBAR -->
   <?php include '../admin/sidebar.php'; ?>
 
-  <!-- MAIN CONTENT -->
-  <div class="flex-grow-1 main-content" 
-       style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">
+  <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">
     <div class="container-fluid py-3">
-
-      <!-- HEADER -->
       <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
         <h4 class="fw-bold text-primary m-0">Data Guru</h4>
-       <?php include '../profil/profil.php'; ?>
+        <?php include '../profil/profil.php'; ?>
       </div>
 
-      <!-- HEADER TAMBAH & PENCARIAN -->
       <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div class="search-container flex-grow-1 position-relative" style="max-width: 500px;">
           <img src="../assets/cari.png" alt="Cari" class="search-icon">
@@ -64,12 +71,11 @@ $guruList = $data['data'] ?? [];
         </button>
       </div>
 
-      <!-- CARD LIST GURU -->
       <div class="row g-3" id="guruContainer">
         <?php if (empty($guruList)): ?>
           <p class="text-muted">Tidak ada data guru.</p>
         <?php else: ?>
-          <?php foreach ($guruList as $guru): 
+          <?php foreach ($guruList as $guru):
             $nama = htmlspecialchars($guru['nama_guru']);
             $kata = explode(' ', $nama);
             $inisial = (count($kata) >= 2)
@@ -79,8 +85,7 @@ $guruList = $data['data'] ?? [];
             <div class="col-md-4 mb-3 guru-item" data-id="<?= $guru['id_guru'] ?>">
               <div class="card guru-card shadow-sm border-0 p-3 d-flex flex-column justify-content-between" style="border-radius:16px; transition: all 0.2s;">
                 <div class="d-flex align-items-center mb-3">
-                  <div class="avatar-inisial bg-primary text-white me-3" 
-                       style="width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;">
+                  <div class="avatar-inisial bg-primary text-white me-3" style="width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;">
                     <?= $inisial ?>
                   </div>
                   <div>
@@ -117,7 +122,7 @@ $guruList = $data['data'] ?? [];
   </div>
 </div>
 
-<!-- MODAL TAMBAH/EDIT -->
+<!-- Modal Tambah/Edit Guru -->
 <div class="modal fade" id="modalGuru" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-3">
@@ -148,6 +153,14 @@ $guruList = $data['data'] ?? [];
             <label class="form-label required-label">Email</label>
             <input type="email" name="email" id="email" class="form-control" required>
           </div>
+          <div class="mb-3">
+            <label class="form-label required-label">Kelas</label>
+            <select name="kelas" id="kelas" class="form-select" required>
+              <option value="">Pilih Kelas</option>
+              <option value="A">Kelas A</option>
+              <option value="B">Kelas B</option>
+            </select>
+          </div>
         </div>
         <div class="modal-footer border-0">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -158,13 +171,13 @@ $guruList = $data['data'] ?? [];
   </div>
 </div>
 
-<!-- MODAL AKUN GURU -->
+<!-- Modal Akun Guru -->
 <div class="modal fade" id="modalAkun" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-primary text-white">
         <h5 class="modal-title">Akun Guru</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
         <table class="table table-borderless">
@@ -181,7 +194,7 @@ $guruList = $data['data'] ?? [];
   </div>
 </div>
 
-<!-- MODAL KONFIRMASI HAPUS -->
+<!-- Modal Konfirmasi Hapus -->
 <div class="modal fade" id="modalHapus" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -194,7 +207,7 @@ $guruList = $data['data'] ?? [];
       </div>
       <div class="modal-body">
         <p class="mb-0">Apakah Anda yakin ingin <strong>menghapus</strong> data guru ini?</p>
-        <p class="text-muted mt-2 mb-0"><small> <strong>tidak dapat dibatalkan</strong>.</small></p>
+        <p class="text-muted mt-2 mb-0"><small>Tindakan ini <strong>tidak dapat dibatalkan</strong>.</small></p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -204,27 +217,60 @@ $guruList = $data['data'] ?? [];
   </div>
 </div>
 
-<!-- Notifikasi -->
-<div id="notifBox" class="notif"></div>
+<!-- Modal Notifikasi Custom -->
+<div class="modal fade" id="notificationModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content notification-modal">
+      <div class="modal-body text-center p-4">
+        <div class="notification-icon-wrapper mb-3">
+          <svg class="notification-checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+            <circle class="notification-checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+            <path class="notification-checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+          </svg>
+        </div>
+        <h5 class="notification-title mb-2" id="notificationTitle">Berhasil menambah data!</h5>
+        <p class="notification-message text-muted mb-4" id="notificationMessage">Data guru berhasil ditambahkan.</p>
+        <button type="button" class="btn btn-primary btn-notification-ok" id="btnNotificationOk">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+  // Notification Modal System
+  const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'), {
+    backdrop: 'static',
+    keyboard: false
+  });
 
+  function showNotification(title, message) {
+    document.getElementById('notificationTitle').textContent = title;
+    document.getElementById('notificationMessage').textContent = message;
+    notificationModal.show();
+  }
 
+  document.getElementById('btnNotificationOk').addEventListener('click', () => {
+    notificationModal.hide();
+    setTimeout(() => location.reload(), 300);
+  });
+
+  // Search Functionality
   const searchInput = document.getElementById('searchInput');
   searchInput.addEventListener('keyup', () => {
     const keyword = searchInput.value.toLowerCase();
     document.querySelectorAll('.guru-item').forEach(item => {
       const nama = item.querySelector('.card-title').textContent.toLowerCase();
       const nip = item.querySelector('small').textContent.toLowerCase();
-      const email = item.querySelector('.card-body p:first-child').textContent.toLowerCase();
+      const emailEl = item.querySelector('.card-body p:first-child');
+      const email = emailEl ? emailEl.textContent.toLowerCase() : '';
       item.style.display = (nama.includes(keyword) || nip.includes(keyword) || email.includes(keyword)) ? '' : 'none';
     });
   });
 
-  // Modal
-  const modalGuru = new bootstrap.Modal(document.getElementById('modalGuru'));
-  const modalHapus = new bootstrap.Modal(document.getElementById('modalHapus'));
+  // Modal & Form Setup
+  const modalGuruBootstrap = new bootstrap.Modal(document.getElementById('modalGuru'));
+  const modalHapusBootstrap = new bootstrap.Modal(document.getElementById('modalHapus'));
   const formGuru = document.getElementById('formGuru');
   const idGuruInput = document.getElementById('id_guru');
   const judulModal = document.getElementById('judulModalGuru');
@@ -232,23 +278,36 @@ $guruList = $data['data'] ?? [];
   const apiURL = "https://ortuconnect.pbltifnganjuk.com/api/admin/data_guru.php";
   let idGuruHapus = null;
 
-  // Notifikasi
-  function showNotif(message, success = true) {
-    const notifBox = document.getElementById('notifBox');
-    notifBox.textContent = message;
-    notifBox.className = 'notif show ' + (success ? 'success' : 'error');
-    setTimeout(() => notifBox.classList.remove('show'), 3000);
-  }
-
-  // Tambah Guru
+  // Tambah Guru Button
   document.getElementById('btnTambahGuru').addEventListener('click', () => {
     judulModal.textContent = "Tambah Guru Baru";
     formGuru.reset();
     idGuruInput.value = "";
-    modalGuru.show();
+    modalGuruBootstrap.show();
   });
 
-  // Simpan (Tambah/Edit)
+  // Fetch All Guru
+  async function fetchAllGuru() {
+    try {
+      const res = await fetch(apiURL + '?list=all', { cache: 'no-store' });
+      const d = await res.json();
+      return d.data || [];
+    } catch {
+      return [];
+    }
+  }
+
+  // Check NIP Exists
+  async function nipExists(nip, excludeId = null) {
+    const list = await fetchAllGuru();
+    return list.some(g => {
+      if (!g.nip) return false;
+      if (excludeId && String(g.id_guru) === String(excludeId)) return false;
+      return String(g.nip).trim() === String(nip).trim();
+    });
+  }
+
+  // Form Submit Handler
   formGuru.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -257,70 +316,99 @@ $guruList = $data['data'] ?? [];
     const alamat = document.getElementById('alamat').value.trim();
     const no_telp = document.getElementById('no_telp').value.trim();
     const email = document.getElementById('email').value.trim();
+    const kelas = document.getElementById('kelas').value;
+    const id = idGuruInput.value.trim();
 
-    if (!nama || !nip || !alamat || !no_telp || !email) {
-      showNotif("Semua field dengan tanda * wajib diisi!", false);
+    if (!nama || !nip || !alamat || !no_telp || !email || !kelas) {
+      alert('Semua field wajib diisi!');
       return;
     }
-
-    const id = idGuruInput.value.trim();
-    const formData = { nama_guru: nama, nip, alamat, no_telp, email };
-    if (id) formData.id_guru = id;
-    const method = id ? "PUT" : "POST";
 
     tombolSimpan.disabled = true;
     tombolSimpan.textContent = "Menyimpan...";
 
     try {
+      // Validasi NIP
+      if (!id) {
+        if (await nipExists(nip, null)) {
+          alert('NIP sudah terdaftar pada sistem!');
+          tombolSimpan.disabled = false;
+          tombolSimpan.textContent = "Simpan";
+          return;
+        }
+      } else {
+        if (await nipExists(nip, id)) {
+          alert('NIP sudah terdaftar pada guru lain!');
+          tombolSimpan.disabled = false;
+          tombolSimpan.textContent = "Simpan";
+          return;
+        }
+      }
+
+      const method = id ? "PUT" : "POST";
+      const body = { nama_guru: nama, nip, alamat, no_telp, email, kelas };
+      if (id) body.id_guru = id;
+
       const res = await fetch(apiURL, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(body)
       });
+
       const data = await res.json();
 
       if (data.status === "success" || res.ok) {
-        showNotif(id ? "Data guru berhasil diperbarui!" : "Guru baru berhasil ditambahkan!", true);
-        modalGuru.hide();
-        setTimeout(() => location.reload(), 800);
+        modalGuruBootstrap.hide();
+        
+        // Tampilkan notifikasi sesuai aksi
+        if (id) {
+          showNotification('Berhasil mengedit data!', 'Data guru berhasil diperbarui.');
+        } else {
+          showNotification('Berhasil menambah data!', 'Data guru berhasil ditambahkan.');
+        }
       } else {
-        showNotif(data.message || "Gagal menyimpan data.", false);
+        alert(data.message || "Gagal menyimpan data.");
       }
     } catch (err) {
-      showNotif("Terjadi kesalahan: " + err.message, false);
+      alert("Terjadi kesalahan: " + err.message);
     } finally {
       tombolSimpan.disabled = false;
       tombolSimpan.textContent = "Simpan";
     }
   });
 
-  // Edit Guru
+  // Edit Guru Function
   window.editGuru = async (id) => {
     try {
       const res = await fetch(apiURL + `?id_guru=${id}`);
       const data = await res.json();
-      if (!data.data) return showNotif("Data tidak ditemukan!", false);
+      if (!data.data) {
+        alert('Data guru tidak ditemukan!');
+        return;
+      }
 
       const g = data.data;
-      idGuruInput.value = g.id_guru;
-      document.getElementById('nama_guru').value = g.nama_guru;
-      document.getElementById('nip').value = g.nip;
-      document.getElementById('alamat').value = g.alamat;
-      document.getElementById('no_telp').value = g.no_telp;
-      document.getElementById('email').value = g.email;
+      idGuruInput.value = g.id_guru || '';
+      document.getElementById('nama_guru').value = g.nama_guru || '';
+      document.getElementById('nip').value = g.nip || '';
+      document.getElementById('alamat').value = g.alamat || '';
+      document.getElementById('no_telp').value = g.no_telp || '';
+      document.getElementById('email').value = g.email || '';
+      document.getElementById('kelas').value = g.kelas || '';
       judulModal.textContent = "Edit Data Guru";
-      modalGuru.show();
+      modalGuruBootstrap.show();
     } catch (err) {
-      showNotif("Gagal memuat data: " + err.message, false);
+      alert("Gagal memuat data: " + err.message);
     }
   };
 
-  // Hapus Guru (Modal)
+  // Hapus Guru Function
   window.hapusGuru = (id) => {
     idGuruHapus = id;
-    modalHapus.show();
+    modalHapusBootstrap.show();
   };
 
+  // Konfirmasi Hapus Handler
   document.getElementById('btnKonfirmasiHapus').addEventListener('click', async () => {
     if (!idGuruHapus) return;
 
@@ -332,24 +420,21 @@ $guruList = $data['data'] ?? [];
       });
       const data = await res.json();
 
-      modalHapus.hide();
+      modalHapusBootstrap.hide();
 
       if (data.status === "success" || res.ok) {
-        showNotif("Data guru berhasil dihapus!", true);
-        const card = document.querySelector(`.guru-item[data-id="${idGuruHapus}"]`);
-        if (card) card.remove();
-        else location.reload();
+        showNotification('Berhasil menghapus data!', 'Data guru berhasil dihapus.');
       } else {
-        showNotif(data.message || "Gagal menghapus data.", false);
+        alert(data.message || "Gagal menghapus data.");
       }
     } catch (err) {
-      showNotif("Gagal menghapus: " + err.message, false);
+      alert("Gagal menghapus: " + err.message);
     } finally {
       idGuruHapus = null;
     }
   });
 
-  // Generate Akun
+  // Generate Akun Function
   window.generateAkun = async (id) => {
     try {
       const res = await fetch(`https://ortuconnect.pbltifnganjuk.com/api/admin/generate_akun.php?tipe=guru&id=${id}`, { cache: "no-store" });
@@ -361,12 +446,11 @@ $guruList = $data['data'] ?? [];
         document.getElementById("akunPassword").textContent = d.password;
         document.getElementById("akunRole").textContent = d.role;
         new bootstrap.Modal(document.getElementById('modalAkun')).show();
-        showNotif("Akun berhasil ditampilkan!", true);
       } else {
-        showNotif(data.message, false);
+        alert(data.message || "Gagal membuat akun.");
       }
     } catch (err) {
-      showNotif("Gagal menampilkan akun: " + err.message, false);
+      alert("Gagal menampilkan akun: " + err.message);
     }
   };
 </script>

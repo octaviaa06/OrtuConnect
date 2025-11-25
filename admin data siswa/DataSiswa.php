@@ -36,7 +36,7 @@ $siswaList = $data['data'] ?? [];
   <link rel="stylesheet" href="datasiswa.css">
   <link rel="stylesheet" href="../profil/profil.css">
   <link rel="stylesheet" href="../admin/sidebar.css">
-
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
 <div class="d-flex">
@@ -122,51 +122,70 @@ $siswaList = $data['data'] ?? [];
 <!-- TAMBAH/EDIT -->
 <div class="modal fade" id="modalSiswa" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-3">
+    <div class="modal-content p-3 custom-modal">
       <div class="modal-header border-0">
-        <h5 class="modal-title" id="judulModalSiswa">Tambah Murid Baru</h5>
+        <h5 class="modal-title fw-bold text-primary" id="judulModalSiswa">Tambah Murid Baru</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form id="formSiswa">
         <input type="hidden" name="id_siswa" id="id_siswa">
         <div class="modal-body">
-          <div class="mb-3"><label class="form-label">Nama Lengkap</label><input type="text" name="nama_siswa" id="nama_siswa" class="form-control" required></div>
-       <div class="mb-3">
-  <label class="form-label">Kelas</label>
-  <select name="kelas" id="kelas" class="form-select" required>
-    <option value="">-- Pilih Kelas --</option>
-    <option value="Kelas A">Kelas A</option>
-    <option value="Kelas B">Kelas B</option>
-  </select>
-          </div>
-
-          <div class="mb-3"><label class="form-label">Tanggal Lahir</label><input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control" required></div>
           <div class="mb-3">
-            <label class="form-label">Jenis Kelamin</label>
-            <select type="text" name="gender" id="gender" class="form-select" required>
-                <option value="">-- Jenis Kelamin --</option>
-                <option value="Laki-Laki">Laki-Laki</option>
-                <option value="Perempuan">Perempuan</option>
-           </select>
+            <label class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
+            <input type="text" name="nama_siswa" id="nama_siswa" class="form-control custom-input" required>
+            <div class="invalid-feedback">Nama lengkap harus diisi</div>
           </div>
-          <div class="mb-3"><label class="form-label">Nama Orang Tua</label><input type="text" name="nama_ortu" id="nama_ortu" class="form-control" required></div>
-          <div class="mb-3"><label class="form-label">No. Telp Orang Tua</label><input type="text" name="no_telp_ortu" id="no_telp_ortu" class="form-control" required></div>
-          <div class="mb-3"><label class="form-label">Alamat</label><textarea name="alamat" id="alamat" class="form-control"></textarea></div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Kelas <span class="text-danger">*</span></label>
+            <select name="kelas" id="kelas" class="form-select custom-input" required>
+              <option value="">-- Pilih Kelas --</option>
+              <option value="Kelas A">Kelas A</option>
+              <option value="Kelas B">Kelas B</option>
+            </select>
+            <div class="invalid-feedback">Kelas harus dipilih</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Tanggal Lahir <span class="text-danger">*</span></label>
+            <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control custom-input" required>
+            <div class="invalid-feedback">Tanggal lahir harus diisi</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Jenis Kelamin <span class="text-danger">*</span></label>
+            <select name="gender" id="gender" class="form-select custom-input" required>
+              <option value="">-- Jenis Kelamin --</option>
+              <option value="Laki-Laki">Laki-Laki</option>
+              <option value="Perempuan">Perempuan</option>
+            </select>
+            <div class="invalid-feedback">Jenis kelamin harus dipilih</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Nama Orang Tua <span class="text-danger">*</span></label>
+            <input type="text" name="nama_ortu" id="nama_ortu" class="form-control custom-input" required>
+            <div class="invalid-feedback">Nama orang tua harus diisi</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">No. Telp Orang Tua <span class="text-danger">*</span></label>
+            <input type="text" name="no_telp_ortu" id="no_telp_ortu" class="form-control custom-input" required>
+            <div class="invalid-feedback">Nomor telepon harus diisi</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Alamat</label>
+            <textarea name="alamat" id="alamat" class="form-control custom-input" rows="3"></textarea>
+          </div>
         </div>
         <div class="modal-footer border-0">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-primary" id="btnSimpanSiswa">Simpan</button>
+          <button type="button" class="btn btn-secondary custom-btn" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary custom-btn" id="btnSimpanSiswa">Simpan</button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
-
 <!-- AKUN -->
 <div class="modal fade" id="modalAkun" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
+    <div class="modal-content custom-modal">
       <div class="modal-header bg-primary text-white">
         <h5 class="modal-title">Akun OrangTua</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -180,14 +199,14 @@ $siswaList = $data['data'] ?? [];
         </table>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+        <button class="btn btn-secondary custom-btn" data-bs-dismiss="modal">Tutup</button>
       </div>
-
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   const modalSiswa = new bootstrap.Modal(document.getElementById('modalSiswa'));
@@ -196,27 +215,69 @@ document.addEventListener("DOMContentLoaded", () => {
   const apiURL = "https://ortuconnect.pbltifnganjuk.com/api/admin/data_siswa.php";
 
   // Sidebar toggle
-const sidebar = document.getElementById('sidebar');
-const toggleBtn = document.getElementById('toggleSidebar');
-if (toggleBtn) {
-  toggleBtn.addEventListener('click', () => {
-    sidebar.classList.toggle('expanded');
+  const sidebar = document.getElementById('sidebar');
+  const toggleBtn = document.getElementById('toggleSidebar');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('expanded');
+    });
+  }
+
+  // Validasi form real-time
+  const inputs = formSiswa.querySelectorAll('.custom-input[required]');
+  inputs.forEach(input => {
+    input.addEventListener('blur', function() {
+      validateField(this);
+    });
   });
-}
+
+  function validateField(field) {
+    if (!field.value.trim()) {
+      field.classList.add('is-invalid');
+      return false;
+    } else {
+      field.classList.remove('is-invalid');
+      return true;
+    }
+  }
+
   // Tambah siswa
   document.getElementById('btnTambahSiswa').addEventListener('click', () => {
     document.getElementById('judulModalSiswa').textContent = "Tambah Murid Baru";
     formSiswa.reset();
     idSiswa.value = "";
+    // Hapus validasi sebelumnya
+    inputs.forEach(input => input.classList.remove('is-invalid'));
     modalSiswa.show();
   });
 
   // Simpan data siswa (POST/PUT)
   formSiswa.addEventListener('submit', async (e) => {
     e.preventDefault();
+    
+    // Validasi semua field
+    let isValid = true;
+    inputs.forEach(input => {
+      if (!validateField(input)) {
+        isValid = false;
+      }
+    });
+
+    if (!isValid) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Data Belum Lengkap',
+        text: 'Harap isi semua field yang wajib diisi!',
+        confirmButtonColor: '#3085d6'
+      });
+      return;
+    }
+
     const id = idSiswa.value.trim();
     const dataForm = Object.fromEntries(new FormData(formSiswa).entries());
     const method = id ? "PUT" : "POST";
+    const action = id ? "mengedit" : "menambah";
+
     if (id) dataForm.id_siswa = id;
 
     try {
@@ -226,72 +287,151 @@ if (toggleBtn) {
         body: JSON.stringify(dataForm)
       });
       const data = await res.json();
-      alert(data.message || "Berhasil disimpan!");
-      modalSiswa.hide();
-      location.reload();
+      
+      if (res.ok) {
+        Swal.fire({
+          icon: 'success',
+          title: `Berhasil ${action} data!`,
+          text: data.message || `Data murid berhasil ${action}.`,
+          confirmButtonColor: '#3085d6'
+        }).then(() => {
+          modalSiswa.hide();
+          location.reload();
+        });
+      } else {
+        throw new Error(data.message || 'Gagal menyimpan data');
+      }
     } catch (err) {
-      alert("Gagal menyimpan: " + err.message);
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal Menyimpan',
+        text: err.message,
+        confirmButtonColor: '#3085d6'
+      });
     }
   });
 
-window.editSiswa = async function(id) {
-  try {
-    const res = await fetch(apiURL + `?id_siswa=${id}`);
-    const data = await res.json();
-    if (!data || data.message) return alert("Data tidak ditemukan!");
+  window.editSiswa = async function(id) {
+    try {
+      const res = await fetch(apiURL + `?id_siswa=${id}`);
+      const data = await res.json();
+      if (!data || data.message) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Data Tidak Ditemukan',
+          text: 'Data murid tidak ditemukan!',
+          confirmButtonColor: '#3085d6'
+        });
+        return;
+      }
 
-    const s = data;
-    idSiswa.value = s.id_siswa;
-    document.getElementById('nama_siswa').value = s.nama_siswa;
-    document.getElementById('kelas').value = s.kelas;
-    document.getElementById('tanggal_lahir').value = s.tanggal_lahir;
-    document.getElementById('gender').value = s.gender;
-    document.getElementById('nama_ortu').value = s.nama_ortu;
-    document.getElementById('no_telp_ortu').value = s.no_telp_ortu;
-    document.getElementById('alamat').value = s.alamat;
-    document.getElementById('judulModalSiswa').textContent = "Edit Data Murid";
-    modalSiswa.show();
-  } catch (err) {
-    alert("Gagal memuat data: " + err.message);
-  }
-};
-
-window.hapusSiswa = async function(id) {
-  if (!confirm("Yakin ingin menghapus data murid ini?")) return;
-  try {
-    const res = await fetch(apiURL, {
-      method: "DELETE",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({id_siswa: id})
-    });
-    const data = await res.json();
-    alert(data.message || "Data berhasil dihapus!");
-    location.reload();
-  } catch (err) {
-    alert("Gagal menghapus: " + err.message);
-  }
-};
-
-window.generateAkun = async function(id) {
-  try {
-    const res = await fetch(`https://ortuconnect.pbltifnganjuk.com/api/admin/generate_akun.php?tipe=siswa&id=${id}`, { cache: "no-store" });
-    const data = await res.json();
-    if (data.status === "success") {
-      const d = data.data;
-      document.getElementById("akunNama").textContent = d.nama;
-      document.getElementById("akunUsername").textContent = d.username;
-      document.getElementById("akunPassword").textContent = d.password;
-      document.getElementById("akunRole").textContent = d.role;
-      new bootstrap.Modal(document.getElementById('modalAkun')).show();
-    } else {
-      alert(data.message);
+      const s = data;
+      idSiswa.value = s.id_siswa;
+      document.getElementById('nama_siswa').value = s.nama_siswa;
+      document.getElementById('kelas').value = s.kelas;
+      document.getElementById('tanggal_lahir').value = s.tanggal_lahir;
+      document.getElementById('gender').value = s.gender;
+      document.getElementById('nama_ortu').value = s.nama_ortu;
+      document.getElementById('no_telp_ortu').value = s.no_telp_ortu;
+      document.getElementById('alamat').value = s.alamat;
+      document.getElementById('judulModalSiswa').textContent = "Edit Data Murid";
+      
+      // Hapus validasi sebelumnya
+      inputs.forEach(input => input.classList.remove('is-invalid'));
+      modalSiswa.show();
+    } catch (err) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal Memuat Data',
+        text: err.message,
+        confirmButtonColor: '#3085d6'
+      });
     }
-  } catch (err) {
-    alert("Gagal menampilkan akun: " + err.message);
+  };
+
+  window.hapusSiswa = async function(id) {
+    const result = await Swal.fire({
+      icon: 'warning',
+      title: 'Hapus Data Murid?',
+      text: 'Data yang dihapus tidak dapat dikembalikan!',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Ya, Hapus!',
+      cancelButtonText: 'Batal'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        const res = await fetch(apiURL, {
+          method: "DELETE",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({id_siswa: id})
+        });
+        const data = await res.json();
+        
+        if (res.ok) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Berhasil Dihapus!',
+            text: data.message || 'Data murid berhasil dihapus.',
+            confirmButtonColor: '#3085d6'
+          }).then(() => {
+            location.reload();
+          });
+        } else {
+          throw new Error(data.message || 'Gagal menghapus data');
+        }
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal Menghapus',
+          text: err.message,
+          confirmButtonColor: '#3085d6'
+        });
+      }
+    } else {
+      Swal.fire({
+        icon: 'info',
+        title: 'Dibatalkan',
+        text: 'Data murid aman.',
+        confirmButtonColor: '#3085d6',
+        timer: 1500
+      });
+    }
+  };
+
+  window.generateAkun = async function(id) {
+    try {
+      const res = await fetch(`https://ortuconnect.pbltifnganjuk.com/api/admin/generate_akun.php?tipe=siswa&id=${id}`, { cache: "no-store" });
+      const data = await res.json();
+      if (data.status === "success") {
+        const d = data.data;
+        document.getElementById("akunNama").textContent = d.nama;
+        document.getElementById("akunUsername").textContent = d.username;
+        document.getElementById("akunPassword").textContent = d.password;
+        document.getElementById("akunRole").textContent = d.role;
+        new bootstrap.Modal(document.getElementById('modalAkun')).show();
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal Membuat Akun',
+          text: data.message,
+          confirmButtonColor: '#3085d6'
+        });
+      }
+    } catch (err) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: "Gagal menampilkan akun: " + err.message,
+        confirmButtonColor: '#3085d6'
+      });
+    }
   }
-}
 });
 
+// Pencarian
 const searchInput = document.getElementById('searchInput');
 const siswaContainer = document.getElementById('siswaContainer');
 
@@ -304,7 +444,6 @@ if (searchInput && siswaContainer) {
       const nama = item.querySelector('.card-title').textContent.toLowerCase();
       const kelas = item.querySelector('small').textContent.toLowerCase();
 
- 
       if (nama.includes(keyword) || kelas.includes(keyword)) {
         item.style.display = '';
       } else {
@@ -313,8 +452,6 @@ if (searchInput && siswaContainer) {
     }
   });
 }
-
-
 </script>
 </body>
 </html>
