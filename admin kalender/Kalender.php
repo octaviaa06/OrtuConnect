@@ -3,15 +3,15 @@ session_name('SESS_ADMIN');
 session_start();
 $active_page = 'Kalender';
 
+// Cek autentikasi dan peran admin
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../login/index.php?error=Harap login sebagai admin!");
     exit;
 }
 
-$current_month = $_GET['month'] ?? 11;
-$current_year  = $_GET['year'] ?? 2025;
+$current_month = $_GET['month'] ?? date('n');
+$current_year  = $_GET['year'] ?? date('Y');
 
-// Navigasi bulan (next / prev)
 if (isset($_GET['nav'])) {
     if ($_GET['nav'] === 'next') {
         $current_month++;
@@ -27,28 +27,34 @@ if (isset($_GET['nav'])) {
         }
     }
 }
+// Fungsi Helper untuk Fetch API
+function fetchApiData($url) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    
+    $response = curl_exec($ch);
+    $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($http_code === 200 && $response) {
+        return json_decode($response, true);
+    }
+    return [];
+}
 
+// Hitung komponen tanggal untuk kalender
 $first_day_of_month = mktime(0, 0, 0, $current_month, 1, $current_year);
 $number_of_days     = date('t', $first_day_of_month);
 $date_components    = getdate($first_day_of_month);
-$month_name         = date('F', $first_day_of_month); // Hanya bulan, tanpa tahun
+$month_name         = date('F', $first_day_of_month);
 $day_of_week        = $date_components['wday'];
+
+// Panggil API untuk mendapatkan agenda
 $api_agenda_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/agenda.php?month={$current_month}&year={$current_year}";
-
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $api_agenda_url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-$response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$ch = null;
-
-if ($httpCode !== 200 || empty($response)) {
-    $response = json_encode(["data" => []]);
-}
-
-$data       = json_decode($response, true);
+$data = fetchApiData($api_agenda_url);
 $agendaList = $data['data'] ?? [];
 
 // Kelompokkan agenda berdasarkan tanggal
@@ -59,7 +65,8 @@ foreach ($agendaList as $agenda) {
 }
 
 // Tentukan tanggal yang dipilih
-$selected_day       = $_GET['day'] ?? ((date('Y') == $current_year && date('n') == $current_month) ? date('j') : 1);
+$default_day = (date('Y') == $current_year && date('n') == $current_month) ? date('j') : 1;
+$selected_day = $_GET['day'] ?? $default_day;
 $selected_date_full = date('Y-m-d', mktime(0, 0, 0, $current_month, $selected_day, $current_year));
 $selected_agenda    = $agendaByDate[$selected_date_full] ?? [];
 
@@ -84,7 +91,6 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
     <link rel="stylesheet" href="kalender.css" />
     <link rel="stylesheet" href="../profil/profil.css">
     <link rel="stylesheet" href="../admin/sidebar.css">
-
 </head>
 
 <body>
@@ -95,7 +101,7 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
 
                 <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
                     <h4 class="fw-bold text-primary m-0">Kalender</h4>
-                   <?php include '../profil/profil.php'; ?>
+                    <?php include '../profil/profil.php'; ?>
                 </div>
 
                 <button class="btn btn-primary btn-lg w-100 mb-4 fw-bold btn-tambah-agenda" onclick="openModalTambahAgenda()">
@@ -108,9 +114,9 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="fw-bold m-0"><?= $month_name_id ?> <?= $current_year ?></h5>
                                 <div class="kalender-nav-buttons">
-                                    <a href="Kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=prev&day=<?= $selected_day ?>" class="nav-arrow me-2">&lt;</a>
-                                    <a href="Kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=next&day=<?= $selected_day ?>" class="nav-arrow">&gt;</a>
-                                </div>
+    <a href="Kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=prev&day=<?= $selected_day ?>" class="nav-arrow me-2" title="Bulan Sebelumnya">&lt;</a>
+    <a href="Kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=next&day=<?= $selected_day ?>" class="nav-arrow" title="Bulan Berikutnya">&gt;</a>
+</div>
                             </div>
 
                             <div class="kalender-grid">
@@ -123,8 +129,6 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
                                 <div class="hari-header">Sab</div>
 
                                 <?php
-                                $day_counter = 1;
-
                                 // Hari kosong di awal bulan
                                 for ($i = 0; $i < $day_of_week; $i++) {
                                     echo "<div class='tanggal-kosong'></div>";
@@ -138,7 +142,7 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
                                     $has_agenda  = isset($agendaByDate[$date_string]);
 
                                     $class = 'tanggal-item';
-                                    if ($day_counter % 7 == 1) $class .= ' minggu';
+                                    if (($day_of_week + $day - 1) % 7 == 0) $class .= ' minggu';
                                     if ($is_today) $class .= ' today';
                                     if ($is_selected) $class .= ' selected-day';
                                     if ($has_agenda) $class .= ' has-agenda';
@@ -146,15 +150,14 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
                                     $link = "Kalender.php?month={$current_month}&year={$current_year}&day={$day}";
 
                                     echo "<a href='{$link}' class='{$class}' data-date='{$date_string}'><span>{$day}</span></a>";
-
-                                    $day_counter++;
                                 }
 
                                 // Hari kosong akhir bulan
-                                while ($day_counter <= 42) {
-                                    if ($day_counter % 7 == 1) break;
-                                    echo "<div class='tanggal-kosong'></div>";
-                                    $day_counter++;
+                                $cells_after = ($day_of_week + $number_of_days) % 7;
+                                if ($cells_after > 0) {
+                                    for ($i = $cells_after; $i < 7; $i++) {
+                                        echo "<div class='tanggal-kosong'></div>";
+                                    }
                                 }
                                 ?>
                             </div>
@@ -244,7 +247,7 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
     <div class="modal fade" id="agendaModal" tabindex="-1" aria-labelledby="agendaModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <form id="formAgenda">
+                <form id="formAgenda" novalidate>
                     <div class="modal-header">
                         <h5 class="modal-title" id="agendaModalLabel">
                             <i class="bi bi-calendar-plus me-2"></i>Tambah Agenda
@@ -299,37 +302,28 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
     <script>
         const AGENDA_API = "https://ortuconnect.pbltifnganjuk.com/api/admin/agenda.php";
 
-        // =========================================================================
-        // FUNGSI NOTIFIKASI TOAST (Menggunakan CSS yang Disediakan)
-        // =========================================================================
+        // Fungsi Notifikasi Toast
         function showNotif(message, isSuccess = true) {
             const notifBox = document.getElementById("notifBox");
             const notifMessage = document.getElementById("notifMessage");
             if (!notifBox) return;
             
-            // Atur pesan dan kelas
             notifMessage.textContent = message;
-            
-            // 1. Reset kelas (hilangkan show, success, error)
             notifBox.classList.remove('success', 'error', 'show');
 
-            // 2. Tentukan kelas baru
             if (isSuccess) {
                 notifBox.classList.add('success');
             } else {
                 notifBox.classList.add('error');
             }
             
-            // 3. Tampilkan Toast (tambahkan kelas show)
-            void notifBox.offsetWidth; // Memicu reflow/render
+            void notifBox.offsetWidth;
             notifBox.classList.add('show');
             
-            // 4. Sembunyikan Toast setelah 3 detik
             setTimeout(() => {
                 notifBox.classList.remove('show');
             }, 3000); 
         }
-        // =========================================================================
 
         function openModalTambahAgenda() {
             document.getElementById('agendaId').value = '';
@@ -339,12 +333,21 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
             document.getElementById('agendaModalLabel').innerHTML = '<i class="bi bi-calendar-plus me-2"></i>Tambah Agenda';
             document.getElementById('btnSimpanAgenda').innerHTML = '<i class="bi bi-check-circle me-1"></i> Simpan';
             
-            // Reset validasi
             document.getElementById('formAgenda').classList.remove('was-validated');
             
             new bootstrap.Modal(document.getElementById('agendaModal')).show();
         }
-    }
+
+        function formatTanggal(tanggal) {
+            if (!tanggal) return '-';
+            const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
+                           'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            const d = new Date(tanggal);
+            
+            if (isNaN(d.getTime())) return tanggal; 
+
+            return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
+        }
 
         function lihatDetailAgenda(agenda) {
             document.getElementById('detailNamaKegiatan').textContent = agenda.nama_kegiatan || '-';
@@ -354,17 +357,13 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
             new bootstrap.Modal(document.getElementById('detailAgendaModal')).show();
         }
 
-        function formatTanggal(tanggal) {
-            const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 
-                           'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-            const d = new Date(tanggal);
-            return `${d.getDate()} ${bulan[d.getMonth()]} ${d.getFullYear()}`;
-        }
-
         async function editAgenda(id) {
+            if (!id) return showNotif('ID Agenda tidak valid.', false);
+            
             try {
                 const res = await fetch(`${AGENDA_API}?id=${id}`);
                 const data = await res.json();
+                
                 if (data.status === 'success' && data.data) {
                     const a = data.data;
                     document.getElementById('agendaId').value = a.id;
@@ -376,23 +375,25 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
                     
                     document.getElementById('formAgenda').classList.remove('was-validated');
                     
-                    const backdrops = document.querySelectorAll('.modal-backdrop');
-                    backdrops.forEach(backdrop => backdrop.remove());
+                    const detailModalEl = document.getElementById('detailAgendaModal');
+                    const detailModal = bootstrap.Modal.getInstance(detailModalEl);
+                    if (detailModal) detailModal.hide();
+
+                    document.querySelectorAll('.modal-backdrop').forEach(backdrop => backdrop.remove());
                     
                     new bootstrap.Modal(document.getElementById('agendaModal')).show();
                 } else {
-                    showNotif('Gagal memuat data agenda.', false);
+                    showNotif('Gagal memuat data agenda: ' + (data.message || 'Data tidak ditemukan.'), false);
                 }
-            } catch {
+            } catch (error) {
+                console.error('Edit error:', error);
                 showNotif("Terjadi kesalahan koneksi.", false);
             }
-        } catch (error) {
-            console.error('Delete error:', error);
-            showNotif("Terjadi kesalahan koneksi.", false);
         }
-    }
 
         async function deleteAgenda(id) {
+            if (!id) return showNotif('ID Agenda tidak valid.', false);
+
             const confirmDelete = await showConfirmModal(
                 'Konfirmasi Hapus',
                 'Apakah Anda yakin ingin menghapus agenda ini? Tindakan ini tidak dapat dibatalkan.',
@@ -411,26 +412,21 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
                 const data = await res.json();
                 
                 if (data.status === 'success') {
-                    // Tampilkan notifikasi
                     showNotif(data.message || 'Agenda berhasil dihapus!', true);
-                    
-                    // Muat ulang halaman setelah notifikasi selesai ditampilkan
-                    setTimeout(() => location.reload(), 3400); // 3 detik tampil + 0.4 detik transisi/animasi hilang
+                    setTimeout(() => location.reload(), 3400); 
                 } else {
                     showNotif(data.message || 'Gagal menghapus agenda.', false);
                 }
-            } catch {
+            } catch (error) {
+                console.error('Delete error:', error);
                 showNotif("Terjadi kesalahan koneksi.", false);
             }
         }
 
-        // Fungsi helper untuk modal konfirmasi
         function showConfirmModal(title, message, confirmText, cancelText) {
             return new Promise((resolve) => {
                 const existingModal = document.getElementById('confirmDeleteModal');
-                if (existingModal) {
-                    existingModal.remove();
-                }
+                if (existingModal) existingModal.remove();
                 
                 const modalHTML = `
                     <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
@@ -469,7 +465,12 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
                 };
                 
                 modalElement.addEventListener('hidden.bs.modal', () => {
-                    modalElement.remove();
+                    if (!document.body.contains(modalElement)) return; 
+                    
+                    setTimeout(() => {
+                        modalElement.remove();
+                        resolve(false);
+                    }, 10); 
                 }, { once: true });
 
                 document.getElementById('cancelBtn').onclick = () => {
@@ -481,7 +482,6 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
             });
         }
 
-        // FUNGSI SUBMIT FORM
         document.getElementById('formAgenda').addEventListener('submit', async e => {
             e.preventDefault();
             
@@ -511,29 +511,6 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Loading...';
 
-        const btn = document.getElementById('btnSimpanAgenda');
-        const originalText = btn.textContent;
-        
-        btn.disabled = true;
-        btn.textContent = 'Loading...';
-
-        try {
-            console.log('Sending data:', requestData);
-
-            const res = await fetch(AGENDA_API, {
-                method: method,
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify(requestData)
-            });
-
-            console.log('Response status:', res.status);
-            const textResponse = await res.text();
-            console.log('Raw response:', textResponse);
-
-            let data;
             try {
                 const res = await fetch(AGENDA_API, {
                     method,
@@ -550,7 +527,7 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
                     if (modalInstance) {
                         modalElement.addEventListener('hidden.bs.modal', function handler() {
                             showNotif(message, true);
-                            setTimeout(() => location.reload(), 3400); 
+                            setTimeout(() => location.reload(), 3400);
                             modalElement.removeEventListener('hidden.bs.modal', handler);
                         }, { once: true }); 
 
@@ -562,22 +539,14 @@ $month_name_id = $bulan_indonesia[$month_name] ?? $month_name;
                 } else {
                     showNotif(data.message || 'Gagal menyimpan agenda.', false);
                 }
-            } catch {
+            } catch (error) {
+                console.error('Submit error:', error);
                 showNotif("Terjadi kesalahan koneksi.", false);
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalHTML;
             }
-
-        } catch (error) {
-            console.error('Submit error:', error);
-            showNotif("Terjadi kesalahan: " + error.message, false);
-        } finally {
-            btn.disabled = false;
-            btn.textContent = originalText;
-        }
-    });
-
-</script>
+        });
+    </script>
 </body>
 </html>

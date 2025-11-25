@@ -115,7 +115,7 @@ $perizinanList = $data['data'] ?? [];
          style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">
 
                 <div class="card shadow-sm border-0 p-4" style="border-radius:16px;">
-                    <h5 class="fw-bold mb-4">Daftar Perizinan Murid (Total: <?= count($perizinanList) ?>)</h5>
+                    <h5 class="fw-bold mb-4">Perizinan</h5>
 
             <div class="card shadow-sm border-0 p-4" style="border-radius:16px;">
                 <h5 class="fw-bold mb-4">Daftar Perizinan Murid (Total: <?= count($perizinanList) ?>)</h5>
