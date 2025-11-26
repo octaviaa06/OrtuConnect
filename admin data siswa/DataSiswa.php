@@ -2,8 +2,6 @@
 session_name('SESS_ADMIN');
 session_start();
 
-
-
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   header("Location: ../login/index.php?error=Harap login sebagai admin!");
   exit;
@@ -25,6 +23,15 @@ $ch=null;
 
 $data = json_decode($response, true);
 $siswaList = $data['data'] ?? [];
+
+// Filter berdasarkan kelas jika dipilih
+$selected_kelas = $_GET['kelas_filter'] ?? '';
+if ($selected_kelas) {
+    $siswaList = array_filter($siswaList, function($siswa) use ($selected_kelas) {
+        return $siswa['kelas'] === $selected_kelas;
+    });
+}
+
 $from_param = 'data';
 $_GET['from'] = $from_param;
 ?>
@@ -56,11 +63,23 @@ $_GET['from'] = $from_param;
        <?php include '../profil/profil.php'; ?>
       </div>
 
-      <!-- HEADER TAMBAH & PENCARIAN -->
+      <!-- HEADER TAMBAH, PENCARIAN & FILTER KELAS -->
       <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
-        <div class="search-container flex-grow-1 position-relative" style="max-width: 500px;">
-          <img src="../assets/cari.png" alt="Cari" class="search-icon">
-          <input type="text" id="searchInput" class="form-control search-input" placeholder="Cari murid berdasarkan nama atau kelas...">
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+          <!-- Filter Kelas -->
+          <div class="filter-kelas-container">
+            <select id="filterKelas" class="form-select filter-select" onchange="filterByKelas()">
+              <option value="">Semua Kelas</option>
+              <option value="Kelas A" <?= $selected_kelas === 'Kelas A' ? 'selected' : '' ?>>Kelas A</option>
+              <option value="Kelas B" <?= $selected_kelas === 'Kelas B' ? 'selected' : '' ?>>Kelas B</option>
+            </select>
+          </div>
+
+          <!-- Pencarian -->
+          <div class="search-container position-relative">
+            <img src="../assets/cari.png" alt="Cari" class="search-icon">
+            <input type="text" id="searchInput" class="form-control search-input" placeholder="Cari murid berdasarkan nama...">
+          </div>
         </div>
 
         <button class="btn btn-primary rounded-3 px-4" id="btnTambahSiswa">
@@ -71,7 +90,12 @@ $_GET['from'] = $from_param;
       <!-- CARD LIST SISWA -->
       <div class="row g-3" id="siswaContainer">
         <?php if (empty($siswaList)): ?>
-          <p class="text-muted">Tidak ada data murid.</p>
+          <div class="col-12">
+            <div class="text-center text-muted p-5">
+              <img src="../assets/empty-data.png" alt="Data kosong" width="100" class="mb-3 opacity-50">
+              <p class="mb-0"><?= $selected_kelas ? "Tidak ada data siswa di $selected_kelas" : "Tidak ada data murid." ?></p>
+            </div>
+          </div>
         <?php else: ?>
           <?php foreach ($siswaList as $siswa): 
             $nama = htmlspecialchars($siswa['nama_siswa']);
@@ -80,7 +104,7 @@ $_GET['from'] = $from_param;
               ? strtoupper(substr($kata[0], 0, 1) . substr($kata[1], 0, 1))
               : strtoupper(substr($kata[0], 0, 2));
           ?>
-            <div class="col-md-4 mb-3 siswa-item">
+            <div class="col-md-4 mb-3 siswa-item" data-kelas="<?= htmlspecialchars($siswa['kelas']) ?>">
               <div class="card shadow-sm border-0 p-3 d-flex flex-column justify-content-between" style="border-radius:16px;">
                 <div class="d-flex align-items-center mb-3">
                   <div class="avatar-inisial bg-primary text-white me-3" 
@@ -89,7 +113,7 @@ $_GET['from'] = $from_param;
                   </div>
                   <div>
                     <h5 class="card-title mb-0"><?= $nama ?></h5>
-                    <small><strong></strong> <?= htmlspecialchars($siswa['kelas']); ?></small>
+                    <small class="badge bg-secondary"><?= htmlspecialchars($siswa['kelas']); ?></small>
                   </div>
                 </div>
                 <div class="card-body pt-0 pb-2 px-0">
@@ -210,20 +234,21 @@ $_GET['from'] = $from_param;
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+// Filter berdasarkan kelas
+function filterByKelas() {
+    const selectedKelas = document.getElementById('filterKelas').value;
+    if (selectedKelas) {
+        window.location.href = `?kelas_filter=${encodeURIComponent(selectedKelas)}`;
+    } else {
+        window.location.href = '?';
+    }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const modalSiswa = new bootstrap.Modal(document.getElementById('modalSiswa'));
   const formSiswa = document.getElementById('formSiswa');
   const idSiswa = document.getElementById('id_siswa');
   const apiURL = "https://ortuconnect.pbltifnganjuk.com/api/admin/data_siswa.php";
-
-  // Sidebar toggle
-  const sidebar = document.getElementById('sidebar');
-  const toggleBtn = document.getElementById('toggleSidebar');
-  if (toggleBtn) {
-    toggleBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('expanded');
-    });
-  }
 
   // Validasi form real-time
   const inputs = formSiswa.querySelectorAll('.custom-input[required]');
@@ -248,7 +273,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('judulModalSiswa').textContent = "Tambah Murid Baru";
     formSiswa.reset();
     idSiswa.value = "";
-    // Hapus validasi sebelumnya
     inputs.forEach(input => input.classList.remove('is-invalid'));
     modalSiswa.show();
   });
@@ -257,7 +281,6 @@ document.addEventListener("DOMContentLoaded", () => {
   formSiswa.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    // Validasi semua field
     let isValid = true;
     inputs.forEach(input => {
       if (!validateField(input)) {
@@ -338,7 +361,6 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById('alamat').value = s.alamat;
       document.getElementById('judulModalSiswa').textContent = "Edit Data Murid";
       
-      // Hapus validasi sebelumnya
       inputs.forEach(input => input.classList.remove('is-invalid'));
       modalSiswa.show();
     } catch (err) {
@@ -392,14 +414,6 @@ document.addEventListener("DOMContentLoaded", () => {
           confirmButtonColor: '#3085d6'
         });
       }
-    } else {
-      Swal.fire({
-        icon: 'info',
-        title: 'Dibatalkan',
-        text: 'Data murid aman.',
-        confirmButtonColor: '#3085d6',
-        timer: 1500
-      });
     }
   };
 
@@ -444,7 +458,7 @@ if (searchInput && siswaContainer) {
 
     for (let item of siswaItems) {
       const nama = item.querySelector('.card-title').textContent.toLowerCase();
-      const kelas = item.querySelector('small').textContent.toLowerCase();
+      const kelas = item.querySelector('.badge').textContent.toLowerCase();
 
       if (nama.includes(keyword) || kelas.includes(keyword)) {
         item.style.display = '';
