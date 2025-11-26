@@ -36,7 +36,7 @@ if (isset($_POST['cancel_logout'])) {
         'dashboard guru'    => '../dashboard_guru/home_guru.php',
         'data_siswa'        => '../guru data siswa/data_siswa.php',
         'absensi_siswa'      => '../guru absensi/absensi_siswa.php',
-        'perizinan'   => '../guru perizinan/perizinan.php',
+        'perizinan_siswa'   => '../guru perizinan/perizinan.php',
         'kalender guru'     => '../guru kalender/kalender.php',
     ];
 
