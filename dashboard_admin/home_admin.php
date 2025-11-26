@@ -359,6 +359,7 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    
     const API_URL = "https://ortuconnect.pbltifnganjuk.com/api/perizinan.php";
     const USER_ID = <?= isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0 ?>;
     

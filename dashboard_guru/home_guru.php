@@ -167,7 +167,7 @@ ob_end_flush();
                         <a href="../guru absensi/absensi_siswa.php" class="text-decoration-none">
                             <div class="card access-card shadow-sm h-100">
                                 <div class="card-body d-flex flex-column justify-content-center align-items-center text-center w-100">
-                                    <img src="../assets/Absensi.png" class="access-icon mb-2" alt="Absensi">
+                                    <img src="../assets/Absensi Biru.png" class="access-icon mb-2" alt="Absensi">
                                     <p class="access-text">Kelola Absensi</p>
                                 </div>
                             </div>
@@ -177,7 +177,7 @@ ob_end_flush();
                         <a href="../guru perizinan/perizinan.php" class="text-decoration-none">
                             <div class="card access-card shadow-sm h-100">
                                 <div class="card-body d-flex flex-column justify-content-center align-items-center text-center w-100">
-                                    <img src="../assets/Perizinan.png" class="access-icon mb-2" alt="Perizinan">
+                                    <img src="../assets/Perizinan Biru.png" class="access-icon mb-2" alt="Perizinan">
                                     <p class="access-text">Proses Perizinan</p>
                                 </div>
                             </div>

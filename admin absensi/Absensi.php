@@ -57,26 +57,21 @@ $_GET['from'] = $from_param;
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Absensi | OrtuConnect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-   
     <link rel="stylesheet" href="absensi.css">
     <link rel="stylesheet" href="../profil/profil.css">
-     <link rel="stylesheet" href="../admin/sidebar.css">
+    <link rel="stylesheet" href="../admin/sidebar.css">
 </head>
 <body>
 
 <div class="d-flex">
     <?php include '../admin/sidebar.php'; ?>
 
-    <!-- BACKGROUND DIPINDAH KE CLASS → INI YANG BIKIN SIDEBAR FULL SAMPAI BAWAH -->
-    <div class="flex-grow-1 main-content bg-absensi-guru">
+    <div class="flex-grow-1 main-content bg-absensi-admin">
         <div class="container-fluid py-3">
-
 
             <!-- HEADER -->
             <div class="d-flex justify-content-between align-items-center mb-4 page-header">
-
                 <h4 class="fw-bold text-primary m-0 page-title">Absensi Admin</h4>
-
                 <div class="profile-area">
                     <?php 
                     $_GET['from'] = $from_param;
@@ -84,7 +79,6 @@ $_GET['from'] = $from_param;
                     ?>
                 </div>
             </div>
-
 
             <!-- FILTER KELAS & TANGGAL -->
             <form id="filterForm" class="d-flex gap-3 align-items-center mb-5 flex-wrap" method="GET">
@@ -202,8 +196,23 @@ function showNotif(msg, success = true) {
     const box = document.getElementById('notifBox');
     box.textContent = msg;
     box.style.backgroundColor = success ? '#28a745' : '#dc3545';
+    box.style.borderLeft = `4px solid ${success ? '#1e7e34' : '#c82333'}`;
+    
+    // Reset dan show dengan animasi
     box.style.display = 'block';
-    setTimeout(() => box.style.display = 'none', 3000);
+    box.style.transform = 'translateX(400px)';
+    box.style.opacity = '0';
+    
+    setTimeout(() => {
+        box.style.transform = 'translateX(0)';
+        box.style.opacity = '1';
+    }, 10);
+    
+    setTimeout(() => {
+        box.style.transform = 'translateX(400px)';
+        box.style.opacity = '0';
+        setTimeout(() => box.style.display = 'none', 400);
+    }, 3000);
 }
 
 // Update warna select
@@ -211,11 +220,27 @@ function updateStatusColor(sel) {
     sel.className = 'form-select status-absensi-select status-' + sel.value.toLowerCase();
 }
 
-// Simpan absensi
+// Validasi sebelum simpan absensi
 async function simpanAbsensi() {
+    const kelas = document.querySelector('select[name="kelas"]').value;
+    const tanggal = document.querySelector('input[name="tanggal"]').value;
+    
+    // Validasi kelas
+    if (!kelas) {
+        showNotif('⚠ Harap pilih kelas terlebih dahulu!', false);
+        return;
+    }
+    
+    // Validasi tanggal
+    if (!tanggal) {
+        showNotif('⚠ Harap pilih tanggal terlebih dahulu!', false);
+        return;
+    }
+
     const form = document.getElementById('formAbsensi');
     const btn = document.querySelector('.btn.btn-primary');
-    btn.disabled = true; btn.innerHTML = 'Menyimpan...';
+    btn.disabled = true; 
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
 
     const formData = new FormData(form);
     const updates = [];
@@ -228,7 +253,8 @@ async function simpanAbsensi() {
 
     if (updates.length === 0) {
         showNotif('Tidak ada perubahan untuk disimpan.', false);
-        btn.disabled = false; btn.innerHTML = 'Simpan';
+        btn.disabled = false; 
+        btn.innerHTML = 'Simpan';
         return;
     }
 
@@ -245,43 +271,68 @@ async function simpanAbsensi() {
             body: JSON.stringify(payload)
         });
         const data = await res.json();
-        showNotif(data.message || (data.status === 'success' ? 'Berhasil disimpan!' : 'Gagal menyimpan'), data.status === 'success');
+        showNotif(data.message || (data.status === 'success' ? '✓ Absensi berhasil disimpan!' : '❌ Gagal menyimpan absensi'), data.status === 'success');
         if (data.status === 'success') setTimeout(() => location.reload(), 1500);
     } catch (err) {
-        showNotif('Koneksi error', false);
+        showNotif('❌ Koneksi error, periksa jaringan Anda', false);
     } finally {
-        btn.disabled = false; btn.innerHTML = 'Simpan';
+        btn.disabled = false; 
+        btn.innerHTML = 'Simpan';
     }
 }
 
-// Export PDF (sama seperti sebelumnya)
+// Validasi sebelum export PDF
 async function exportPDF() {
     const kelas = document.getElementById('exportClass').value;
     const tanggal = document.getElementById('exportDate').value;
-    const filter = document.getElementById('exportFilter').value;
-    if (!kelas || !tanggal) return showNotif('Pilih kelas dan tanggal', false);
+    
+    // Validasi di modal export
+    if (!kelas) {
+        showNotif('⚠ Harap pilih kelas di modal export!', false);
+        return;
+    }
+    
+    if (!tanggal) {
+        showNotif('⚠ Harap pilih tanggal di modal export!', false);
+        return;
+    }
 
     const btn = event.target;
-    btn.disabled = true; btn.innerHTML = 'Mengunduh...';
+    btn.disabled = true; 
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengunduh...';
 
     try {
         const res = await fetch('export_pdf.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ kelas, tanggal, filter_type: filter })
+            body: JSON.stringify({ 
+                kelas, 
+                tanggal, 
+                filter_type: document.getElementById('exportFilter').value 
+            })
         });
+        
+        if (!res.ok) {
+            throw new Error('Gagal mengambil data');
+        }
+        
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = url; a.download = `Absensi_${kelas}_${tanggal}.pdf`;
+        a.href = url; 
+        a.download = `Absensi_${kelas}_${tanggal}.pdf`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showNotif('PDF berhasil diunduh!', true);
+        
+        showNotif('✅ PDF berhasil diunduh!', true);
         bootstrap.Modal.getInstance(document.getElementById('exportPdfModal')).hide();
     } catch (err) {
-        showNotif('Gagal export PDF', false);
+        showNotif('❌ Gagal export PDF: ' + err.message, false);
     } finally {
-        btn.disabled = false; btn.innerHTML = 'Download PDF';
+        btn.disabled = false; 
+        btn.innerHTML = 'Download PDF';
     }
 }
 
@@ -293,11 +344,22 @@ function updateExportDateInput() {
     const period = document.getElementById('exportPeriodInfo');
     const text = document.getElementById('periodText');
 
-    if (!date) { period.style.display = 'none'; return; }
-    // Logika periode bisa ditambah sesuai kebutuhan
+    if (!date) { 
+        period.style.display = 'none'; 
+        return; 
+    }
+    
     period.style.display = 'block';
     text.textContent = date;
 }
+
+// Validasi saat modal export dibuka
+document.getElementById('exportPdfModal').addEventListener('show.bs.modal', function() {
+    const currentKelas = document.querySelector('select[name="kelas"]').value;
+    if (currentKelas) {
+        document.getElementById('exportClass').value = currentKelas;
+    }
+});
 
 document.getElementById('exportDate').addEventListener('change', updateExportDateInput);
 document.addEventListener('DOMContentLoaded', updateExportDateInput);
