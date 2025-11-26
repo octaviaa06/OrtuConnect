@@ -27,6 +27,9 @@ curl_close($ch);
 
 $data = json_decode($response, true);
 $perizinanList = $data['data'] ?? [];
+$from_param = 'Perizinan'; 
+$_GET['from'] = $from_param;
+
 ?>
 <!DOCTYPE html>
 <html lang="id">
