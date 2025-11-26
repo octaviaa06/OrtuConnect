@@ -1,5 +1,5 @@
 /* ======================================================= */
-/* ===== RESET & FONT ===== */
+/* ===== 1. RESET & FONT ===== */
 /* ======================================================= */
 
 * {
@@ -19,7 +19,7 @@ body {
 }
 
 /* ======================================================= */
-/* ===== CONTAINER UTAMA ===== */
+/* ===== 2. CONTAINER UTAMA ===== */
 /* ======================================================= */
 
 .container {
@@ -33,7 +33,7 @@ body {
 }
 
 /* ======================================================= */
-/* ===== KIRI: TEKS SELAMAT DATANG ===== */
+/* ===== 3. BAGIAN KIRI (TEKS) ===== */
 /* ======================================================= */
 
 .left {
@@ -51,7 +51,7 @@ body {
 }
 
 /* ======================================================= */
-/* ===== KANAN: LOGIN BOX ===== */
+/* ===== 4. BAGIAN KANAN (LOGIN BOX) ===== */
 /* ======================================================= */
 
 .right {
@@ -105,8 +105,6 @@ body {
   transform: scale(1.02);
 }
 
-
-
 /* Tombol Login */
 .login-box button {
   width: 100%;
@@ -128,19 +126,83 @@ body {
   box-shadow: 0 6px 20px rgba(138, 0, 255, 0.5);
 }
 
-/* Error Message */
-.login-box .error {
-  color: #ffcccc;
-  background: rgba(255, 0, 0, 0.3);
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 14px;
-  margin-top: 15px;
-  backdrop-filter: blur(5px);
+/* ======================================================= */
+/* ===== 5. NOTIFICATION STYLES (DIGABUNG) ===== */
+/* ======================================================= */
+
+.notification {
+    padding: 14px 18px;
+    border-radius: 15px;
+    margin: 18px 0 8px 0;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    animation: slideInDown 0.4s ease;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.notification::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent 0%, currentColor 50%, transparent 100%);
+}
+
+/* Error Notification Theme */
+.error-notification {
+    background: rgba(220, 53, 69, 0.25);
+    color: #ffcccc;
+    border-color: rgba(220, 53, 69, 0.4);
+}
+
+.error-notification::before {
+    background: linear-gradient(90deg, transparent 0%, #ff6b6b 50%, transparent 100%);
+}
+
+/* Icon Notifikasi (SVG otomatis) */
+.notification::after {
+    content: '';
+    display: block;
+    width: 18px;
+    height: 18px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: brightness(0) saturate(100%) invert(100%);
+    order: -1; /* Agar icon muncul di kiri teks */
+}
+
+.error-notification::after {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E");
+}
+
+/* Animation Keyframes */
+@keyframes slideInDown {
+    from {
+        transform: translateY(-15px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
 /* ======================================================= */
-/* ===== RESPONSIVE MOBILE ===== */
+/* ===== 6. RESPONSIVE MOBILE ===== */
 /* ======================================================= */
 
 @media (max-width: 992px) {
@@ -194,8 +256,12 @@ body {
     font-size: 15px;
   }
 
-  .toggle-icon {
-    right: 16px;
+  /* Responsive Notification */
+  .notification {
+    padding: 12px 16px;
+    font-size: 13px;
+    margin: 15px 0 6px 0;
+    border-radius: 12px;
   }
 }
 
