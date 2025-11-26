@@ -90,7 +90,8 @@ $guruList = $data['data'] ?? [];
                   </div>
                   <div>
                     <h5 class="card-title mb-0"><?= $nama ?></h5>
-                    <small><strong>NIP </strong><?= htmlspecialchars($guru['nip']); ?></small>
+                    <small><strong>NIP </strong><?= htmlspecialchars($guru['nip']); ?></small><br>
+                    <small><strong>Kelas </strong><?= htmlspecialchars($guru['kelas']); ?></small>
                   </div>
                 </div>
 

@@ -256,7 +256,7 @@ ob_start();
     </table>
 
     <div class="footer">
-        Tanggal Cetak: <?= date('d-m-Y H:i:s') ?>
+        Tanggal Cetak: <?= date('d-m-Y') ?>
     </div>
 </body>
 </html>

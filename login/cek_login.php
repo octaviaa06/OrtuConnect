@@ -1,6 +1,6 @@
 <?php
-session_start();
 ob_start();
+session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     $_SESSION['error'] = "Invalid request";
@@ -14,28 +14,17 @@ if (!isset($_POST['username']) || !isset($_POST['password'])) {
     exit;
 }
 
-$username = $_POST['username'];
-$password = $_POST['password'];
+$username = trim($_POST['username']);
+$password = trim($_POST['password']);
 
-// 1. Cek kosong
-if (trim($username) === '' || trim($password) === '') {
+if ($username === '' || $password === '') {
     $_SESSION['error'] = "Wajib memasukkan username dan password";
     header("Location: index.php");
     exit;
 }
 
-// 2. Cegah spasi diawal/akhir
-if ($username !== trim($username) || $password !== trim($password)) {
-    $_SESSION['error'] = "Username atau password tidak boleh ada spasi diawal/akhir";
-    header("Location: index.php");
-    exit;
-}
-
-$username = trim($username);
-$password = trim($password);
-
-// === API LOGIN ===
 $api_url = "https://ortuconnect.pbltifnganjuk.com/api/login.php";
+
 $data = [
     "username" => $username,
     "password" => $password
@@ -55,9 +44,8 @@ $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $error = curl_error($ch);
 curl_close($ch);
 
-// Cek API error
 if ($response === false || $http_code !== 200) {
-    $_SESSION['error'] = "Gagal koneksi ke server: $error";
+    $_SESSION['error'] = "Gagal koneksi ke server";
     header("Location: index.php");
     exit;
 }
@@ -71,16 +59,18 @@ if (!$result || !isset($result['success']) || $result['success'] !== true) {
 }
 
 $user = $result['user'] ?? null;
+
 if (!$user || !isset($user['role']) || !isset($user['id_akun'])) {
-    $_SESSION['error'] = "Data user tidak lengkap dari API";
+    $_SESSION['error'] = "Data user tidak lengkap dari server";
     header("Location: index.php");
     exit;
 }
 
 $role = $user['role'];
 
-// ===== SESSION LOGIN BERDASARKAN ROLE =====
-$session_name = 'SESS_' . strtoupper($role);
+session_write_close();
+
+$session_name = "SESS_" . strtoupper($role);
 session_name($session_name);
 session_start();
 session_regenerate_id(true);
@@ -90,7 +80,7 @@ $_SESSION['username'] = $user['username'];
 $_SESSION['role'] = $role;
 $_SESSION['login_time'] = time();
 
-$redirect = ($role === 'admin') 
+$redirect = ($role === 'admin')
     ? '../dashboard_admin/home_admin.php'
     : '../dashboard_guru/home_guru.php';
 
