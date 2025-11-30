@@ -1,281 +1,166 @@
-/* ======================================================= */
-/* ===== 1. RESET & FONT ===== */
-/* ======================================================= */
-
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
 }
 
 body {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: url('../Background/background.png') no-repeat center center/cover;
-  padding: 20px;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: url('../Background/background.png') no-repeat center center/cover;
+    padding: 20px;
 }
-
-/* ======================================================= */
-/* ===== 2. CONTAINER UTAMA ===== */
-/* ======================================================= */
 
 .container {
-  width: 100%;
-  max-width: 1200px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 40px;
-  flex-wrap: wrap;
-}
-
-/* ======================================================= */
-/* ===== 3. BAGIAN KIRI (TEKS) ===== */
-/* ======================================================= */
-
-.left {
-  flex: 1;
-  min-width: 300px;
-  padding: 0 20px;
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
 }
 
 .left h1 {
-  color: white;
-  font-size: 68px;
-  font-weight: 700;
-  text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.5);
-  line-height: 1.1;
+    color: white;
+    font-size: 68px;
+    font-weight: 700;
+    text-shadow: 2px 2px 12px rgba(0, 0, 0, 0.5);
+    line-height: 1.1;
 }
 
-/* ======================================================= */
-/* ===== 4. BAGIAN KANAN (LOGIN BOX) ===== */
-/* ======================================================= */
+.right { flex-shrink: 0; }
 
-.right {
-  flex-shrink: 0;
-}
-
+/* GLASSMORPHISM TANPA backdrop-filter → 100% NO WARNING! */
 .login-box {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 18px;
-  padding: 40px 35px;
-  width: 100%;
-  max-width: 420px;
-  text-align: center;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 18px;
+    padding: 40px 35px;
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    position: relative;
+    overflow: hidden;
 }
 
-/* Logo */
+.login-box::before {
+    content: '';
+    position: absolute;
+    inset: -30px;
+    background: url('../Background/background.png') center/cover;
+    filter: blur(12px);
+    z-index: -1;
+}
+
 .logo-img {
-  width: 180px;
-  height: auto;
-  display: block;
-  margin: 0 auto 25px;
+    width: 180px;
+    height: auto;
+    display: block;
+    margin: 0 auto 25px;
 }
 
-/* Input & Select */
-.login-box input,
-.login-box select {
-  width: 100%;
-  margin: 14px 0;
-  padding: 14px 18px;
-  border: none;
-  border-radius: 25px;
-  background: rgba(255, 255, 255, 0.25);
-  color: white;
-  outline: none;
-  font-size: 16px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+.login-box input {
+    width: 100%;
+    margin: 14px 0;
+    padding: 14px 18px;
+    border: none;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    outline: none;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
-.login-box input::placeholder {
-  color: rgba(255, 255, 255, 0.8);
-  font-weight: 500;
-}
-
+.login-box input::placeholder { color: rgba(255, 255, 255, 0.8); }
 .login-box input:focus {
-  background: rgba(255, 255, 255, 0.35);
-  transform: scale(1.02);
+    background: rgba(255, 255, 255, 0.35);
+    transform: scale(1.02);
 }
 
-/* Tombol Login */
+.password-wrapper {
+    position: relative;
+    margin: 14px 0;
+}
+
+.password-wrapper input { padding-right: 50px; }
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    user-select: none;
+    z-index: 10;
+}
+
 .login-box button {
-  width: 100%;
-  padding: 14px;
-  background: linear-gradient(90deg, #8a00ff, #ff0099);
-  border: none;
-  border-radius: 25px;
-  color: white;
-  font-weight: 600;
-  font-size: 16px;
-  margin-top: 20px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(138, 0, 255, 0.4);
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(90deg, #8a00ff, #ff0099);
+    border: none;
+    border-radius: 25px;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+    margin-top: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(138, 0, 255, 0.4);
 }
 
 .login-box button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(138, 0, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(138, 0, 255, 0.5);
 }
 
-/* ======================================================= */
-/* ===== 5. NOTIFICATION STYLES (DIGABUNG) ===== */
-/* ======================================================= */
-
 .notification {
-    padding: 14px 18px;
+    padding: 14px 20px;
     border-radius: 15px;
     margin: 18px 0 8px 0;
     font-size: 14px;
     font-weight: 500;
     text-align: center;
-    animation: slideInDown 0.4s ease;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(220, 53, 69, 0.3);
+    border: 1px solid rgba(220, 53, 69, 0.5);
+    color: #ffcccc;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    position: relative;
-    overflow: hidden;
-    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    animation: slideInDown 0.5s ease;
 }
 
-.notification::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, transparent 0%, currentColor 50%, transparent 100%);
-}
-
-/* Error Notification Theme */
-.error-notification {
-    background: rgba(220, 53, 69, 0.25);
-    color: #ffcccc;
-    border-color: rgba(220, 53, 69, 0.4);
-}
-
-.error-notification::before {
-    background: linear-gradient(90deg, transparent 0%, #ff6b6b 50%, transparent 100%);
-}
-
-/* Icon Notifikasi (SVG otomatis) */
-.notification::after {
-    content: '';
-    display: block;
-    width: 18px;
-    height: 18px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    filter: brightness(0) saturate(100%) invert(100%);
-    order: -1; /* Agar icon muncul di kiri teks */
-}
-
-.error-notification::after {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E");
-}
-
-/* Animation Keyframes */
 @keyframes slideInDown {
-    from {
-        transform: translateY(-15px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+    from { transform: translateY(-20px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
 }
 
-/* ======================================================= */
-/* ===== 6. RESPONSIVE MOBILE ===== */
-/* ======================================================= */
-
-@media (max-width: 992px) {
-  .left h1 {
-    font-size: 52px;
-  }
+@keyframes slideOutUp {
+    to { transform: translateY(-20px); opacity: 0; }
 }
 
+/* Responsive */
+@media (max-width: 992px) { .left h1 { font-size: 52px; } }
 @media (max-width: 768px) {
-  body {
-    padding: 15px;
-    height: auto;
-    min-height: 100vh;
-  }
-
-  .container {
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-    gap: 30px;
-  }
-
-  .left {
-    order: 2;
-    padding: 0;
-  }
-
-  .left h1 {
-    font-size: 42px;
-    text-align: center;
-  }
-
-  .right {
-    order: 1;
-    width: 100%;
-    max-width: 380px;
-  }
-
-  .login-box {
-    padding: 35px 25px;
-  }
-
-  .logo-img {
-    width: 150px;
-    margin-bottom: 20px;
-  }
-
-  .login-box input,
-  .login-box button {
-    padding: 16px 18px;
-    font-size: 15px;
-  }
-
-  /* Responsive Notification */
-  .notification {
-    padding: 12px 16px;
-    font-size: 13px;
-    margin: 15px 0 6px 0;
-    border-radius: 12px;
-  }
+    body { min-height: 100vh; padding: 15px; }
+    .container { flex-direction: column; text-align: center; gap: 30px; }
+    .left { order: 2; }
+    .left h1 { font-size: 42px; }
+    .right { order: 1; max-width: 380px; }
+    .login-box { padding: 35px 25px; }
+    .logo-img { width: 150px; }
 }
-
 @media (max-width: 480px) {
-  .left h1 {
-    font-size: 36px;
-  }
-
-  .login-box {
-    padding: 30px 20px;
-    max-width: 100%;
-  }
-
-  .logo-img {
-    width: 130px;
-  }
+    .left h1 { font-size: 36px; }
+    .login-box { padding: 30px 20px; }
+    .logo-img { width: 130px; }
 }

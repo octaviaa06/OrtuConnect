@@ -58,7 +58,7 @@ $_GET['from'] = $from_param;
     <div class="container-fluid py-3">
 
       <!-- HEADER -->
-      <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
+      <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold text-primary m-0">Data Murid</h4>
        <?php include '../profil/profil.php'; ?>
       </div>
@@ -66,19 +66,19 @@ $_GET['from'] = $from_param;
       <!-- HEADER TAMBAH, PENCARIAN & FILTER KELAS -->
       <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
         <div class="d-flex align-items-center gap-3 flex-wrap">
-          <!-- Filter Kelas -->
+          <!-- Pencarian -->
+          <div class="search-container position-relative">
+            <img src="../assets/cari.png" alt="Cari" class="search-icon">
+            <input type="text" id="searchInput" class="form-control search-input" placeholder="Cari murid berdasarkan nama...">
+          </div>
+
+          <!-- Filter Kelas - Dipindahkan ke samping pencarian -->
           <div class="filter-kelas-container">
             <select id="filterKelas" class="form-select filter-select" onchange="filterByKelas()">
               <option value="">Semua Kelas</option>
               <option value="Kelas A" <?= $selected_kelas === 'Kelas A' ? 'selected' : '' ?>>Kelas A</option>
               <option value="Kelas B" <?= $selected_kelas === 'Kelas B' ? 'selected' : '' ?>>Kelas B</option>
             </select>
-          </div>
-
-          <!-- Pencarian -->
-          <div class="search-container position-relative">
-            <img src="../assets/cari.png" alt="Cari" class="search-icon">
-            <input type="text" id="searchInput" class="form-control search-input" placeholder="Cari murid berdasarkan nama...">
           </div>
         </div>
 
@@ -191,8 +191,9 @@ $_GET['from'] = $from_param;
           </div>
           <div class="mb-3">
             <label class="form-label fw-semibold">No. Telp Orang Tua <span class="text-danger">*</span></label>
-            <input type="text" name="no_telp_ortu" id="no_telp_ortu" class="form-control custom-input" required>
-            <div class="invalid-feedback">Nomor telepon harus diisi</div>
+            <input type="text" name="no_telp_ortu" id="no_telp_ortu" class="form-control custom-input" required maxlength="15">
+            <small class="text-muted d-block">Contoh: 081234567890</small>
+            <div class="invalid-feedback">Nomor telepon harus 10-15 digit angka saja</div>
           </div>
           <div class="mb-3">
             <label class="form-label fw-semibold">Alamat</label>
@@ -250,6 +251,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const idSiswa = document.getElementById('id_siswa');
   const apiURL = "https://ortuconnect.pbltifnganjuk.com/api/admin/data_siswa.php";
 
+  // ====== VALIDASI NOMOR TELEPON ======
+  // Validasi Nomor Telepon – hanya angka
+  document.getElementById("no_telp_ortu").addEventListener("input", function () {
+      this.value = this.value.replace(/\D/g, "");
+  });
+
   // Validasi form real-time
   const inputs = formSiswa.querySelectorAll('.custom-input[required]');
   inputs.forEach(input => {
@@ -287,6 +294,18 @@ document.addEventListener("DOMContentLoaded", () => {
         isValid = false;
       }
     });
+
+    // Validasi tambahan untuk nomor telepon
+    const noTelp = document.getElementById('no_telp_ortu').value.trim();
+    if (!/^\d{10,15}$/.test(noTelp)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Format Nomor Telepon Salah',
+        text: 'Nomor telepon harus berisi 10-15 digit angka saja!',
+        confirmButtonColor: '#3085d6'
+      });
+      return;
+    }
 
     if (!isValid) {
       Swal.fire({

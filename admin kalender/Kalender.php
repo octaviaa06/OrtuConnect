@@ -27,6 +27,7 @@ if (isset($_GET['nav'])) {
         }
     }
 }
+
 // Fungsi Helper untuk Fetch API
 function fetchApiData($url) {
     $ch = curl_init();
@@ -116,9 +117,9 @@ $_GET['from'] = $from_param;
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="fw-bold m-0"><?= $month_name_id ?> <?= $current_year ?></h5>
                                 <div class="kalender-nav-buttons">
-    <a href="Kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=prev&day=<?= $selected_day ?>" class="nav-arrow me-2" title="Bulan Sebelumnya">&lt;</a>
-    <a href="Kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=next&day=<?= $selected_day ?>" class="nav-arrow" title="Bulan Berikutnya">&gt;</a>
-</div>
+                                    <a href="Kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=prev&day=<?= $selected_day ?>" class="nav-arrow me-2" title="Bulan Sebelumnya">&lt;</a>
+                                    <a href="Kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=next&day=<?= $selected_day ?>" class="nav-arrow" title="Bulan Berikutnya">&gt;</a>
+                                </div>
                             </div>
 
                             <div class="kalender-grid">
@@ -206,16 +207,33 @@ $_GET['from'] = $from_param;
         </div>
     </div>
 
-    <div id="notifBox" class="notif" role="alert" aria-live="assertive" aria-atomic="true">
-        <span id="notifMessage"></span>
+    <!-- Modal Notifikasi Success -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content success-modal-content">
+                <div class="modal-body text-center p-4 position-relative">
+                    <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="success-checkmark mb-3">
+                        <svg width="80" height="80" viewBox="0 0 80 80">
+                            <circle class="checkmark-circle" cx="40" cy="40" r="38" fill="none" stroke="#a8d5a8" stroke-width="3"/>
+                            <path class="checkmark-check" fill="none" stroke="#5cb85c" stroke-width="4" stroke-linecap="round" d="M20,42 L32,54 L60,26"/>
+                        </svg>
+                    </div>
+                    <h5 class="fw-bold mb-2" style="color: #4a4a4a;" id="successTitle">Berhasil menambah data!</h5>
+                    <p class="text-muted mb-4" id="successMessage">Data agenda berhasil ditambahkan.</p>
+                    <button type="button" class="btn btn-primary px-4" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <!-- Modal Detail Agenda -->
     <div class="modal fade" id="detailAgendaModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title"><i class="bi bi-info-circle me-2"></i>Detail Agenda</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
@@ -246,6 +264,7 @@ $_GET['from'] = $from_param;
         </div>
     </div>
 
+    <!-- Modal Tambah/Edit Agenda -->
     <div class="modal fade" id="agendaModal" tabindex="-1" aria-labelledby="agendaModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -254,7 +273,7 @@ $_GET['from'] = $from_param;
                         <h5 class="modal-title" id="agendaModalLabel">
                             <i class="bi bi-calendar-plus me-2"></i>Tambah Agenda
                         </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
 
                     <div class="modal-body">
@@ -300,31 +319,61 @@ $_GET['from'] = $from_param;
         </div>
     </div>
 
+    <!-- Modal Konfirmasi Hapus -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Konfirmasi Hapus
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">Apakah Anda yakin ingin menghapus agenda ini? Tindakan ini tidak dapat dibatalkan.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelBtn">
+                        <i class="bi bi-x-circle me-1"></i> Batal
+                    </button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                        <i class="bi bi-trash me-1"></i> Hapus
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const AGENDA_API = "https://ortuconnect.pbltifnganjuk.com/api/admin/agenda.php";
+        let currentAgendaId = null;
 
-        // Fungsi Notifikasi Toast
-        function showNotif(message, isSuccess = true) {
-            const notifBox = document.getElementById("notifBox");
-            const notifMessage = document.getElementById("notifMessage");
-            if (!notifBox) return;
+        // Fungsi Notifikasi Success Modal
+        function showSuccessModal(message, actionType = 'menambah') {
+            const modal = new bootstrap.Modal(document.getElementById('successModal'));
+            const titleMap = {
+                'menambah': 'Berhasil menambah data!',
+                'mengedit': 'Berhasil mengedit data!',
+                'menghapus': 'Berhasil menghapus data!'
+            };
             
-            notifMessage.textContent = message;
-            notifBox.classList.remove('success', 'error', 'show');
+            const messageMap = {
+                'menambah': 'Data agenda berhasil ditambahkan.',
+                'mengedit': 'Data agenda berhasil diperbarui.',
+                'menghapus': 'Data agenda berhasil dihapus.'
+            };
 
-            if (isSuccess) {
-                notifBox.classList.add('success');
-            } else {
-                notifBox.classList.add('error');
-            }
+            document.getElementById('successTitle').textContent = titleMap[actionType] || titleMap['menambah'];
+            document.getElementById('successMessage').textContent = message || messageMap[actionType];
             
-            void notifBox.offsetWidth;
-            notifBox.classList.add('show');
+            modal.show();
             
+            // Auto close after 3 seconds and reload
             setTimeout(() => {
-                notifBox.classList.remove('show');
-            }, 3000); 
+                modal.hide();
+                setTimeout(() => location.reload(), 300);
+            }, 3000);
         }
 
         function openModalTambahAgenda() {
@@ -360,7 +409,7 @@ $_GET['from'] = $from_param;
         }
 
         async function editAgenda(id) {
-            if (!id) return showNotif('ID Agenda tidak valid.', false);
+            if (!id) return alert('ID Agenda tidak valid.');
             
             try {
                 const res = await fetch(`${AGENDA_API}?id=${id}`);
@@ -385,104 +434,52 @@ $_GET['from'] = $from_param;
                     
                     new bootstrap.Modal(document.getElementById('agendaModal')).show();
                 } else {
-                    showNotif('Gagal memuat data agenda: ' + (data.message || 'Data tidak ditemukan.'), false);
+                    alert('Gagal memuat data agenda: ' + (data.message || 'Data tidak ditemukan.'));
                 }
             } catch (error) {
                 console.error('Edit error:', error);
-                showNotif("Terjadi kesalahan koneksi.", false);
+                alert("Terjadi kesalahan koneksi.");
             }
         }
 
-        async function deleteAgenda(id) {
-            if (!id) return showNotif('ID Agenda tidak valid.', false);
+        function deleteAgenda(id) {
+            if (!id) return alert('ID Agenda tidak valid.');
 
-            const confirmDelete = await showConfirmModal(
-                'Konfirmasi Hapus',
-                'Apakah Anda yakin ingin menghapus agenda ini? Tindakan ini tidak dapat dibatalkan.',
-                'Hapus',
-                'Batal'
-            );
-            
-            if (!confirmDelete) return;
+            currentAgendaId = id;
+            const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+            modal.show();
+        }
+
+        // Event listener untuk konfirmasi hapus
+        document.getElementById('confirmDeleteBtn').addEventListener('click', async function() {
+            if (!currentAgendaId) return;
             
             try {
                 const res = await fetch(AGENDA_API, {
                     method: 'DELETE',
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ id })
+                    body: JSON.stringify({ id: currentAgendaId })
                 });
                 const data = await res.json();
                 
+                const modal = bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal'));
+                modal.hide();
+                
                 if (data.status === 'success') {
-                    showNotif(data.message || 'Agenda berhasil dihapus!', true);
-                    setTimeout(() => location.reload(), 3400); 
+                    showSuccessModal(data.message || 'Data agenda berhasil dihapus.', 'menghapus');
                 } else {
-                    showNotif(data.message || 'Gagal menghapus agenda.', false);
+                    alert(data.message || 'Gagal menghapus agenda.');
                 }
             } catch (error) {
                 console.error('Delete error:', error);
-                showNotif("Terjadi kesalahan koneksi.", false);
+                alert("Terjadi kesalahan koneksi.");
             }
-        }
+        });
 
-        function showConfirmModal(title, message, confirmText, cancelText) {
-            return new Promise((resolve) => {
-                const existingModal = document.getElementById('confirmDeleteModal');
-                if (existingModal) existingModal.remove();
-                
-                const modalHTML = `
-                    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header bg-danger text-white">
-                                    <h5 class="modal-title">
-                                        <i class="bi bi-exclamation-triangle me-2"></i>${title}
-                                    </h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <p class="mb-0">${message}</p>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelBtn">
-                                        <i class="bi bi-x-circle me-1"></i> ${cancelText}
-                                    </button>
-                                    <button type="button" class="btn btn-danger" id="confirmBtn">
-                                        <i class="bi bi-trash me-1"></i> ${confirmText}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                document.body.insertAdjacentHTML('beforeend', modalHTML);
-                
-                const modalElement = document.getElementById('confirmDeleteModal');
-                const modal = new bootstrap.Modal(modalElement);
-                
-                document.getElementById('confirmBtn').onclick = () => {
-                    modal.hide();
-                    resolve(true);
-                };
-                
-                modalElement.addEventListener('hidden.bs.modal', () => {
-                    if (!document.body.contains(modalElement)) return; 
-                    
-                    setTimeout(() => {
-                        modalElement.remove();
-                        resolve(false);
-                    }, 10); 
-                }, { once: true });
-
-                document.getElementById('cancelBtn').onclick = () => {
-                    modal.hide();
-                    resolve(false);
-                };
-                
-                modal.show();
-            });
-        }
+        // Reset currentAgendaId ketika modal ditutup
+        document.getElementById('confirmDeleteModal').addEventListener('hidden.bs.modal', function() {
+            currentAgendaId = null;
+        });
 
         document.getElementById('formAgenda').addEventListener('submit', async e => {
             e.preventDefault();
@@ -496,6 +493,7 @@ $_GET['from'] = $from_param;
             
             const id = document.getElementById('agendaId').value;
             const method = id ? 'PUT' : 'POST';
+            const actionType = id ? 'mengedit' : 'menambah';
             const formData = {
                 id,
                 nama_kegiatan: document.getElementById('agendaNama').value.trim(),
@@ -504,7 +502,7 @@ $_GET['from'] = $from_param;
             };
 
             if (!formData.nama_kegiatan || !formData.tanggal) {
-                showNotif('Nama atau Tanggal kegiatan wajib diisi!', false);
+                alert('Nama atau Tanggal kegiatan wajib diisi!');
                 return;
             }
 
@@ -524,26 +522,24 @@ $_GET['from'] = $from_param;
                 if (data.status === 'success') {
                     const modalElement = document.getElementById('agendaModal');
                     const modalInstance = bootstrap.Modal.getInstance(modalElement);
-                    const message = data.message || (id ? 'Agenda diperbarui!' : 'Agenda ditambahkan!');
+                    const message = data.message || (id ? 'Data agenda berhasil diperbarui.' : 'Data agenda berhasil ditambahkan.');
 
                     if (modalInstance) {
                         modalElement.addEventListener('hidden.bs.modal', function handler() {
-                            showNotif(message, true);
-                            setTimeout(() => location.reload(), 3400);
+                            showSuccessModal(message, actionType);
                             modalElement.removeEventListener('hidden.bs.modal', handler);
                         }, { once: true }); 
 
                         modalInstance.hide();
                     } else {
-                        showNotif(message, true);
-                        setTimeout(() => location.reload(), 3400);
+                        showSuccessModal(message, actionType);
                     }
                 } else {
-                    showNotif(data.message || 'Gagal menyimpan agenda.', false);
+                    alert(data.message || 'Gagal menyimpan agenda.');
                 }
             } catch (error) {
                 console.error('Submit error:', error);
-                showNotif("Terjadi kesalahan koneksi.", false);
+                alert("Terjadi kesalahan koneksi.");
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalHTML;

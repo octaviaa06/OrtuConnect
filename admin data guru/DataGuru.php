@@ -39,7 +39,6 @@ $data = fetchApiData($api_url);
 $guruList = $data['data'] ?? [];
 $from_param = 'DataGuru';
 $_GET['from'] = $from_param;
-
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -52,6 +51,7 @@ $_GET['from'] = $from_param;
   <link rel="stylesheet" href="notification.css">
   <link rel="stylesheet" href="../profil/profil.css">
   <link rel="stylesheet" href="../admin/sidebar.css">
+ 
 </head>
 <body>
 <div class="d-flex">
@@ -127,42 +127,55 @@ $_GET['from'] = $from_param;
 
 <!-- Modal Tambah/Edit Guru -->
 <div class="modal fade" id="modalGuru" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
     <div class="modal-content p-3">
       <div class="modal-header border-0">
         <h5 class="modal-title" id="judulModalGuru">Tambah Guru Baru</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form id="formGuru">
+      <form id="formGuru" novalidate>
         <input type="hidden" name="id_guru" id="id_guru">
         <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label required-label">Nama Lengkap</label>
-            <input type="text" name="nama_guru" id="nama_guru" class="form-control" required>
+          <!-- ===== FORM TAMBAH GURU ===== -->
+          <div class="form-group">
+            <label for="nama_lengkap" class="form-label">Nama Lengkap <span style="color:red">*</span></label>
+            <input type="text" class="form-control" id="nama_lengkap" name="nama_lengkap" required>
+            <div class="invalid-feedback">Nama lengkap wajib diisi</div>
           </div>
-          <div class="mb-3">
-            <label class="form-label required-label">NIP</label>
-            <input type="text" name="nip" id="nip" class="form-control" required>
+
+          <div class="form-group">
+            <label for="nip" class="form-label">NIP <span style="color:red">*</span></label>
+            <input type="text" class="form-control" id="nip" name="nip" required maxlength="18">
+            <small id="nipWarning" style="color:red; display:none; font-size:13px;">NIP tidak boleh lebih dari 18 angka!</small>
+            <div class="invalid-feedback">NIP harus berisi angka saja (minimal 8 digit)</div>
           </div>
-          <div class="mb-3">
-            <label class="form-label required-label">Alamat</label>
-            <input type="text" name="alamat" id="alamat" class="form-control" required>
+
+          <div class="form-group">
+            <label for="alamat" class="form-label">Alamat <span style="color:red">*</span></label>
+            <input type="text" class="form-control" id="alamat" name="alamat" required>
+            <div class="invalid-feedback">Alamat wajib diisi</div>
           </div>
-          <div class="mb-3">
-            <label class="form-label required-label">Nomor Telepon</label>
-            <input type="text" name="no_telp" id="no_telp" class="form-control" required>
+
+          <div class="form-group">
+            <label for="telepon" class="form-label">Nomor Telepon <span style="color:red">*</span></label>
+            <input type="text" class="form-control" id="telepon" name="telepon" required>
+            <div class="invalid-feedback">Nomor telepon harus 10-15 digit angka saja</div>
           </div>
-          <div class="mb-3">
-            <label class="form-label required-label">Email</label>
-            <input type="email" name="email" id="email" class="form-control" required>
+
+          <div class="form-group">
+            <label for="email" class="form-label">Email <span style="color:red">*</span></label>
+            <input type="email" class="form-control" id="email" name="email" required>
+            <div class="invalid-feedback">Email tidak valid</div>
           </div>
-          <div class="mb-3">
-            <label class="form-label required-label">Kelas</label>
-            <select name="kelas" id="kelas" class="form-select" required>
-              <option value="">Pilih Kelas</option>
+
+          <div class="form-group">
+            <label for="kelas" class="form-label">Kelas <span style="color:red">*</span></label>
+            <select class="form-control" id="kelas" name="kelas" required>
+              <option value="" disabled selected>Pilih Kelas</option>
               <option value="A">Kelas A</option>
               <option value="B">Kelas B</option>
             </select>
+            <div class="invalid-feedback">Pilih kelas terlebih dahulu</div>
           </div>
         </div>
         <div class="modal-footer border-0">
@@ -197,7 +210,7 @@ $_GET['from'] = $from_param;
   </div>
 </div>
 
-<!-- Modal Konfirmasi Hapus -->
+<!-- Modal Hapus -->
 <div class="modal fade" id="modalHapus" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -220,7 +233,7 @@ $_GET['from'] = $from_param;
   </div>
 </div>
 
-<!-- Modal Notifikasi Custom -->
+<!-- Modal Notifikasi -->
 <div class="modal fade" id="notificationModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
   <div class="modal-dialog modal-dialog-centered modal-sm">
     <div class="modal-content notification-modal">
@@ -231,8 +244,8 @@ $_GET['from'] = $from_param;
             <path class="notification-checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
           </svg>
         </div>
-        <h5 class="notification-title mb-2" id="notificationTitle">Berhasil menambah data!</h5>
-        <p class="notification-message text-muted mb-4" id="notificationMessage">Data guru berhasil ditambahkan.</p>
+        <h5 class="notification-title mb-2" id="notificationTitle">Berhasil!</h5>
+        <p class="notification-message text-muted mb-4" id="notificationMessage">Data berhasil disimpan.</p>
         <button type="button" class="btn btn-primary btn-notification-ok" id="btnNotificationOk">OK</button>
       </div>
     </div>
@@ -241,37 +254,47 @@ $_GET['from'] = $from_param;
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  // Notification Modal System
-  const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'), {
-    backdrop: 'static',
-    keyboard: false
-  });
-
+  const notificationModal = new bootstrap.Modal(document.getElementById('notificationModal'), { backdrop: 'static', keyboard: false });
   function showNotification(title, message) {
     document.getElementById('notificationTitle').textContent = title;
     document.getElementById('notificationMessage').textContent = message;
     notificationModal.show();
   }
-
   document.getElementById('btnNotificationOk').addEventListener('click', () => {
     notificationModal.hide();
     setTimeout(() => location.reload(), 300);
   });
 
-  // Search Functionality
-  const searchInput = document.getElementById('searchInput');
-  searchInput.addEventListener('keyup', () => {
-    const keyword = searchInput.value.toLowerCase();
+  // ====== JAVASCRIPT VALIDASI ======
+  // Validasi NIP – hanya angka & max 18 digit
+  document.getElementById("nip").addEventListener("input", function () {
+      let nip = this.value;
+
+      // Hanya angka (hapus semua selain angka)
+      this.value = nip.replace(/\D/g, "");
+
+      // Jika lebih dari 18 digit → beri warning
+      if (this.value.length > 18) {
+          document.getElementById("nipWarning").style.display = "block";
+      } else {
+          document.getElementById("nipWarning").style.display = "none";
+      }
+  });
+
+  // Validasi Nomor Telepon – hanya angka (tanpa contoh tampilan)
+  document.getElementById("telepon").addEventListener("input", function () {
+      this.value = this.value.replace(/\D/g, "");
+  });
+
+  // Search
+  document.getElementById('searchInput').addEventListener('keyup', function () {
+    const keyword = this.value.toLowerCase();
     document.querySelectorAll('.guru-item').forEach(item => {
-      const nama = item.querySelector('.card-title').textContent.toLowerCase();
-      const nip = item.querySelector('small').textContent.toLowerCase();
-      const emailEl = item.querySelector('.card-body p:first-child');
-      const email = emailEl ? emailEl.textContent.toLowerCase() : '';
-      item.style.display = (nama.includes(keyword) || nip.includes(keyword) || email.includes(keyword)) ? '' : 'none';
+      const text = item.textContent.toLowerCase();
+      item.style.display = text.includes(keyword) ? '' : 'none';
     });
   });
 
-  // Modal & Form Setup
   const modalGuruBootstrap = new bootstrap.Modal(document.getElementById('modalGuru'));
   const modalHapusBootstrap = new bootstrap.Modal(document.getElementById('modalHapus'));
   const formGuru = document.getElementById('formGuru');
@@ -281,49 +304,52 @@ $_GET['from'] = $from_param;
   const apiURL = "https://ortuconnect.pbltifnganjuk.com/api/admin/data_guru.php";
   let idGuruHapus = null;
 
-  // Tambah Guru Button
   document.getElementById('btnTambahGuru').addEventListener('click', () => {
     judulModal.textContent = "Tambah Guru Baru";
     formGuru.reset();
+    formGuru.classList.remove('was-validated');
     idGuruInput.value = "";
     modalGuruBootstrap.show();
   });
 
-  // Fetch All Guru
   async function fetchAllGuru() {
     try {
       const res = await fetch(apiURL + '?list=all', { cache: 'no-store' });
       const d = await res.json();
       return d.data || [];
-    } catch {
-      return [];
-    }
+    } catch { return []; }
   }
 
-  // Check NIP Exists
   async function nipExists(nip, excludeId = null) {
     const list = await fetchAllGuru();
     return list.some(g => {
-      if (!g.nip) return false;
       if (excludeId && String(g.id_guru) === String(excludeId)) return false;
       return String(g.nip).trim() === String(nip).trim();
     });
   }
 
-  // Form Submit Handler
   formGuru.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!formGuru.checkValidity()) {
+      e.stopPropagation();
+      formGuru.classList.add('was-validated');
+      return;
+    }
 
-    const nama = document.getElementById('nama_guru').value.trim();
+    const nama = document.getElementById('nama_lengkap').value.trim();
     const nip = document.getElementById('nip').value.trim();
     const alamat = document.getElementById('alamat').value.trim();
-    const no_telp = document.getElementById('no_telp').value.trim();
+    const no_telp = document.getElementById('telepon').value.trim();
     const email = document.getElementById('email').value.trim();
     const kelas = document.getElementById('kelas').value;
     const id = idGuruInput.value.trim();
 
-    if (!nama || !nip || !alamat || !no_telp || !email || !kelas) {
-      alert('Semua field wajib diisi!');
+    if (!/^\d{8,20}$/.test(nip)) {
+      alert('NIP harus berisi angka saja (8-20 digit)');
+      return;
+    }
+    if (!/^\d{10,15}$/.test(no_telp)) {
+      alert('Nomor telepon harus berisi 10-15 digit angka saja');
       return;
     }
 
@@ -331,21 +357,17 @@ $_GET['from'] = $from_param;
     tombolSimpan.textContent = "Menyimpan...";
 
     try {
-      // Validasi NIP
-      if (!id) {
-        if (await nipExists(nip, null)) {
-          alert('NIP sudah terdaftar pada sistem!');
-          tombolSimpan.disabled = false;
-          tombolSimpan.textContent = "Simpan";
-          return;
-        }
-      } else {
-        if (await nipExists(nip, id)) {
-          alert('NIP sudah terdaftar pada guru lain!');
-          tombolSimpan.disabled = false;
-          tombolSimpan.textContent = "Simpan";
-          return;
-        }
+      if (!id && await nipExists(nip)) {
+        alert('NIP sudah terdaftar!');
+        tombolSimpan.disabled = false;
+        tombolSimpan.textContent = "Simpan";
+        return;
+      }
+      if (id && await nipExists(nip, id)) {
+        alert('NIP sudah digunakan guru lain!');
+        tombolSimpan.disabled = false;
+        tombolSimpan.textContent = "Simpan";
+        return;
       }
 
       const method = id ? "PUT" : "POST";
@@ -360,15 +382,12 @@ $_GET['from'] = $from_param;
 
       const data = await res.json();
 
-      if (data.status === "success" || res.ok) {
+      if (data.status === "success") {
         modalGuruBootstrap.hide();
-        
-        // Tampilkan notifikasi sesuai aksi
-        if (id) {
-          showNotification('Berhasil mengedit data!', 'Data guru berhasil diperbarui.');
-        } else {
-          showNotification('Berhasil menambah data!', 'Data guru berhasil ditambahkan.');
-        }
+        showNotification(
+          id ? 'Berhasil mengedit data!' : 'Berhasil menambah data!',
+          id ? 'Data guru berhasil diperbarui.' : 'Data guru berhasil ditambahkan.'
+        );
       } else {
         alert(data.message || "Gagal menyimpan data.");
       }
@@ -380,41 +399,35 @@ $_GET['from'] = $from_param;
     }
   });
 
-  // Edit Guru Function
   window.editGuru = async (id) => {
     try {
       const res = await fetch(apiURL + `?id_guru=${id}`);
       const data = await res.json();
-      if (!data.data) {
-        alert('Data guru tidak ditemukan!');
-        return;
-      }
+      if (!data.data) throw new Error('Data tidak ditemukan');
 
       const g = data.data;
-      idGuruInput.value = g.id_guru || '';
-      document.getElementById('nama_guru').value = g.nama_guru || '';
+      idGuruInput.value = g.id_guru;
+      document.getElementById('nama_lengkap').value = g.nama_guru || '';
       document.getElementById('nip').value = g.nip || '';
       document.getElementById('alamat').value = g.alamat || '';
-      document.getElementById('no_telp').value = g.no_telp || '';
+      document.getElementById('telepon').value = g.no_telp || '';
       document.getElementById('email').value = g.email || '';
       document.getElementById('kelas').value = g.kelas || '';
       judulModal.textContent = "Edit Data Guru";
+      formGuru.classList.remove('was-validated');
       modalGuruBootstrap.show();
     } catch (err) {
       alert("Gagal memuat data: " + err.message);
     }
   };
 
-  // Hapus Guru Function
   window.hapusGuru = (id) => {
     idGuruHapus = id;
     modalHapusBootstrap.show();
   };
 
-  // Konfirmasi Hapus Handler
   document.getElementById('btnKonfirmasiHapus').addEventListener('click', async () => {
     if (!idGuruHapus) return;
-
     try {
       const res = await fetch(apiURL, {
         method: "DELETE",
@@ -422,22 +435,19 @@ $_GET['from'] = $from_param;
         body: JSON.stringify({ id_guru: idGuruHapus })
       });
       const data = await res.json();
-
       modalHapusBootstrap.hide();
-
-      if (data.status === "success" || res.ok) {
-        showNotification('Berhasil menghapus data!', 'Data guru berhasil dihapus.');
+      if (data.status === "success") {
+        showNotification('Berhasil menghapus data!', 'Data guru telah dihapus.');
       } else {
-        alert(data.message || "Gagal menghapus data.");
+        alert(data.message || "Gagal menghapus.");
       }
     } catch (err) {
-      alert("Gagal menghapus: " + err.message);
+      alert("Error: " + err.message);
     } finally {
       idGuruHapus = null;
     }
   });
 
-  // Generate Akun Function
   window.generateAkun = async (id) => {
     try {
       const res = await fetch(`https://ortuconnect.pbltifnganjuk.com/api/admin/generate_akun.php?tipe=guru&id=${id}`, { cache: "no-store" });
@@ -453,9 +463,10 @@ $_GET['from'] = $from_param;
         alert(data.message || "Gagal membuat akun.");
       }
     } catch (err) {
-      alert("Gagal menampilkan akun: " + err.message);
+      alert("Error: " + err.message);
     }
   };
 </script>
+
 </body>
 </html>

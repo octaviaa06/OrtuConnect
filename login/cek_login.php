@@ -1,102 +1,75 @@
 <?php
-ob_start(); 
-session_start(); 
+session_name("SESS_LOGIN");
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
-function handleErrorRedirect($msg) {
+function redirectError($msg) {
     $_SESSION['error'] = $msg;
     header("Location: index.php");
     exit;
 }
 
-// 1. Validasi Method
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    handleErrorRedirect("Invalid request");
+    redirectError("Akses tidak diizinkan");
 }
 
-// 2. Validasi Input Ada
-if (!isset($_POST['username']) || !isset($_POST['password'])) {
-    handleErrorRedirect("Data tidak lengkap");
-}
+$username = trim($_POST['username'] ?? '');
+$password = trim($_POST['password'] ?? '');
 
-$username = trim($_POST['username']);
-$password = $_POST['password'];
-
-// 3. Validasi Input Kosong
 if ($username === '' || $password === '') {
-    handleErrorRedirect("Username atau password kosong"); 
+    redirectError("Username dan password wajib diisi");
 }
 
-// 4. Persiapan cURL
 $api_url = "https://ortuconnect.pbltifnganjuk.com/api/login.php";
-$data = [
-"username" => $username,
-"password" => $password
-];
+$payload = json_encode(["username" => $username, "password" => $password]);
 
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, $api_url);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); 
-curl_setopt($ch, CURLOPT_TIMEOUT, 10); 
+curl_setopt_array($ch, [
+    CURLOPT_URL => $api_url,
+    CURLOPT_POST => true,
+    CURLOPT_POSTFIELDS => $payload,
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_HTTPHEADER => ["Content-Type: application/json"],
+    CURLOPT_SSL_VERIFYPEER => false,
+    CURLOPT_TIMEOUT => 10
+]);
 
 $response = curl_exec($ch);
 $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$curl_error = curl_error($ch);
-curl_close($ch); // Gunakan curl_close()
+curl_close($ch);
 
-// 5. Cek Koneksi API
 if ($response === false || $http_code !== 200) {
-$msg = "Gagal koneksi server. " . ($curl_error ? $curl_error : "Kode: $http_code");
-    handleErrorRedirect($msg);
+    redirectError("Koneksi ke server gagal. Coba lagi nanti.");
 }
 
 $result = json_decode($response, true);
 
-// 6. Cek Response API (Sukses/Gagal Login)
 if (!$result || !isset($result['success']) || $result['success'] !== true) {
-    $error_msg = $result['message'] ?? "Username atau password salah";
-    handleErrorRedirect($error_msg);
+    $msg = $result['message'] ?? "Username atau password salah";
+    redirectError($msg);
 }
 
-$user = $result['user'] ?? null;
-if (!$user || !isset($user['role']) || !isset($user['id_akun'])) {
-    handleErrorRedirect("Data user tidak lengkap dari API");
+$user = $result['user'] ?? [];
+if (empty($user['role'])) {
+    redirectError("Data akun tidak valid");
 }
 
-// 7. Setup Session
-$role = $user['role']; 
-$session_name = 'SESS_' . strtoupper($role);
-session_name($session_name);
-// Panggil session_start() lagi untuk memastikan session_name baru diterapkan
-session_start(); 
-session_regenerate_id(true);
+// Login sukses → buat session sesuai role
+$role = $user['role'];
+$new_session_name = "SESS_" . strtoupper($role);
+session_write_close();
+session_name($new_session_name);
+session_start();
 
-// 8. Cek jika user sudah login sebelumnya (opsional, untuk redirect cepat)
-if (isset($_SESSION['role']) && $_SESSION['role'] === $role && isset($_SESSION['username']) && $_SESSION['username'] === $user['username']) {
-$redirect = $role === 'admin' 
-? '../dashboard_admin/home_admin.php' 
-: '../dashboard_guru/home_guru.php';
-header("Location: $redirect");
-exit;
-}
-
-// 9. Simpan Data Baru ke Session
 $_SESSION['id_akun'] = $user['id_akun'];
 $_SESSION['username'] = $user['username'];
-$_SESSION['role']  = $user['role'];
-$_SESSION['login_time'] = time(); 
+$_SESSION['role'] = $role;
+$_SESSION['login_time'] = time();
 
-// 10. Redirect sesuai Role
-$redirect = $role === 'admin' 
-? '../dashboard_admin/home_admin.php' 
- : '../dashboard_guru/home_guru.php';
-
-if (!file_exists($redirect)) {
-    handleErrorRedirect("Halaman tujuan tidak ditemukan: " . basename($redirect));
-}
+$redirect = ($role === "admin")
+    ? "../dashboard_admin/home_admin.php"
+    : "../dashboard_guru/home_guru.php";
 
 header("Location: $redirect");
 exit;

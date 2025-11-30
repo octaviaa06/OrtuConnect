@@ -152,6 +152,7 @@
         font-size: 1.3rem;
     }
 }
+
 /* ===================================================== */
 /* MODAL GRADIENT STYLE – SENADA DENGAN TEMA BIRU APLIKASI */
 /* ===================================================== */
@@ -160,7 +161,7 @@
     background: linear-gradient(135deg, #ffffff, #eef5ff, #d7e7ff);
     border-radius: 20px;
     border: none;
-    color: #1a2b4c; /* biru gelap elegan */
+    color: #1a2b4c;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     animation: popupFade 0.3s ease;
 }
@@ -170,7 +171,7 @@
     background: linear-gradient(135deg, #e8f1ff, #d0e2ff);
     border-bottom: none;
     border-radius: 20px 20px 0 0;
-    color: #0d47a1; /* biru tua branding */
+    color: #0d47a1;
     font-weight: 600;
 }
 
@@ -191,4 +192,127 @@
         opacity: 1;
         transform: scale(1);
     }
+}
+
+/* ===================================================== */
+/* SUCCESS MODAL - STYLE SESUAI GAMBAR */
+/* ===================================================== */
+
+.success-modal-content {
+    background: linear-gradient(135deg, #ffffff, #f8fffe, #e8f9f8);
+    border-radius: 20px;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    animation: successPopup 0.4s ease-out;
+    position: relative;
+}
+
+/* Success Checkmark Animation */
+.success-checkmark {
+    display: inline-block;
+    animation: scaleIn 0.5s ease-out;
+}
+
+.checkmark-circle {
+    stroke-dasharray: 240;
+    stroke-dashoffset: 240;
+    animation: drawCircle 0.8s ease-out forwards;
+}
+
+.checkmark-check {
+    stroke-dasharray: 60;
+    stroke-dashoffset: 60;
+    animation: drawCheck 0.6s 0.4s ease-out forwards;
+}
+
+@keyframes successPopup {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes drawCircle {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes drawCheck {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Success Modal Body */
+.success-modal-content .modal-body h5 {
+    color: #4a4a4a;
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+.success-modal-content .modal-body p {
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+.success-modal-content .btn-primary {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 30px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    transition: all 0.3s;
+}
+
+.success-modal-content .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+}
+
+/* Mobile Responsive */
+@media (max-width: 576px) {
+    .success-modal-content .modal-body {
+        padding: 2rem 1.5rem;
+    }
+    
+    .success-checkmark svg {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .success-modal-content .modal-body h5 {
+        font-size: 1.1rem;
+    }
+}
+
+/* Button Tambah Agenda */
+.btn-tambah-agenda {
+    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+    border: none;
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+.btn-tambah-agenda:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+    background: linear-gradient(135deg, #0b5ed7, #0a58ca);
 }
