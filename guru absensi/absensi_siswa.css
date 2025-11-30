@@ -1,161 +1,302 @@
-.main-content {
-    margin-left: 240px;
-    flex-grow: 1;
-    padding: 20px 40px;
-    transition: margin-left 0.35s ease;
-    background-color: transparent;
-    position: relative;
+/* ======================================================= */
+/* ===== ABSENSI ADMIN STYLES (FLAT DESIGN) ===== */
+/* ======================================================= */
+
+/* Background untuk halaman absensi */
+.bg-absensi-admin {
+    background-image: url('/assets/background/dashboard-admin.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     min-height: 100vh;
+    background-color: #f8f9fa;
 }
 
+/* Header Styling */
+.page-header {
+    padding-top: 10px;
+}
 
+.page-title {
+    font-size: 1.5rem;
+    color: #0d6efd;
+}
 
-/* ======================================= */
-/* ====== CUSTOM STYLE ABSENSI =========== */
-/* ======================================= */
+/* Filter Form Styling - FLAT DESIGN */
+#filterForm {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e0e0e0;
+}
 
-/* Kontrol Tanggal dan Kelas */
-.custom-control-absensi {
-    border-radius: 12px;
-    padding: 10px 15px;
-    border: 1px solid #ccc;
+/* Card Styling - FLAT DESIGN */
+.card {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Absensi Item Styling */
+.absensi-item {
+    transition: background-color 0.2s ease;
+}
+
+.absensi-item:hover {
+    background: #f8f9fa;
+}
+
+/* Status Select Styling - SIMPLE */
+.status-absensi-select {
+    max-width: 120px;
+    border: 1px solid #ced4da;
+    background: #ffffff;
+    color: #495057;
+    font-weight: 400;
+}
+
+.status-hadir {
+    border-color: #198754;
+    background: #d1e7dd;
+    color: #0f5132;
+}
+
+.status-izin {
+    border-color: #ffc107;
+    background: #fff3cd;
+    color: #664d03;
+}
+
+.status-sakit {
+    border-color: #0dcaf0;
+    background: #cff4fc;
+    color: #055160;
+}
+
+.status-alpa {
+    border-color: #dc3545;
+    background: #f8d7da;
+    color: #842029;
+}
+
+/* Badge Styling - FLAT */
+.badge {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
     font-weight: 500;
 }
 
-/* Tombol Simpan Absensi */
-.btn-simpan-absensi {
-    border-radius: 12px;
+/* Button Styling - FLAT SOLID COLORS */
+.btn {
+    border-radius: 6px;
+    font-weight: 500;
     padding: 10px 20px;
-    font-weight: bold;
+    transition: all 0.2s ease;
+    border: none;
 }
 
-/* Item Daftar Absensi */
-.absensi-item {
-    padding-left: 10px;
-    padding-right: 10px;
-    border-color: #eee !important;
+.btn-primary {
+    background-color: #0d6efd;
+    color: white;
 }
 
-.absensi-item:last-child {
-    border-bottom: none !important;
+.btn-primary:hover {
+    background-color: #0b5ed7;
 }
 
-
-/* Empty State */
-.empty-state {
-    font-style: italic;
-    color: #6c757d;
+.btn-primary:active {
+    background-color: #0a58ca;
 }
 
-/* Notifikasi */
+.btn-success {
+    background-color: #198754;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #157347;
+}
+
+.btn-success:active {
+    background-color: #146c43;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5c636a;
+}
+
+/* Form Styling - SIMPLE */
+.form-control, .form-select {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    padding: 10px 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    background-color: #ffffff;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    outline: 0;
+}
+
+/* Modal Styling - FLAT */
+.modal-content {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 20px 24px;
+    background-color: #0d6efd;
+    color: white;
+    border-radius: 8px 8px 0 0;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 16px 24px;
+    background-color: #f8f9fa;
+}
+
+/* Notifikasi Styles */
 .notif {
     position: fixed;
-    bottom: 20px;
+    top: 20px;
     right: 20px;
-    min-width: 300px;
-    padding: 12px 20px;
+    padding: 16px 24px;
+    border-radius: 8px;
     color: white;
     font-weight: 500;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     z-index: 9999;
+    min-width: 280px;
+    max-width: 400px;
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.3s ease;
     display: none;
-    animation: slideIn 0.3s ease;
 }
 
-@keyframes slideIn {
-    from { transform: translateY(20px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
+.notif.show {
+    transform: translateX(0);
+    opacity: 1;
 }
 
-/* Responsive */
-@media (max-width: 576px) {
-    .status-absensi-select {
-        width: 120px;
-        font-size: 14px;
-    }
-    .absensi-item .col-5 {
-        font-size: 14px;
-    }
+/* Spinner Styling */
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 0.15em;
 }
-/* ========================================= */
-/* ===== RESPONSIVE FIX - MOBILE & TABLET ==== */
-/* ========================================= */
 
-@media (max-width: 992px) {
-    /* Header atas (judul + profil) jadi vertikal */
-    .header-fixed {
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 12px;
-    }
-    .header-fixed h4 {
-        font-size: 1.4rem;
-    }
+/* Alert Styling */
+.alert {
+    border-radius: 6px;
 }
+
+.alert-info {
+    background-color: #cff4fc;
+    border-color: #9eeaf9;
+    color: #055160;
+}
+
+/* ======================================================= */
+/* ===== RESPONSIVE STYLES ===== */
+/* ======================================================= */
 
 @media (max-width: 768px) {
-    /* Filter bar jadi kolom */
+    .bg-absensi-admin {
+        background-attachment: scroll;
+    }
+    
+    .page-title {
+        font-size: 1.3rem;
+    }
+    
+    #filterForm {
+        padding: 15px;
+    }
+    
+    .absensi-item {
+        padding: 15px 0;
+    }
+    
+    .absensi-item > div {
+        font-size: 0.9rem;
+    }
+    
+    .status-absensi-select {
+        max-width: 100px;
+        font-size: 0.85rem;
+    }
+    
+    .notif {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        min-width: auto;
+        max-width: none;
+        transform: translateY(-100px);
+    }
+    
+    .notif.show {
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 576px) {
+    .page-title {
+        font-size: 1.2rem;
+    }
+    
     #filterForm {
         flex-direction: column;
-        align-items: stretch !important;
+        align-items: stretch;
     }
+    
     #filterForm .form-control,
     #filterForm .form-select,
     #filterForm .btn {
-        width: 100% !important;
         max-width: none !important;
-        margin-bottom: 8px;
+        width: 100%;
     }
-    #filterForm .btn {
-        margin-bottom: 0;
-    }
-
-    /* Card absensi */
-    .card {
-        padding: 16px !important;
-    }
-
-    /* Item absensi jadi layout vertikal yang lebih lega */
+    
     .absensi-item {
         flex-direction: column;
-        align-items: flex-start !important;
-        padding: 14px 10px !important;
-        gap: 8px;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px 0;
     }
-
+    
     .absensi-item > div {
         width: 100% !important;
-        padding: 0 !important;
+        text-align: left;
     }
-
-    /* Nomor urut jadi lebih kecil */
-    .absensi-item .col-1 {
-        font-size: 0.9rem;
-        color: #6c757d;
+    
+    .absensi-item > div:last-child {
+        justify-content: flex-start !important;
     }
-
-
-
-
-/* Warna option di dropdown sesuai status (opsional, tergantung browser) */
-.status-absensi-select option.status-hadir { 
-    color: #28a745; 
-    font-weight: bold; 
-}
-
-.status-absensi-select option.status-sakit { 
-    color: #0d6efd; 
-    font-weight: bold; 
-}
-
-.status-absensi-select option.status-izin { 
-    color: #ffc107; 
-    font-weight: bold; 
-}
-
-.status-absensi-select option.status-alpa { 
-    color: #dc3545; 
-    font-weight: bold; 
-}
+    
+    .modal-dialog {
+        margin: 20px 10px;
+    }
 }

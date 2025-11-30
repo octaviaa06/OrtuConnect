@@ -112,8 +112,8 @@ $_GET['from'] = $from_param;
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="fw-bold m-0"><?= htmlspecialchars(date('F', $first_day_of_month), ENT_QUOTES) ?> <?= (int)$current_year ?></h5>
                                 <div class="kalender-nav-buttons">
-                                    <a href="Kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=prev&day=<?= $selected_day ?>" class="nav-arrow me-2"><</a>
-                                    <a href="Kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=next&day=<?= $selected_day ?>" class="nav-arrow">></a>
+                                    <a href="kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=prev&day=<?= $selected_day ?>" class="nav-arrow me-2"><</a>
+                                    <a href="kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=next&day=<?= $selected_day ?>" class="nav-arrow">></a>
                                 </div>
                             </div>
 
@@ -147,7 +147,7 @@ $_GET['from'] = $from_param;
                                     if ($is_selected) $class .= ' selected-day';
                                     if ($has_agenda) $class .= ' has-agenda';
 
-                                    $link = "Kalender.php?month={$current_month}&year={$current_year}&day={$day}";
+                                    $link = "kalender.php?month={$current_month}&year={$current_year}&day={$day}";
                                     echo "<a href='{$link}' class='{$class}' data-date='{$date_string}'><span>{$day}</span></a>";
 
                                     $day_counter++;
@@ -226,7 +226,6 @@ $_GET['from'] = $from_param;
                         <p id="modal-deskripsi" class="mb-0">...</p>
                     </div>
                 </div>
-                <!-- HAPUS FOOTER TUTUP — cukup pakai X di header -->
             </div>
         </div>
     </div>
@@ -259,7 +258,6 @@ $_GET['from'] = $from_param;
             });
         });
 
-        // Perbaiki sidebar tidak terpotong saat modal muncul (mobile only)
         const detailModal = document.getElementById('detailModal');
         if (detailModal) {
             detailModal.addEventListener('show.bs.modal', function () {

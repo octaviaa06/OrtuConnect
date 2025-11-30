@@ -8,6 +8,9 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
     exit;
 }
 
+// Ambil filter kelas dari URL
+$selected_kelas = $_GET['kelas_filter'] ?? '';
+
 // Ambil data API
 $api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/data_siswa.php";
 
@@ -21,10 +24,17 @@ $response = curl_exec($ch);
 if (curl_errno($ch)) {
     $response = json_encode(["data" => []]);
 }
-$ch = null;
+curl_close($ch); // diperbaiki
 
 $data = json_decode($response, true);
 $siswaList = $data['data'] ?? [];
+
+// Filter berdasarkan kelas
+if (!empty($selected_kelas)) {
+    $siswaList = array_filter($siswaList, function ($s) use ($selected_kelas) {
+        return isset($s['kelas']) && $s['kelas'] === $selected_kelas;
+    });
+}
 
 $from_param = 'data_siswa';
 ?>
@@ -38,14 +48,14 @@ $from_param = 'data_siswa';
    
     <link rel="stylesheet" href="data_siswa.css">
     <link rel="stylesheet" href="../profil/profil.css">
-     <link rel="stylesheet" href="../guru/sidebar.css">
+    <link rel="stylesheet" href="../guru/sidebar.css">
 </head>
 <body>
 
 <div class="d-flex">
 
-    <!-- SIDEBAR (GUNAKAN SIDEBAR.PHP YANG BENAR) -->
-    <?php include'../guru/sidebar.php'; ?>
+    <!-- SIDEBAR -->
+    <?php include '../guru/sidebar.php'; ?>
 
     <!-- MAIN CONTENT -->
     <div class="flex-grow-1 main-content"
@@ -66,12 +76,25 @@ $from_param = 'data_siswa';
                 </div>
             </div>
 
-            <!-- SEARCH BAR -->
-            <div class="search-action-bar mb-4">
-                <div class="search-container flex-grow-1">
-                    <img src="../assets/cari.png" alt="Cari" class="search-icon">
-                    <input type="text" id="searchInput" class="search-input"
-                           placeholder="Cari murid berdasarkan nama atau kelas...">
+            <!-- FILTER & SEARCH -->
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                
+                <!-- Filter Kelas -->
+                <div class="filter-kelas-container">
+                    <select id="filterKelas" class="form-select filter-select" onchange="filterByKelas()">
+                        <option value="">Semua Kelas</option>
+                        <option value="Kelas A" <?= $selected_kelas === 'Kelas A' ? 'selected' : '' ?>>Kelas A</option>
+                        <option value="Kelas B" <?= $selected_kelas === 'Kelas B' ? 'selected' : '' ?>>Kelas B</option>
+                    </select>
+                </div>
+
+                <!-- Search Bar -->
+                <div class="search-action-bar mb-4">
+                    <div class="search-container flex-grow-1">
+                        <img src="../assets/cari.png" alt="Cari" class="search-icon">
+                        <input type="text" id="searchInput" class="search-input"
+                               placeholder="Cari murid berdasarkan nama atau kelas...">
+                    </div>
                 </div>
             </div>
 
@@ -81,21 +104,19 @@ $from_param = 'data_siswa';
                 <?php if (empty($siswaList)): ?>
                     <div class="col-12">
                         <div class="alert alert-info text-center">
-                            <img src="../assets/empty-state.png" alt="No Data" style="width: 80px; opacity: 0.5;" class="mb-2">
+                            <img src="../assets/empty-state.png" alt="No Data" style="width:80px; opacity:0.5;" class="mb-2">
                             <p class="mb-0">Tidak ada data murid.</p>
                         </div>
                     </div>
-
                 <?php else: ?>
 
-                    <?php foreach ($siswaList as $siswa): 
+                    <?php foreach ($siswaList as $siswa):
                         $nama = htmlspecialchars($siswa['nama_siswa']);
                         $kata = explode(' ', $nama);
                         $inisial = (count($kata) >= 2)
-                          ? strtoupper(substr($kata[0], 0, 1) . substr($kata[1], 0, 1))
-                          : strtoupper(substr($kata[0], 0, 2));
+                            ? strtoupper(substr($kata[0], 0, 1) . substr($kata[1], 0, 1))
+                            : strtoupper(substr($kata[0], 0, 2));
                     ?>
-
                     <div class="col-lg-4 col-md-6 col-12 siswa-item">
                         <div class="card siswa-card shadow-sm">
                             <div class="card-body">
@@ -129,7 +150,6 @@ $from_param = 'data_siswa';
                             </div>
                         </div>
                     </div>
-
                     <?php endforeach; ?>
 
                 <?php endif; ?>
@@ -141,7 +161,16 @@ $from_param = 'data_siswa';
 </div>
 
 <script>
-// ===== PENCARIAN SISWA =====
+function filterByKelas() {
+    const selectedKelas = document.getElementById('filterKelas').value;
+    if (selectedKelas) {
+        window.location.href = `?kelas_filter=${encodeURIComponent(selectedKelas)}`;
+    } else {
+        window.location.href = '?';
+    }
+}
+
+// Pencarian
 const searchInput = document.getElementById('searchInput');
 const siswaContainer = document.getElementById('siswaContainer');
 

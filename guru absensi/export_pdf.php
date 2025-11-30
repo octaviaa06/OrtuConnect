@@ -1,9 +1,9 @@
 <?php
-session_name('SESS_ADMIN');
+session_name('SESS_GURU');
 session_start();
 
 // Cek login
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
     http_response_code(401);
     exit;
 }

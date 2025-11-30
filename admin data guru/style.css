@@ -438,7 +438,7 @@
     }
 }
 
-/* Responsive Design */
+
 @media (max-width: 576px) {
     .notification-modal .modal-body {
         padding: 1.5rem 1rem !important;
@@ -466,4 +466,42 @@
         padding: 8px 30px;
         font-size: 0.95rem;
     }
+}
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.search-container {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  z-index: 10;
+}
+
+.search-input {
+  padding-left: 40px;
+}
+
+.guru-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+}
+
+.required-label::after {
+  content: " *";
+  color: red;
 }

@@ -1,11 +1,11 @@
 <?php
-session_name('SESS_ADMIN');
+session_name('SESS_GURU');
 session_start();
 
 header('Content-Type: application/json; charset=utf-8');
 
 // Cek login
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
     http_response_code(403);
     echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
     exit;
