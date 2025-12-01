@@ -39,19 +39,18 @@ $_GET['from'] = $from_param;
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="style.css" /> 
     <link rel="stylesheet" href="../profil/profil.css">
-   
-     <link rel="stylesheet" href="../guru/sidebar.css" />
+    <link rel="stylesheet" href="../guru/sidebar.css" />
 </head>
 <body>
     <div class="d-flex">
-        <!-- Sidebar -->
+
         <?php include '../guru/sidebar.php'; ?>
 
         <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">
             <div class="container-fluid py-3">
                 <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
                     <h4 class="fw-bold text-primary m-0">Perizinan</h4>
-                   <?php include '../profil/profil.php'; ?>
+                    <?php include '../profil/profil.php'; ?>
                 </div>
 
                 <div class="card shadow-sm border-0 p-4" style="border-radius:16px;">
@@ -139,10 +138,10 @@ $_GET['from'] = $from_param;
                     <form id="formAlasanTolak">
                         <div class="mb-3">
                             <label for="alasanTolak" class="form-label">Masukkan Alasan Penolakan <span class="text-danger">*</span></label>
-                            <textarea class="form-control" id="alasanTolak" name="alasan" rows="4" placeholder="Contoh: Dokumen tidak lengkap, format tidak sesuai, dll..." required></textarea>
+                            <textarea class="form-control" id="alasanTolak" name="alasan" rows="4" required></textarea>
                             <small class="text-muted d-block mt-2">Alasan ini akan dikirimkan ke orang tua siswa</small>
                         </div>
-                        <input type="hidden" id="id_izin_tolak" value="">
+                        <input type="hidden" id="id_izin_tolak">
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -153,16 +152,39 @@ $_GET['from'] = $from_param;
         </div>
     </div>
 
+    <!-- Modal Konfirmasi Setujui -->
+    <div class="modal fade" id="modalKonfirmasiSetujui" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Konfirmasi Persetujuan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Apakah Anda yakin ingin <strong>Menyetujui</strong> izin ini?</p>
+                    <input type="hidden" id="id_izin_setujui">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-success" id="btnKonfirmasiSetujui">Setujui</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Notif Box -->
     <div id="notifBox" class="notif" style="position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 8px; color: white; display: none; z-index: 9999;"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
         const API_URL = "https://ortuconnect.pbltifnganjuk.com/api/perizinan.php";
         const USER_ID = <?= isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0 ?>;
-        
+
         let currentIdIzin = null;
+
         const modalAlasanTolak = new bootstrap.Modal(document.getElementById('modalAlasanTolak'));
+        const modalKonfirmasiSetujui = new bootstrap.Modal(document.getElementById('modalKonfirmasiSetujui'));
 
         // ============ PENCARIAN ============
         const searchInput = document.getElementById("searchInput");
@@ -176,55 +198,36 @@ $_GET['from'] = $from_param;
             });
         }
 
-        // ============ BUTTON SETUJUI ============
+        // ============ BUTTON SETUJUI (OPEN MODAL) ============
         document.addEventListener("click", function(e) {
             if (e.target.classList.contains("btn-setujui")) {
                 const id_izin = e.target.getAttribute("data-id");
-                
-                if (!id_izin) {
-                    showNotif("Error: ID izin tidak ditemukan", "error");
-                    return;
-                }
-                
-                if (confirm("Apakah Anda yakin ingin MENYETUJUI izin ini?")) {
-                    updateStatusIzin(id_izin, "Disetujui", null);
-                }
+                document.getElementById('id_izin_setujui').value = id_izin;
+                modalKonfirmasiSetujui.show();
             }
         });
 
-        // ============ BUTTON TOLAK - Buka Modal ============
+        // ============ KONFIRMASI SETUJUI ============
+        document.getElementById("btnKonfirmasiSetujui").addEventListener("click", function() {
+            const id = document.getElementById("id_izin_setujui").value;
+            modalKonfirmasiSetujui.hide();
+            updateStatusIzin(id, "Disetujui", null);
+        });
+
+        // ============ BUTTON TOLAK ============
         document.addEventListener("click", function(e) {
             if (e.target.classList.contains("btn-tolak")) {
                 const id_izin = e.target.getAttribute("data-id");
-                
-                if (!id_izin) {
-                    showNotif("Error: ID izin tidak ditemukan", "error");
-                    return;
-                }
-                
                 currentIdIzin = id_izin;
                 document.getElementById('alasanTolak').value = '';
                 modalAlasanTolak.show();
             }
         });
 
-        // ============ KONFIRMASI TOLAK ============
         document.getElementById('btnKonfirmasiTolak').addEventListener("click", function() {
             const alasan = document.getElementById('alasanTolak').value.trim();
-            
-            if (!alasan) {
-                showNotif("⚠ Alasan penolakan harus diisi!", "error");
-                return;
-            }
-            
-            if (!currentIdIzin) {
-                showNotif("Error: ID izin tidak ditemukan", "error");
-                return;
-            }
-            
             modalAlasanTolak.hide();
             updateStatusIzin(currentIdIzin, "Ditolak", alasan);
-            currentIdIzin = null;
         });
 
         // ============ UPDATE STATUS IZIN ============
@@ -235,39 +238,23 @@ $_GET['from'] = $from_param;
                 id_guru_verifikasi: USER_ID
             };
 
-            if (alasan) {
-                payload.alasan_penolakan = alasan;
-            }
-
-            // Disable button
-             const buttons = document.querySelectorAll(`[data-id="${id_izin}"]`);   
-            buttons.forEach(btn => btn.disabled = true);
+            if (alasan) payload.alasan_penolakan = alasan;
 
             fetch(API_URL, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    const pesan = status === 'Disetujui' ? '✓ Izin Disetujui!' : '✗ Izin Ditolak!';
-                    showNotif(pesan, "success");
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1500);
+                    showNotif(status === 'Disetujui' ? "✓ Izin Disetujui!" : "✗ Izin Ditolak!", "success");
+                    setTimeout(() => location.reload(), 1500);
                 } else {
                     showNotif("❌ " + (data.message || "Gagal memperbarui status"), "error");
-                    buttons.forEach(btn => btn.disabled = false);
                 }
             })
-            .catch(error => {
-                console.error("Error:", error);
-                showNotif("❌ Error: " + error.message, "error");
-                buttons.forEach(btn => btn.disabled = false);
-            });
+            .catch(error => showNotif("❌ Error: " + error.message, "error"));
         }
 
         // ============ NOTIFIKASI ============
@@ -277,10 +264,9 @@ $_GET['from'] = $from_param;
             notifBox.textContent = message;
             notifBox.style.display = "block";
             
-            setTimeout(() => {
-                notifBox.style.display = "none";
-            }, 3000);
+            setTimeout(() => notifBox.style.display = "none", 3000);
         }
     </script>
+
 </body>
 </html>
