@@ -2,13 +2,13 @@
 /* PERIZINAN GURU – STYLE.CSS (FINAL & FULL MOBILE FIX) */
 /* ===================================================== */
 
-/* BACKGROUND PERIZINAN – AMAN DI SEMUA HP */
-.bg-perizinan-guru {
+/* BACKGROUND PERIZINAN */
+.bg-perizinan-admin {
     background-image: url('../background/Data Guru(1).png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
+    min-height: 100vh;
 }
 
 /* CARD UTAMA */
@@ -80,7 +80,7 @@
     font-style: italic;
 }
 
-/* NOTIFIKASI — POSISI DI BAWAH TENGAH (SEPANJANG DESAIN ANDA) */
+/* NOTIFIKASI — POSISI DI BAWAH TENGAH */
 .notif {
     position: fixed;
     bottom: 20px;
@@ -150,7 +150,47 @@
 }
 
 /* ===================================================== */
-/* RESPONSIVE – MOBILE & TABLET (INI YANG BIKIN TABEL FULL!) */
+/* SIDEBAR OVERLAY & MOBILE FIX */
+/* ===================================================== */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay.show {
+    display: block;
+    opacity: 1;
+}
+
+/* Hamburger Button Styling */
+#sidebarToggle {
+    background: none;
+    border: none;
+    color: #0d6efd;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#sidebarToggle:hover {
+    background: rgba(13, 110, 253, 0.1);
+    border-radius: 8px;
+}
+
+#sidebarToggle:active {
+    transform: scale(0.95);
+}
+
+/* ===================================================== */
+/* RESPONSIVE – MOBILE & TABLET */
 /* ===================================================== */
 @media (max-width: 992px) {
     html, body, .d-flex {
@@ -178,17 +218,13 @@
 
     /* Header sticky di atas */
     .header-fixed {
-       position: sticky;
-    top: 0;
-    /* HAPUS background putih & backdrop-filter */
-    /* background: rgba(255,255,255,0.97); */
-    /* backdrop-filter: blur(12px); */
-    z-index: 100;
-    padding: 16px 16px !important;
-    margin: -20px -16px 24px -16px !important;
-    /* Hapus border-bottom & border-radius jika tidak diperlukan */
-    /* border-bottom: 1px solid #e9ecef; */
-    /* border-radius: 20px 20px 0 0; */
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        padding: 16px 16px !important;
+        margin: -20px -16px 24px -16px !important;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
     }
 
     /* Search full width */
@@ -197,7 +233,7 @@
         margin-bottom: 16px;
     }
 
-    /* TABEL: BISA SCROLL HORIZONTAL & VERTIKAL — SESUAI style.css Anda */
+    /* TABEL: BISA SCROLL HORIZONTAL & VERTIKAL */
     .table-responsive {
         max-height: calc(100dvh - 300px);
         overflow-x: auto;
@@ -229,7 +265,7 @@
     /* Tabel rapi di HP kecil */
     .table {
         font-size: 0.88rem;
-        min-width: 700px; /* Paksa scroll horizontal jika konten lebar */
+        min-width: 700px;
     }
     .table th, .table td {
         padding: 12px 6px !important;
@@ -255,6 +291,22 @@
         padding: 9px 16px;
         font-size: 0.85rem;
     }
+    
+    /* Sidebar untuk mobile */
+    .sidebar {
+        position: fixed !important;
+        left: -100% !important;
+        top: 0;
+        height: 100vh;
+        width: 280px;
+        transition: left 0.3s ease;
+        z-index: 1050 !important;
+        box-shadow: 2px 0 15px rgba(0,0,0,0.2);
+    }
+    
+    .sidebar.show {
+        left: 0 !important;
+    }
 }
 
 /* Extra kecil (iPhone SE, dll) */
@@ -274,14 +326,324 @@
         min-width: 650px;
     }
     .scroll-btn span {
-        display: none; /* Sembunyikan teks "Geser Kiri/Kanan", biarkan ikon saja */
+        display: none;
     }
     .scroll-btn {
         padding: 10px;
+    }
+    
+    .sidebar {
+        width: 260px;
+    }
+}
+
+/* Pastikan sidebar toggle berfungsi di mobile */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        left: -100%;
+        transition: left 0.3s ease;
+        z-index: 1050;
+    }
+    .sidebar.show {
+        left: 0;
     }
 }
 
 /* Animasi fade-out untuk notif */
 .notif.fade-out {
     opacity: 0;
+}
+/* ===================================================== */
+/* POPUP KONFIRMASI SETUJUI */
+/* ===================================================== */
+
+.custom-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.custom-popup-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.custom-popup {
+    background-color: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+}
+
+.custom-popup-overlay.active .custom-popup {
+    transform: translateY(0);
+}
+
+.popup-header {
+    padding: 30px 30px 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.popup-header.success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.popup-header.warning {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+}
+
+.popup-header.danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+}
+
+.popup-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 20px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+}
+
+.popup-title {
+    color: white;
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 1.5rem;
+}
+
+.popup-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+}
+
+.popup-details {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    margin-top: 15px;
+    text-align: left;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.detail-label {
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.detail-value {
+    color: white;
+    font-weight: bold;
+    text-align: right;
+    max-width: 60%;
+    font-size: 0.9rem;
+}
+
+.popup-body {
+    padding: 25px 30px 30px;
+}
+
+.popup-message {
+    color: #555;
+    margin-bottom: 25px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.popup-actions {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.popup-btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    min-width: 140px;
+}
+
+.popup-btn-cancel {
+    background-color: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+}
+
+.popup-btn-cancel:hover {
+    background-color: #e9ecef;
+    transform: translateY(-2px);
+}
+
+.popup-btn-confirm {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.popup-btn-confirm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(40, 167, 69, 0.4);
+}
+
+.popup-btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.popup-btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(220, 53, 69, 0.4);
+}
+
+/* ===================================================== */
+/* CUSTOM NOTIFICATION BOX */
+/* ===================================================== */
+
+.custom-notif {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 9999;
+    transform: translateX(150%);
+    transition: transform 0.4s ease;
+    max-width: 400px;
+    border-left: 4px solid #28a745;
+}
+
+.custom-notif.show {
+    transform: translateX(0);
+}
+
+.custom-notif.success {
+    border-left-color: #28a745;
+}
+
+.custom-notif.error {
+    border-left-color: #dc3545;
+}
+
+.custom-notif.warning {
+    border-left-color: #ffc107;
+}
+
+.notif-icon {
+    font-size: 1.5rem;
+}
+
+.custom-notif.success .notif-icon {
+    color: #28a745;
+}
+
+.custom-notif.error .notif-icon {
+    color: #dc3545;
+}
+
+.custom-notif.warning .notif-icon {
+    color: #ffc107;
+}
+
+.notif-text {
+    font-weight: 500;
+    color: #333;
+}
+
+/* ===================================================== */
+/* RESPONSIVE POPUP */
+/* ===================================================== */
+
+@media (max-width: 576px) {
+    .custom-popup {
+        width: 95%;
+        margin: 10px;
+    }
+    
+    .popup-actions {
+        flex-direction: column;
+    }
+    
+    .popup-btn {
+        width: 100%;
+    }
+    
+    .popup-header {
+        padding: 25px 20px 15px;
+    }
+    
+    .popup-body {
+        padding: 20px;
+    }
+    
+    .popup-title {
+        font-size: 1.3rem;
+    }
+    
+    .popup-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+    
+    .custom-notif {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+        padding: 12px 16px;
+    }
+}
+
+/* Button States */
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }

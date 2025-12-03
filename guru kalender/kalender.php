@@ -1,17 +1,21 @@
 <?php
+// MULAI SESSION UNTUK GURU
 session_name('SESS_GURU');
 session_start();
 $active_page = 'kalender guru';
 
+// CEK APAKAH SUDAH LOGIN SEBAGAI GURU
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
     header("Location: ../login/index.php?error=Harap login sebagai guru!");
     exit;
 }
 
 // ====== LOGIKA KALENDER ======
+// AMBIL BULAN DAN TAHUN SAAT INI ATAU DARI URL
 $current_month = $_GET['month'] ?? date('n');
 $current_year = $_GET['year'] ?? date('Y');
 
+// NAVIGASI BULAN (NEXT/PREV)
 if (isset($_GET['nav'])) {
     if ($_GET['nav'] === 'next') {
         $current_month++;
@@ -28,11 +32,13 @@ if (isset($_GET['nav'])) {
     }
 }
 
+// HITUNG INFORMASI BULAN
 $first_day_of_month = mktime(0, 0, 0, $current_month, 1, $current_year);
-$number_of_days = date('t', $first_day_of_month);
+$number_of_days = date('t', $first_day_of_month); // Jumlah hari dalam bulan
 $date_components = getdate($first_day_of_month);
-$day_of_week = $date_components['wday'];
+$day_of_week = $date_components['wday']; // Hari pertama bulan (0=Minggu)
 
+// AMBIL DATA AGENDA DARI API
 $api_agenda_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/agenda.php?month={$current_month}&year={$current_year}";
 
 $ch = curl_init();
@@ -42,8 +48,8 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 $response = curl_exec($ch);
 
+// JIKA API ERROR, GUNAKAN DATA DUMMY
 if (curl_errno($ch)) {
-    // API dummy (tanpa 'tempat')
     $response = json_encode([
         "data" => [
             [
@@ -63,20 +69,23 @@ if (curl_errno($ch)) {
 }
 $ch = null;
 
+// PROSES DATA AGENDA
 $data = json_decode($response, true);
 $agendaList = $data['data'] ?? [];
 
+// KELOMPOKKAN AGENDA BERDASARKAN TANGGAL
 $agendaByDate = [];
 foreach ($agendaList as $agenda) {
     $date_key = date('Y-m-d', strtotime($agenda['tanggal']));
     $agendaByDate[$date_key][] = $agenda;
 }
 
+// TENTUKAN HARI YANG DIPILIH
 $selected_day  = $_GET['day'] ?? ((date('Y') == $current_year && date('n') == $current_month) ? date('j') : 1);
 $selected_date_full = date('Y-m-d', mktime(0, 0, 0, $current_month, $selected_day, $current_year));
 $selected_agenda = $agendaByDate[$selected_date_full] ?? [];
 
-// Untuk profil.php
+// UNTUK PROFIL.PHP - TENTUKAN HALAMAN ASAL
 $from_param = 'kalender guru'; 
 $_GET['from'] = $from_param;
 ?>
@@ -86,7 +95,9 @@ $_GET['from'] = $from_param;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Kalender | OrtuConnect</title>
+    <!-- LOAD BOOTSTRAP CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- LOAD CUSTOM CSS -->
     <link rel="stylesheet" href="kalender.css" />
     <link rel="stylesheet" href="../profil/profil.css" />
     <link rel="stylesheet" href="../guru/sidebar.css" />
@@ -94,11 +105,14 @@ $_GET['from'] = $from_param;
 
 <body>
     <div class="d-flex">
+        <!-- SIDEBAR GURU -->
         <?php include '../guru/sidebar.php'; ?>
 
+        <!-- KONTEN UTAMA -->
         <div class="flex-grow-1 main-content kalender-bg">
             <div class="container-fluid py-3">
 
+                <!-- HEADER DENGAN PROFIL -->
                 <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
                     <h4 class="fw-bold text-primary m-0">Kalender</h4>
                     <?php include '../profil/profil.php'; ?>
@@ -106,9 +120,12 @@ $_GET['from'] = $from_param;
 
                 <div class="mb-5"></div>
 
+                <!-- KONTEN KALENDER -->
                 <div class="row">
+                    <!-- KALENDER BULANAN -->
                     <div class="col-md-6 mb-4">
                         <div class="card shadow-sm border-0 p-4 kalender-container">
+                            <!-- HEADER KALENDER DENGAN NAVIGASI -->
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="fw-bold m-0"><?= htmlspecialchars(date('F', $first_day_of_month), ENT_QUOTES) ?> <?= (int)$current_year ?></h5>
                                 <div class="kalender-nav-buttons">
@@ -117,7 +134,9 @@ $_GET['from'] = $from_param;
                                 </div>
                             </div>
 
+                            <!-- GRID KALENDER -->
                             <div class="kalender-grid">
+                                <!-- HEADER HARI -->
                                 <div class="hari-header minggu">Minggu</div>
                                 <div class="hari-header">Senin</div>
                                 <div class="hari-header">Selasa</div>
@@ -127,25 +146,28 @@ $_GET['from'] = $from_param;
                                 <div class="hari-header">Sabtu</div>
 
                                 <?php
+                                // TAMPILKAN TANGGAL KOSONG UNTUK HARI SEBELUM BULAN BERJALAN
                                 $day_counter = 1;
                                 for ($i = 0; $i < $day_of_week; $i++) echo "<div class='tanggal-kosong'></div>";
 
+                                // TAMPILKAN SEMUA HARI DALAM BULAN
                                 for ($day = 1; $day <= $number_of_days; $day++) {
                                     $date_string = date('Y-m-d', mktime(0, 0, 0, $current_month, $day, $current_year));
                                     $is_today = ($date_string == date('Y-m-d'));
                                     $is_selected = ($day == $selected_day);
                                     $has_agenda = isset($agendaByDate[$date_string]);
 
-                                    // Cek apakah hari ini Minggu (0 = Minggu)
+                                    // CEK APAKAH HARI MINGGU
                                     $date_obj = new DateTime($date_string);
-                                    $day_of_week_num = (int)$date_obj->format('w'); // 0 = Minggu, 1 = Senin, ..., 6 = Sabtu
+                                    $day_of_week_num = (int)$date_obj->format('w'); // 0 = Minggu
                                     $is_minggu = ($day_of_week_num === 0);
 
+                                    // TENTUKAN CLASS CSS
                                     $class = 'tanggal-item';
-                                    if ($is_minggu) $class .= ' minggu'; // TANDAI MINGGU!
-                                    if ($is_today) $class .= ' today';
-                                    if ($is_selected) $class .= ' selected-day';
-                                    if ($has_agenda) $class .= ' has-agenda';
+                                    if ($is_minggu) $class .= ' minggu'; // WARNA BEDA UNTUK MINGGU
+                                    if ($is_today) $class .= ' today';   // HIGHLIGHT HARI INI
+                                    if ($is_selected) $class .= ' selected-day'; // HARI YANG DIPILIH
+                                    if ($has_agenda) $class .= ' has-agenda';    // ADA AGENDA
 
                                     $link = "kalender.php?month={$current_month}&year={$current_year}&day={$day}";
                                     echo "<a href='{$link}' class='{$class}' data-date='{$date_string}'><span>{$day}</span></a>";
@@ -153,6 +175,7 @@ $_GET['from'] = $from_param;
                                     $day_counter++;
                                 }
 
+                                // TAMPILKAN TANGGAL KOSONG SETELAH BULAN BERAKHIR
                                 while ($day_counter <= 42) {
                                     if ($day_counter % 7 == 1) break;
                                     echo "<div class='tanggal-kosong'></div>";
@@ -163,11 +186,13 @@ $_GET['from'] = $from_param;
                         </div>
                     </div>
 
+                    <!-- DAFTAR KEGIATAN UNTUK TANGGAL TERPILIH -->
                     <div class="col-md-6">
                         <div class="card shadow-sm border-0 p-4 daftar-kegiatan-container">
                             <h5 class="fw-bold mb-3 text-primary">Daftar Kegiatan</h5>
                             <p class="text-muted mb-4">Kegiatan untuk tanggal: <b><?= htmlspecialchars(date('j F Y', strtotime($selected_date_full)), ENT_QUOTES) ?></b></p>
 
+                            <!-- KONTEN AGENDA -->
                             <div id="daftarAgendaContent">
                                 <?php if (empty($selected_agenda)): ?>
                                     <div class="alert alert-info text-center">Tidak ada agenda pada tanggal ini.</div>
@@ -176,6 +201,7 @@ $_GET['from'] = $from_param;
                                         <div class="kegiatan-item d-flex justify-content-between align-items-center mb-3 p-3 border rounded">
                                             <div>
                                                 <p class="fw-semibold m-0">
+                                                    <!-- LINK UNTUK MODAL DETAIL -->
                                                     <a href="#" 
                                                        class="text-decoration-none text-dark"
                                                        data-bs-toggle="modal"
@@ -189,6 +215,7 @@ $_GET['from'] = $from_param;
                                                 </p>
                                                 <small class="text-muted"><?= date('j F Y', strtotime($kegiatan['tanggal'] ?? $selected_date_full)) ?></small>
                                             </div>
+                                            <!-- TOMBOL LIHAT DETAIL -->
                                             <button class="btn btn-sm btn-outline-primary"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#detailModal"
@@ -230,17 +257,20 @@ $_GET['from'] = $from_param;
         </div>
     </div>
 
+    <!-- LOAD BOOTSTRAP JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Isi modal
+        // ISI MODAL DENGAN DATA KEGIATAN
         document.querySelectorAll('[data-bs-toggle="modal"]').forEach(item => {
             item.addEventListener('click', function(e) {
                 e.preventDefault();
 
+                // AMBIL DATA DARI ATTRIBUTE
                 const nama = this.getAttribute('data-nama') || '—';
                 const tanggal = this.getAttribute('data-tanggal') || '—';
                 const deskripsi = this.getAttribute('data-deskripsi') || 'Tidak ada deskripsi.';
 
+                // ISI DATA KE MODAL
                 document.getElementById('modal-nama').textContent = nama;
                 if (tanggal !== '—') {
                     const date = new Date(tanggal);
@@ -258,6 +288,7 @@ $_GET['from'] = $from_param;
             });
         });
 
+        // HANDLE SCROLL PADA MODAL UNTUK MOBILE
         const detailModal = document.getElementById('detailModal');
         if (detailModal) {
             detailModal.addEventListener('show.bs.modal', function () {

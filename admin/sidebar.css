@@ -1,8 +1,4 @@
-/* ================================================
-   SIDEBAR RESPONSIVE - Menyesuaikan Desain Asli
-   ================================================ */
-
-/* ========== HAMBURGER BUTTON (Mobile/Tablet Only) ========== */
+/* ========== HAMBURGER BUTTON ========== */
 .hamburger-btn {
     position: fixed;
     top: 15px;
@@ -13,22 +9,22 @@
     border-radius: 8px;
     width: 45px;
     height: 45px;
-    display: none; /* Hidden di desktop */
+    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 5px;
+    gap: 4px;
     cursor: pointer;
     box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-    transition: all 0.3s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hamburger-btn span {
-    width: 25px;
-    height: 3px;
+    width: 22px;
+    height: 2.5px;
     background: white;
     border-radius: 2px;
-    transition: all 0.3s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hamburger-btn:hover {
@@ -37,31 +33,35 @@
 }
 
 .hamburger-btn.active span:nth-child(1) {
-    transform: rotate(45deg) translate(5px, 5px);
+    transform: rotate(45deg) translate(6px, 6px);
+    width: 22px;
 }
 
 .hamburger-btn.active span:nth-child(2) {
     opacity: 0;
+    transform: translateX(-10px);
 }
 
 .hamburger-btn.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(7px, -7px);
+    transform: rotate(-45deg) translate(6px, -6px);
+    width: 22px;
 }
 
-/* ========== SIDEBAR DEFAULT (TETAP SEPERTI ASLI) ========== */
+/* ========== SIDEBAR UTAMA ========== */
 .sidebar {
     position: fixed;
     top: 0;
     left: 0;
     width: 200px;
     height: 100vh;
-    background: #0d6efd;
-    transition: all 0.35s ease;
+    background: linear-gradient(180deg, #0d6efd 0%, #0b5ed7 100%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 1050;
-    padding-top: 20px;
-    border-radius: 0 18px 18px 0;
+    padding-top: 15px;
+    border-radius: 0 20px 20px 0;
     overflow-y: auto;
     overflow-x: hidden;
+    box-shadow: 4px 0 20px rgba(13, 110, 253, 0.15);
 }
 
 .sidebar.expanded { 
@@ -72,46 +72,110 @@
     width: 70px; 
 }
 
-/* ========== SLIDE BUTTON (Desktop) ========== */
+/* ========== SLIDE BUTTON ========== */
 .slide-btn {
-    width: 32px;
+    width: 24px;
+    height: 24px;
     cursor: pointer;
-    transition: transform 0.3s;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 10px auto 20px;
+    display: block;
+    filter: brightness(0) invert(1);
 }
 
 .slide-btn:hover { 
-    transform: scale(1.15); 
+    transform: scale(1.1) rotate(180deg); 
+    filter: brightness(0) invert(0.8);
 }
 
-/* ========== ICONS & NAV LINKS (TETAP ASLI) ========== */
+/* ========== ICONS ========== */
 .icon { 
-    width: 28px; 
-    height: 28px; 
-    flex-shrink: 0; 
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    transition: all 0.25s ease;
+    filter: brightness(0) invert(1);
 }
 
-.nav-link { 
-    padding: 12px 16px; 
-    border-radius: 12px; 
-    transition: all 0.3s;
+/* ========== NAVIGATION LINKS ========== */
+.sidebar .nav-link { 
+    padding: 10px 14px;
+    border-radius: 10px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    color: white !important;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 8px;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
 }
 
-.nav-link:hover, 
-.nav-link.active {
-    background: rgba(255,255,255,0.25);
-    transform: translateX(6px);
+.sidebar .nav-link.active {
+    background: white !important;
+    color: #0d6efd !important;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateX(4px);
 }
 
-/* ========== COLLAPSED STATE (Desktop) ========== */
+/* Warna ikon saat aktif */
+.sidebar .nav-link.active .icon {
+    filter: none !important;
+}
+
+.sidebar .nav-link:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateX(4px);
+}
+
+/* Efek garis aktif */
+.sidebar .nav-link.active::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 60%;
+    background: #0d6efd;
+    border-radius: 2px 0 0 2px;
+    animation: activePulse 2s ease-in-out infinite;
+}
+
+@keyframes activePulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* ========== COLLAPSED STATE ========== */
 .sidebar.collapsed .menu-text { 
-    opacity: 0; 
-    width: 0; 
-    overflow: hidden; 
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    transition: opacity 0.2s ease, width 0.3s ease;
 }
 
 .sidebar.collapsed .nav-link { 
-    justify-content: center; 
-    padding: 12px 0; 
+    justify-content: center;
+    padding: 10px 0;
+    margin: 4px 12px;
+}
+
+.sidebar.collapsed .icon {
+    margin: 0;
+}
+
+/* Animasi slide button saat collapsed */
+.sidebar.collapsed .slide-btn {
+    transform: rotate(180deg);
+}
+
+.sidebar.collapsed .slide-btn:hover {
+    transform: rotate(180deg) scale(1.1);
 }
 
 /* ========== OVERLAY ========== */
@@ -121,12 +185,12 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 1040;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(3px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(2px);
 }
 
 .sidebar-overlay.show {
@@ -134,101 +198,103 @@
     visibility: visible;
 }
 
-/* ========== DESKTOP MODE (>= 992px) - TETAP SEPERTI ASLI ========== */
+/* ========== ANIMASI SMOOTH TOGGLE ========== */
+.sidebar.collapsing {
+    animation: sidebarCollapse 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.expanding {
+    animation: sidebarExpand 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes sidebarCollapse {
+    0% { width: 200px; }
+    100% { width: 70px; }
+}
+
+@keyframes sidebarExpand {
+    0% { width: 70px; }
+    100% { width: 200px; }
+}
+
+/* ========== RESPONSIVE BREAKPOINTS ========== */
+
+/* Desktop Mode (>= 992px) */
 @media (min-width: 992px) {
-    /* Main content sesuai sidebar */
     .main-content {
         margin-left: 200px;
-        transition: margin-left 0.35s ease;
+        transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    body:has(.sidebar.collapsed) .main-content {
+    .sidebar.collapsed ~ .main-content {
         margin-left: 70px;
     }
 }
 
-/* ========== TABLET MODE (768px - 991px) ========== */
-@media (min-width: 768px) and (max-width: 991px) {
-    /* Show hamburger button */
+/* Tablet Mode (768px - 991px) */
+@media (max-width: 991px) {
     .hamburger-btn {
         display: flex;
     }
 
-    /* Sidebar slide dari kiri */
     .sidebar {
-        width: 260px;
+        width: 240px;
         transform: translateX(-100%);
-        transition: transform 0.35s ease;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .sidebar.show {
         transform: translateX(0);
+        box-shadow: 4px 0 25px rgba(0, 0, 0, 0.2);
     }
 
-    /* Hide slide button di tablet */
     .slide-btn {
         display: none;
     }
 
-    /* Main content full width */
     .main-content {
         margin-left: 0 !important;
         padding: 15px;
-        padding-left: 65px; /* Space untuk hamburger */
+        padding-left: 65px;
+        transition: padding 0.3s ease;
+    }
+    
+    .icon {
+        width: 22px;
+        height: 22px;
+    }
+    
+    .nav-link {
+        font-size: 15px;
     }
 }
 
-/* ========== MOBILE MODE (< 768px) ========== */
+/* Mobile Mode (< 768px) */
 @media (max-width: 767px) {
-    /* Show hamburger button */
     .hamburger-btn {
-        display: flex;
         width: 42px;
         height: 42px;
         top: 12px;
         left: 12px;
     }
 
-    .hamburger-btn span {
-        width: 22px;
-    }
-
-    /* Sidebar slide dari kiri */
     .sidebar {
-        width: 75%;
-        max-width: 280px;
-        transform: translateX(-100%);
-        transition: transform 0.35s ease;
+        width: 80%;
+        max-width: 260px;
     }
 
-    .sidebar.show {
-        transform: translateX(0);
-    }
-
-    /* Hide slide button */
-    .slide-btn {
-        display: none;
-    }
-
-    /* Main content full width */
     .main-content {
-        margin-left: 0 !important;
         padding: 12px;
         padding-left: 60px;
     }
-
-    /* Responsive nav links untuk mobile */
+    
     .nav-link {
-        padding: 10px 14px;
-    }
-
-    .icon {
-        width: 26px;
-        height: 26px;
+        font-size: 14px;
+        padding: 9px 12px;
     }
 }
 
-/* ========== SMALL MOBILE (< 480px) ========== */
+/* Small Mobile (< 480px) */
 @media (max-width: 479px) {
     .hamburger-btn {
         width: 38px;
@@ -237,19 +303,25 @@
         left: 10px;
     }
 
+    .hamburger-btn span {
+        width: 20px;
+        height: 2px;
+    }
+
     .sidebar {
-        width: 80%;
-        max-width: 260px;
+        width: 85%;
+        max-width: 240px;
     }
 
     .nav-link {
-        padding: 9px 12px;
-        font-size: 0.95rem;
+        padding: 8px 10px;
+        font-size: 13px;
+        gap: 10px;
     }
 
     .icon {
-        width: 24px;
-        height: 24px;
+        width: 18px;
+        height: 18px;
     }
 
     .main-content {
@@ -258,13 +330,64 @@
     }
 }
 
+/* ========== ANIMASI ENTRANCE ========== */
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.nav-item {
+    animation: fadeInSlide 0.4s ease-out forwards;
+    opacity: 0;
+}
+
+.nav-item:nth-child(1) { animation-delay: 0.05s; }
+.nav-item:nth-child(2) { animation-delay: 0.1s; }
+.nav-item:nth-child(3) { animation-delay: 0.15s; }
+.nav-item:nth-child(4) { animation-delay: 0.2s; }
+.nav-item:nth-child(5) { animation-delay: 0.25s; }
+.nav-item:nth-child(6) { animation-delay: 0.3s; }
+
 /* ========== ACCESSIBILITY ========== */
 @media (prefers-reduced-motion: reduce) {
     .sidebar,
     .sidebar-overlay,
     .nav-link,
     .hamburger-btn,
-    .slide-btn {
+    .slide-btn,
+    .nav-item,
+    .icon {
         transition: none !important;
+        animation: none !important;
     }
+    
+    .nav-link.active::after {
+        animation: none;
+        opacity: 1;
+    }
+}
+
+/* ========== SCROLLBAR CUSTOM ========== */
+.sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
 }

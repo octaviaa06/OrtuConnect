@@ -60,7 +60,14 @@ $_GET['from'] = $from_param;
   <div class="flex-grow-1 main-content" style="background-image:url('../background/Data Guru(1).png'); background-size:cover; background-position:center;">
     <div class="container-fluid py-3">
       <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
-        <h4 class="fw-bold text-primary m-0">Data Guru</h4>
+  <div class="d-flex align-items-center gap-3">
+    <!-- Icon Data Guru -->
+    <div class="header-icon-wrapper data-guru animated">
+      <img src="../assets/Data_Guru.png" alt="Data Guru" class="header-icon">
+    </div>
+    <!-- Judul -->
+    <h4 class="fw-bold text-primary m-0">Data Guru</h4>
+  </div>
         <?php include '../profil/profil.php'; ?>
       </div>
 
@@ -466,6 +473,332 @@ $_GET['from'] = $from_param;
       alert("Error: " + err.message);
     }
   };
+ // ===== ANIMASI ICON HEADER DATA GURU - WARNA BIRU =====
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Efek khusus untuk icon Data Guru (warna biru)
+    const guruIcon = document.querySelector('.header-icon-wrapper.data-guru');
+    
+    if (guruIcon) {
+        // Click effect dengan ripple BIRU
+        guruIcon.addEventListener('click', function(e) {
+            createRippleEffectBlue(this, e);
+            
+            // Bounce effect
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 150);
+        });
+        
+        // Hover effect dengan particles BIRU
+        guruIcon.addEventListener('mouseenter', function() {
+            createParticlesEffectBlue(this);
+        });
+        
+        // Tambah floating animation setelah load
+        setTimeout(() => {
+            guruIcon.classList.add('animated');
+        }, 500);
+    }
+});
+
+// Fungsi untuk efek ripple dengan warna BIRU
+function createRippleEffectBlue(element, event) {
+    const rect = element.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    const ripple = document.createElement('span');
+    ripple.style.cssText = `
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(33, 150, 243, 0.3); /* BIRU */
+        transform: scale(0);
+        animation: rippleEffect 0.6s linear;
+        width: 100px;
+        height: 100px;
+        top: ${y - 50}px;
+        left: ${x - 50}px;
+        pointer-events: none;
+        z-index: 1;
+    `;
+    
+    element.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+}
+
+// Fungsi untuk particles effect dengan warna BIRU
+function createParticlesEffectBlue(element) {
+    // Hapus particles lama
+    const oldParticles = element.querySelectorAll('.particle');
+    oldParticles.forEach(p => p.remove());
+    
+    // Buat 4 particles baru dengan warna biru
+    for (let i = 0; i < 4; i++) {
+        setTimeout(() => {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            
+            // Random position
+            const posX = Math.random() * 80 + 10;
+            const posY = Math.random() * 80 + 10;
+            
+            // Random movement
+            const moveX = (Math.random() - 0.5) * 60;
+            const moveY = (Math.random() - 0.5) * 60;
+            
+            // Warna biru dengan variasi
+            const colors = [
+                'rgba(33, 150, 243, 0.6)',    // Biru utama
+                'rgba(66, 165, 245, 0.6)',    // Biru terang
+                'rgba(100, 181, 246, 0.6)',   // Biru muda
+                'rgba(144, 202, 249, 0.6)'    // Biru sangat muda
+            ];
+            
+            particle.style.cssText = `
+                position: absolute;
+                width: ${2 + Math.random() * 2}px;
+                height: ${2 + Math.random() * 2}px;
+                background: ${colors[i % colors.length]};
+                border-radius: 50%;
+                left: ${posX}%;
+                top: ${posY}%;
+                animation: particleFloatBlue 1.2s ease-out forwards;
+                --moveX: ${moveX}px;
+                --moveY: ${moveY}px;
+                pointer-events: none;
+                z-index: 1;
+            `;
+            
+            element.appendChild(particle);
+            setTimeout(() => particle.remove(), 1200);
+        }, i * 100);
+    }
+}
+
+// Tambah style untuk particle animation biru
+const particleBlueStyle = document.createElement('style');
+particleBlueStyle.textContent = `
+    @keyframes particleFloatBlue {
+        0% {
+            transform: translate(0, 0) scale(1);
+            opacity: 1;
+        }
+        70% {
+            opacity: 0.7;
+        }
+        100% {
+            transform: translate(var(--moveX), var(--moveY)) scale(0);
+            opacity: 0;
+        }
+    }
+    
+    @keyframes rippleEffect {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(particleBlueStyle);
+
+    // Animasi tombol edit/hapus
+    const actionButtons = document.querySelectorAll('.btn-light.border-0');
+    actionButtons.forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            const img = this.querySelector('img');
+            if (img) img.style.transform = 'scale(1.15) rotate(5deg)';
+        });
+        
+        btn.addEventListener('mouseleave', function() {
+            const img = this.querySelector('img');
+            if (img) img.style.transform = 'scale(1) rotate(0)';
+        });
+    });
+    
+    // Scroll reveal animation
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe semua card guru untuk lazy loading
+    document.querySelectorAll('.guru-item').forEach(item => {
+        observer.observe(item);
+    });
+
+
+// Fungsi highlight hasil pencarian
+function highlightSearchResults(searchTerm) {
+    if (!searchTerm) {
+        // Hapus highlight jika tidak ada pencarian
+        document.querySelectorAll('.search-highlight').forEach(el => {
+            const parent = el.parentNode;
+            parent.replaceChild(document.createTextNode(el.textContent), el);
+            parent.normalize();
+        });
+        return;
+    }
+    
+    const guruItems = document.querySelectorAll('.guru-item');
+    guruItems.forEach(item => {
+        const textNodes = getTextNodes(item);
+        textNodes.forEach(node => {
+            const text = node.textContent;
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            
+            if (regex.test(text)) {
+                const highlighted = text.replace(regex, '<span class="search-highlight">$1</span>');
+                const span = document.createElement('span');
+                span.innerHTML = highlighted;
+                node.parentNode.replaceChild(span, node);
+            }
+        });
+    });
+}
+
+// Helper function untuk mendapatkan text nodes
+function getTextNodes(element) {
+    const textNodes = [];
+    const walk = document.createTreeWalker(
+        element,
+        NodeFilter.SHOW_TEXT,
+        null,
+        false
+    );
+    
+    let node;
+    while (node = walk.nextNode()) {
+        if (node.textContent.trim()) {
+            textNodes.push(node);
+        }
+    }
+    
+    return textNodes;
+}
+
+// Fungsi untuk menampilkan toast notification
+function showToast(message, type = 'success') {
+    // Hapus toast sebelumnya jika ada
+    const existingToast = document.querySelector('.toast-notification');
+    if (existingToast) existingToast.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = `toast-notification ${type}`;
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? '#0d6efd' : type === 'error' ? '#dc3545' : '#ffc107'};
+        color: white;
+        padding: 12px 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 9999;
+        animation: slideInRight 0.3s ease, fadeOut 0.3s ease 2.7s forwards;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Auto remove setelah 3 detik
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.style.animation = 'fadeOut 0.3s ease forwards';
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, 3000);
+}
+
+// Tambah animasi loading saat fetch data
+const originalFetch = window.fetch;
+window.fetch = async function(...args) {
+    // Tampilkan loading indicator jika perlu
+    if (args[0].includes('data_guru.php') || args[0].includes('generate_akun.php')) {
+        const loader = document.createElement('div');
+        loader.id = 'api-loader';
+        loader.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(13, 110, 253, 0.3);
+            border-top: 3px solid #0d6efd;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 9999;
+        `;
+        document.body.appendChild(loader);
+        
+        try {
+            const response = await originalFetch.apply(this, args);
+            loader.remove();
+            return response;
+        } catch (error) {
+            loader.remove();
+            throw error;
+        }
+    }
+    
+    return originalFetch.apply(this, args);
+};
+
+// CSS untuk loader animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+`;
+document.head.appendChild(style);
+
+// Animasi saat menambah/menghapus card
+function animateCardRemoval(cardElement) {
+    cardElement.style.animation = 'fadeOutUp 0.3s ease forwards';
+    setTimeout(() => {
+        if (cardElement.parentNode) {
+            cardElement.remove();
+        }
+    }, 300);
+}
+
+function animateCardAddition(cardElement) {
+    cardElement.style.opacity = '0';
+    cardElement.style.transform = 'translateY(20px)';
+    document.getElementById('guruContainer').prepend(cardElement);
+    
+    // Trigger reflow untuk memastikan animasi berjalan
+    cardElement.offsetHeight;
+    
+    cardElement.style.transition = 'all 0.5s ease';
+    cardElement.style.opacity = '1';
+    cardElement.style.transform = 'translateY(0)';
+}
+
+// Event listener untuk refresh data dengan animasi
+document.addEventListener('dataRefresh', function() {
+    const container = document.getElementById('guruContainer');
+    container.style.opacity = '0.5';
+    container.style.transition = 'opacity 0.3s ease';
+    
+    setTimeout(() => {
+        container.style.opacity = '1';
+    }, 300);
+});
 </script>
 
 </body>

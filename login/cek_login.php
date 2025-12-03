@@ -67,6 +67,11 @@ $_SESSION['username'] = $user['username'];
 $_SESSION['role'] = $role;
 $_SESSION['login_time'] = time();
 
+// Tambahkan kelas untuk guru (untuk akses absensi)
+if ($role === "guru" && !empty($user['kelas'])) {
+    $_SESSION['kelas'] = $user['kelas'];
+}
+
 $redirect = ($role === "admin")
     ? "../dashboard_admin/home_admin.php"
     : "../dashboard_guru/home_guru.php";

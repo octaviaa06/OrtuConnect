@@ -58,8 +58,14 @@ $_GET['from'] = $from_param;
     <div class="container-fluid py-3">
 
       <!-- HEADER -->
-      <div class="d-flex justify-content-between align-items-center mb-4">
+ <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex align-items-center gap-3">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
         <h4 class="fw-bold text-primary m-0">Data Murid</h4>
+    </div>
+   
+  </div>
        <?php include '../profil/profil.php'; ?>
       </div>
 
@@ -487,6 +493,526 @@ if (searchInput && siswaContainer) {
     }
   });
 }
+// ========== ANIMASI INTERAKTIF TAMBAHAN ==========
+
+// Animasi saat halaman selesai loading
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Data Siswa page loaded with animations');
+    
+    // Delay untuk animasi entrance
+    setTimeout(() => {
+        document.body.classList.add('page-loaded');
+    }, 100);
+    
+    // Tambah efek ripple ke tombol utama
+    const primaryButtons = document.querySelectorAll('.btn-primary');
+    primaryButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (this.disabled || this.classList.contains('disabled')) return;
+            
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const ripple = document.createElement('span');
+            ripple.style.cssText = `
+                position: absolute;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.7);
+                transform: scale(0);
+                animation: ripple 0.6s linear;
+                width: 100px;
+                height: 100px;
+                top: ${y - 50}px;
+                left: ${x - 50}px;
+                pointer-events: none;
+                z-index: 1;
+            `;
+            
+            this.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+    
+    // Animasi real-time search dengan highlight
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                highlightSearchResults(this.value.toLowerCase());
+            }, 300);
+        });
+    }
+    
+    // Hover effect untuk card siswa
+    const siswaCards = document.querySelectorAll('.card');
+    siswaCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+            this.style.boxShadow = '0 12px 35px rgba(0, 0, 0, 0.2)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+            this.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)';
+        });
+    });
+    
+    // Animasi tombol edit/hapus
+    const actionButtons = document.querySelectorAll('.btn-light.border-0');
+    actionButtons.forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            const img = this.querySelector('img');
+            if (img) {
+                img.style.transform = 'scale(1.15) rotate(5deg)';
+                img.style.transition = 'transform 0.2s ease';
+            }
+        });
+        
+        btn.addEventListener('mouseleave', function() {
+            const img = this.querySelector('img');
+            if (img) {
+                img.style.transform = 'scale(1) rotate(0)';
+            }
+        });
+    });
+    
+    // Scroll reveal animation
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe semua card siswa untuk lazy loading
+    document.querySelectorAll('.siswa-item').forEach(item => {
+        observer.observe(item);
+    });
+    
+    // Tambah scroll indicator
+    createScrollIndicator();
+    
+    // Animasi filter select
+    const filterSelect = document.getElementById('filterKelas');
+    if (filterSelect) {
+        filterSelect.addEventListener('change', function() {
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+        });
+    }
+    
+    // Validasi form dengan animasi
+    setupFormValidationAnimations();
+});
+
+// Fungsi highlight hasil pencarian
+function highlightSearchResults(searchTerm) {
+    if (!searchTerm) {
+        // Hapus highlight jika tidak ada pencarian
+        document.querySelectorAll('.search-highlight').forEach(el => {
+            const parent = el.parentNode;
+            parent.replaceChild(document.createTextNode(el.textContent), el);
+            parent.normalize();
+        });
+        return;
+    }
+    
+    const siswaItems = document.querySelectorAll('.siswa-item');
+    siswaItems.forEach(item => {
+        const textElements = item.querySelectorAll('.card-title, .card-body p, .badge');
+        textElements.forEach(element => {
+            const originalHTML = element.innerHTML;
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            
+            if (regex.test(element.textContent)) {
+                const highlighted = element.textContent.replace(
+                    regex, 
+                    '<span class="search-highlight">$1</span>'
+                );
+                element.innerHTML = highlighted;
+                
+                // Animasi untuk highlighted elements
+                const highlights = element.querySelectorAll('.search-highlight');
+                highlights.forEach(highlight => {
+                    highlight.style.animation = 'highlightFlash 0.5s ease';
+                });
+            }
+        });
+    });
+}
+
+// Fungsi untuk menampilkan toast notification
+function showToast(message, type = 'success') {
+    // Hapus toast sebelumnya jika ada
+    const existingToast = document.querySelector('.toast-notification');
+    if (existingToast) existingToast.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = `toast-notification ${type}`;
+    toast.innerHTML = `
+        <div class="d-flex align-items-center">
+            <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(toast);
+    
+    // Auto remove setelah 3 detik
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.style.animation = 'fadeOutUp 0.3s ease forwards';
+            setTimeout(() => toast.remove(), 300);
+        }
+    }, 3000);
+}
+
+// Fungsi untuk menampilkan loading overlay
+function showLoading(message = 'Memproses...') {
+    const overlay = document.createElement('div');
+    overlay.className = 'loading-overlay';
+    overlay.innerHTML = `
+        <div class="text-center">
+            <div class="loading-spinner mb-3"></div>
+            <p class="text-primary fw-semibold">${message}</p>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    return overlay;
+}
+
+function hideLoading(overlay) {
+    if (overlay && overlay.parentNode) {
+        overlay.style.opacity = '0';
+        overlay.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => overlay.remove(), 300);
+    }
+}
+
+// Fungsi untuk membuat scroll indicator
+function createScrollIndicator() {
+    const indicator = document.createElement('div');
+    indicator.className = 'scroll-indicator';
+    indicator.innerHTML = '<i class="bi bi-chevron-up"></i>';
+    indicator.style.cssText = `
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+        box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+        z-index: 1000;
+    `;
+    
+    document.body.appendChild(indicator);
+    
+    // Tampilkan indicator saat scroll
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            indicator.classList.add('visible');
+        } else {
+            indicator.classList.remove('visible');
+        }
+    });
+    
+    // Scroll to top saat diklik
+    indicator.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const iconWrapper = document.querySelector('.header-icon-wrapper');
+    if (iconWrapper) {
+        for (let i = 0; i < 3; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            iconWrapper.appendChild(particle);
+        }
+    }
+});
+
+
+// Setup form validation animations
+function setupFormValidationAnimations() {
+    const form = document.getElementById('formSiswa');
+    if (!form) return;
+    
+    const inputs = form.querySelectorAll('input, select, textarea');
+    
+    inputs.forEach(input => {
+        // Validasi real-time
+        input.addEventListener('blur', function() {
+            validateWithAnimation(this);
+        });
+        
+        // Animasi saat fokus
+        input.addEventListener('focus', function() {
+            this.style.transform = 'scale(1.02)';
+            this.style.transition = 'transform 0.2s ease';
+        });
+        
+        input.addEventListener('blur', function() {
+            this.style.transform = 'scale(1)';
+        });
+        
+        // Animasi untuk select
+        if (input.tagName === 'SELECT') {
+            input.addEventListener('change', function() {
+                if (this.value) {
+                    this.classList.add('is-valid');
+                    this.classList.remove('is-invalid');
+                    
+                    // Animasi perubahan
+                    this.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            });
+        }
+    });
+}
+
+function validateWithAnimation(field) {
+    if (!field.value.trim() && field.hasAttribute('required')) {
+        field.classList.add('is-invalid');
+        field.classList.remove('is-valid');
+        
+        // Shake animation
+        field.style.animation = 'shake 0.5s ease';
+        setTimeout(() => {
+            field.style.animation = '';
+        }, 500);
+        
+        return false;
+    } else {
+        field.classList.remove('is-invalid');
+        field.classList.add('is-valid');
+        return true;
+    }
+}
+
+// Enhanced filter function dengan animasi
+function filterByKelas() {
+    const selectedKelas = document.getElementById('filterKelas').value;
+    const siswaItems = document.querySelectorAll('.siswa-item');
+    
+    // Animasi filter
+    const filterSelect = document.getElementById('filterKelas');
+    filterSelect.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        filterSelect.style.transform = 'scale(1)';
+    }, 150);
+    
+    // Jika filter kosong, reload page
+    if (!selectedKelas) {
+        window.location.href = '?';
+        return;
+    }
+    
+    // Tampilkan loading
+    const loading = showLoading('Memfilter data...');
+    
+    // Filter dengan animasi
+    let visibleCount = 0;
+    siswaItems.forEach((item, index) => {
+        const kelas = item.getAttribute('data-kelas');
+        
+        if (kelas === selectedKelas) {
+            item.style.display = '';
+            item.style.animation = `cardSlideIn 0.5s ease ${index * 0.1}s forwards`;
+            visibleCount++;
+        } else {
+            item.style.animation = 'cardSlideOut 0.5s ease forwards';
+            setTimeout(() => {
+                item.style.display = 'none';
+            }, 500);
+        }
+    });
+    
+    // Hide loading
+    setTimeout(() => {
+        hideLoading(loading);
+        
+        // Tampilkan toast jika tidak ada hasil
+        if (visibleCount === 0) {
+            showToast(`Tidak ditemukan siswa di kelas ${selectedKelas}`, 'warning');
+        } else {
+            showToast(`Menampilkan ${visibleCount} siswa di kelas ${selectedKelas}`, 'success');
+        }
+        
+        // Update URL tanpa reload page
+        const url = new URL(window.location);
+        url.searchParams.set('kelas_filter', selectedKelas);
+        window.history.pushState({}, '', url);
+    }, 500);
+}
+
+// Animasi untuk SweetAlert2
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+    }
+});
+
+// Override SweetAlert dengan animasi custom
+function showSuccessAlert(title, text) {
+    Swal.fire({
+        icon: 'success',
+        title: title,
+        text: text,
+        showClass: {
+            popup: 'animate__animated animate__fadeInDown'
+        },
+        hideClass: {
+            popup: 'animate__animated animate__fadeOutUp'
+        }
+    });
+}
+
+function showErrorAlert(title, text) {
+    Swal.fire({
+        icon: 'error',
+        title: title,
+        text: text,
+        showClass: {
+            popup: 'animate__animated animate__headShake'
+        },
+        hideClass: {
+            popup: 'animate__animated animate__fadeOut'
+        }
+    });
+}
+
+// Animate card saat ditambah/dihapus
+function animateCardRemoval(cardElement) {
+    cardElement.style.animation = 'cardSlideOut 0.5s ease forwards';
+    setTimeout(() => {
+        if (cardElement.parentNode) {
+            cardElement.remove();
+            showToast('Data siswa berhasil dihapus', 'success');
+        }
+    }, 500);
+}
+
+function animateCardAddition(cardData) {
+    // Implementasi untuk menambah card baru dengan animasi
+    const container = document.getElementById('siswaContainer');
+    const newCard = createCardElement(cardData);
+    
+    newCard.style.opacity = '0';
+    newCard.style.transform = 'translateX(-100px) scale(0.8)';
+    container.prepend(newCard);
+    
+    // Trigger reflow
+    newCard.offsetHeight;
+    
+    newCard.style.transition = 'all 0.5s ease';
+    newCard.style.opacity = '1';
+    newCard.style.transform = 'translateX(0) scale(1)';
+    
+    showToast('Data siswa berhasil ditambahkan', 'success');
+}
+
+// Helper function untuk membuat card element
+function createCardElement(siswa) {
+    const nama = siswa.nama_siswa;
+    const kata = nama.split(' ');
+    const inisial = kata.length >= 2 
+        ? (kata[0][0] + kata[1][0]).toUpperCase()
+        : nama.substring(0, 2).toUpperCase();
+    
+    const card = document.createElement('div');
+    card.className = 'col-md-4 mb-3 siswa-item';
+    card.setAttribute('data-kelas', siswa.kelas);
+    card.innerHTML = `
+        <div class="card shadow-sm border-0 p-3 d-flex flex-column justify-content-between" style="border-radius:16px;">
+            <div class="d-flex align-items-center mb-3">
+                <div class="avatar-inisial bg-primary text-white me-3" 
+                     style="width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;">
+                    ${inisial}
+                </div>
+                <div>
+                    <h5 class="card-title mb-0">${nama}</h5>
+                    <small class="badge bg-secondary">${siswa.kelas}</small>
+                </div>
+            </div>
+            <div class="card-body pt-0 pb-2 px-0">
+                <p class="mb-1"><strong>Jenis Kelamin:</strong> ${siswa.gender}</p>
+                <p class="mb-1"><strong>Orang Tua:</strong> ${siswa.nama_ortu}</p>
+                <p class="mb-1"><strong>No. Telp:</strong> ${siswa.no_telp_ortu}</p>
+                <p class="mb-0"><strong>Alamat:</strong> ${siswa.alamat ? siswa.alamat.replace(/\n/g, '<br>') : ''}</p>
+            </div>
+            <div class="d-flex justify-content-between mt-3">
+                <button class="btn btn-primary rounded-3 px-4" onclick="generateAkun('${siswa.id_siswa}')">
+                    <span style="font-weight:600;">Buat Akun</span>
+                </button>
+                <div>
+                    <button class="btn btn-light border-0 p-1" onclick="editSiswa('${siswa.id_siswa}')">
+                        <img src="../assets/edit.png" alt="Edit" width="22">
+                    </button>
+                    <button class="btn btn-light border-0 p-1" onclick="hapusSiswa('${siswa.id_siswa}')">
+                        <img src="../assets/Hapus.png" alt="Hapus" width="22">
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
+
+// Event listener untuk data refresh
+document.addEventListener('dataRefresh', function() {
+    const container = document.getElementById('siswaContainer');
+    container.style.opacity = '0.5';
+    container.style.transition = 'opacity 0.3s ease';
+    
+    setTimeout(() => {
+        container.style.opacity = '1';
+    }, 300);
+});
+
+// Tambahkan FontAwesome icons untuk toast
+const fontAwesomeLink = document.createElement('link');
+fontAwesomeLink.rel = 'stylesheet';
+fontAwesomeLink.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css';
+document.head.appendChild(fontAwesomeLink);
 </script>
 </body>
 </html>

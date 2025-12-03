@@ -1,18 +1,20 @@
 <?php
+// CEK DAN MULAI SESSION JIKA BELUM ADA
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Ambil data dari session
+// AMBIL DATA USER DARI SESSION
 $role_raw = $_SESSION['role'] ?? 'user';
-$role = ucfirst($role_raw);
+$role = ucfirst($role_raw); // Format role (Admin/Guru/User)
 $username = $_SESSION['username'] ?? 'user';
-$initial = strtoupper(substr($username, 0, 1));
+$initial = strtoupper(substr($username, 0, 1)); // Ambil inisial username
 
-// Tentukan halaman asal (untuk konfirmasi logout)
+// TENTUKAN HALAMAN ASAL UNTUK REDIRECT LOGOUT
 $current_page_from = $_GET['from'] ?? '';
 
 if (empty($current_page_from)) {
+    // Default redirect berdasarkan role
     if ($role_raw === 'guru') {
         $from_page_param = 'dashboard guru';
     } elseif ($role_raw === 'admin') {
@@ -24,16 +26,19 @@ if (empty($current_page_from)) {
     $from_page_param = $current_page_from;
 }
 
+// LINK UNTUK KONFIRMASI LOGOUT
 $logout_link = "../logout/konfirmasi_logout.php?from=" . urlencode($from_page_param);
 ?>
 
-<!-- PROFIL TANPA HTML, HEAD, BODY -->
+<!-- COMPONENT PROFIL USER -->
 <div class="profile-container">
+    <!-- TOGGLE PROFIL (TAMPILAN KECIL) -->
     <div class="user-profile" id="profileToggle">
         <div class="profile-avatar"><?= $initial ?></div>
         <span class="username-text d-none d-md-inline"><?= $role ?></span>
     </div>
 
+    <!-- DROPDOWN CARD (TAMPILAN DETAIL) -->
     <div class="dropdown-card" id="profileCard">
         <div class="card-header">
             <div class="d-flex align-items-center gap-3">
@@ -45,6 +50,7 @@ $logout_link = "../logout/konfirmasi_logout.php?from=" . urlencode($from_page_pa
             </div>
         </div>
         <hr class="my-0">
+        <!-- LINK LOGOUT -->
         <a href="<?= $logout_link ?>" class="logout-link d-flex align-items-center gap-2 text-decoration-none">
             <img src="../assets/keluar.png" width="18" alt="Logout">
             <span>Logout</span>
@@ -52,17 +58,20 @@ $logout_link = "../logout/konfirmasi_logout.php?from=" . urlencode($from_page_pa
     </div>
 </div>
 
+<!-- SCRIPT TOGGLE DROPDOWN PROFIL -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const btn = document.getElementById('profileToggle');
     const card = document.getElementById('profileCard');
     if (!btn || !card) return;
 
+    // TOGGLE DROPDOWN SAAT PROFIL DIKLIK
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
         card.classList.toggle('show');
     });
 
+    // TUTUP DROPDOWN SAAT KLIK DI LUAR
     document.addEventListener('click', (e) => {
         if (!btn.contains(e.target) && !card.contains(e.target)) {
             card.classList.remove('show');

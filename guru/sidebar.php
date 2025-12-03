@@ -1,103 +1,112 @@
-<?php if (session_status() === PHP_SESSION_NONE) session_start(); ?>
+<?php 
+// ==== AUTO BASE URL — ini yang bikin 100% sama di hosting ====
+if (session_status() === PHP_SESSION_NONE) session_start();
 
-<!-- Hamburger Button untuk Mobile/Tablet -->
-<button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()">
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443 ? "https://" : "http://";
+$current_url = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+$script_name = $_SERVER['SCRIPT_NAME'];
+$base_path = str_replace(basename($script_name), '', $script_name);
+$base_url = $protocol . $_SERVER['HTTP_HOST'] . rtrim($base_path, '/\\') . '/';
+
+function asset_url($path = '') {
+    global $base_url;
+    return $base_url . ltrim($path, '/');
+}
+?>
+
+<!-- Hamburger Button (Mobile/Tablet) -->
+<button class="hamburger-btn" id="hamburgerBtn">
     <span></span>
     <span></span>
     <span></span>
 </button>
 
-<!-- Overlay untuk Mobile/Tablet -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<!-- Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <!-- Sidebar -->
 <div id="sidebar" class="sidebar expanded">
-    <!-- Sidebar Header -->
+    <!-- Tombol Collapse (Desktop) -->
     <div class="sidebar-header text-center">
-        <img src="../assets/Slide.png" id="toggleSidebar" alt="Collapse" class="slide-btn" onclick="toggleSidebar()">
-       
+        <img src="<?= asset_url('../assets/slide.png') ?>" 
+             alt="Toggle" 
+             class="slide-btn" 
+             id="toggleSidebarBtn"
+             style="cursor:pointer;">
     </div>
 
-    <!-- Navigation Menu -->
+    <!-- Menu -->
     <ul class="nav flex-column px-2">
         <li class="nav-item">
-            <a href="../dashboard_guru/home_guru.php" class="nav-link">
-                <img src="../assets/Dashboard.png" class="icon" alt="Dashboard">
+            <a href="<?= asset_url('../dashboard_admin/home_admin.php') ?>" class="nav-link">
+                <img src="<?= asset_url('../assets/Dashboard.png') ?>" class="icon" alt="Dashboard">
                 <span class="menu-text">Dashboard</span>
             </a>
         </li>
-        <li class="nav-item">
-            <a href="../guru data siswa/data_siswa.php" class="nav-link">
-                <img src="../assets/Data_Siswa.png" class="icon" alt="Data Siswa">
+    
+        <li class="nav-item mb-2">
+            <a href="<?= asset_url('../guru data siswa/data_siswa.php') ?>" 
+               class="nav-link <?= (basename($_SERVER['PHP_SELF']) == 'DataSiswa.php') ? 'active' : '' ?>">
+                <img src="<?= asset_url('../assets/Data_Siswa.png') ?>" class="icon" alt="Siswa">
                 <span class="menu-text">Data Murid</span>
             </a>
         </li>
         <li class="nav-item">
-            <a href="../guru absensi/absensi_siswa.php" class="nav-link">
-                <img src="../assets/absensi.png" class="icon" alt="Absensi">
+            <a href="<?= asset_url('../guru absensi/absensi_siswa.php') ?>" class="nav-link">
+                <img src="<?= asset_url('../assets/absensi.png') ?>" class="icon" alt="Absensi">
                 <span class="menu-text">Absensi</span>
             </a>
         </li>
         <li class="nav-item">
-            <a href="../guru perizinan/perizinan.php" class="nav-link">
-                <img src="../assets/Perizinan.png" class="icon" alt="Perizinan">
+            <a href="<?= asset_url('../guru perizinan/perizinan.php') ?>" class="nav-link">
+                <img src="<?= asset_url('../assets/Perizinan.png') ?>" class="icon" alt="Perizinan">
                 <span class="menu-text">Perizinan</span>
             </a>
         </li>
         <li class="nav-item">
-            <a href="../guru kalender/kalender.php" class="nav-link">
-                <img src="../assets/Kalender.png" class="icon" alt="Kalender">
+            <a href="<?= asset_url('../guru kalender/Kalender.php') ?>" class="nav-link">
+                <img src="<?= asset_url('../assets/Kalender.png') ?>" class="icon" alt="Kalender">
                 <span class="menu-text">Kalender</span>
             </a>
         </li>
     </ul>
-
-    <!-- Sidebar Footer -->
-    <div class="sidebar-footer">
-       
-    </div>
 </div>
 
+
+<link rel="stylesheet" href="<?= asset_url('../guru/sidebar.css?v=1.5') ?>">
+
 <script>
-
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    const hamburger = document.getElementById('hamburgerBtn');
-
-    // Mobile/Tablet Mode (< 992px)
-    if (window.innerWidth < 992) {
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-        hamburger.classList.toggle('active');
-        
-        // Prevent body scroll saat sidebar terbuka
-        if (sidebar.classList.contains('show')) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = '';
-        }
-    } 
-    // Desktop Mode (>= 992px)
-    else {
-        sidebar.classList.toggle('collapsed');
-        sidebar.classList.toggle('expanded');
-    }
-}
-
-/**
- * Initialize Sidebar on Page Load
- */
+// ==== SEMUA JAVASCRIPT SUDAH DIPERBAIKI & AMAN DI HOSTING ==== 
 document.addEventListener('DOMContentLoaded', function() {
-    
-    // Auto-close sidebar saat klik menu (Mobile/Tablet only)
+    const sidebar       = document.getElementById('sidebar');
+    const overlay       = document.getElementById('sidebarOverlay');
+    const hamburger     = document.getElementById('hamburgerBtn');
+    const toggleBtn     = document.getElementById('toggleSidebarBtn');
+
+    // Toggle utama
+    function toggleSidebar() {
+        if (window.innerWidth < 992) {
+            // Mobile / Tablet
+            sidebar.classList.toggle('show');
+            overlay.classList.toggle('show');
+            hamburger.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+        } else {
+            // Desktop
+            sidebar.classList.toggle('collapsed');
+            sidebar.classList.toggle('expanded');
+        }
+    }
+
+    // Event listener
+    hamburger.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', toggleSidebar);
+    if (toggleBtn) toggleBtn.addEventListener('click', toggleSidebar);
+
+    // Auto close saat klik menu (mobile only)
     document.querySelectorAll('#sidebar .nav-link').forEach(link => {
-        link.addEventListener('click', function() {
+        link.addEventListener('click', () => {
             if (window.innerWidth < 992) {
-                const sidebar = document.getElementById('sidebar');
-                const overlay = document.getElementById('sidebarOverlay');
-                const hamburger = document.getElementById('hamburgerBtn');
-                
                 sidebar.classList.remove('show');
                 overlay.classList.remove('show');
                 hamburger.classList.remove('active');
@@ -106,101 +115,47 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Highlight active menu berdasarkan current URL
-    const currentPath = window.location.pathname;
-    const currentPage = currentPath.split('/').pop();
-    
+    // Highlight menu aktif
+    const currentPage = location.pathname.split('/').pop();
     document.querySelectorAll('#sidebar .nav-link').forEach(link => {
-        const linkPage = link.getAttribute('href').split('/').pop();
-        if (linkPage === currentPage) {
+        const href = link.getAttribute('href');
+        if (href && href.includes(currentPage)) {
             link.classList.add('active');
         }
     });
 
-    // Ensure sidebar state on page load
-    const sidebar = document.getElementById('sidebar');
-    if (window.innerWidth >= 992) {
-        sidebar.classList.add('expanded');
-        sidebar.classList.remove('show');
-    }
-});
-
-/**
- * Handle Window Resize
- * Reset sidebar state saat resize window
- */
-let resizeTimer;
-window.addEventListener('resize', function() {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(function() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        const hamburger = document.getElementById('hamburgerBtn');
-        
-        // Reset ke Desktop mode jika window >= 992px
-        if (window.innerWidth >= 992) {
-            sidebar.classList.remove('show');
-            overlay.classList.remove('show');
-            hamburger.classList.remove('active');
-            document.body.style.overflow = '';
-            
-            // Ensure expanded state di desktop
-            if (!sidebar.classList.contains('collapsed')) {
+    // Resize handler (paling penting biar ga rusak saat ganti ukuran layar)
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (window.innerWidth >= 992) {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+                hamburger.classList.remove('active');
+                document.body.style.overflow = '';
                 sidebar.classList.add('expanded');
+            } else {
+                sidebar.classList.remove('collapsed', 'expanded');
             }
-        } else {
-            // Remove desktop classes di mobile
-            sidebar.classList.remove('collapsed', 'expanded');
-        }
-    }, 250);
-});
+        }, 200);
+    });
 
-/**
- * Close Sidebar dengan ESC Key (Mobile/Tablet)
- */
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        const sidebar = document.getElementById('sidebar');
-        if (sidebar.classList.contains('show')) {
+    // ESC key to close
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && sidebar.classList.contains('show')) {
             toggleSidebar();
         }
-    }
-});
+    });
 
-/**
- * Prevent Scroll Chain pada Sidebar (Mobile Touch)
- */
-document.addEventListener('DOMContentLoaded', function() {
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar) {
-        sidebar.addEventListener('touchmove', function(e) {
-            e.stopPropagation();
-        }, { passive: true });
-    }
-});
-
-/**
- * Handle Swipe Gesture untuk Close Sidebar (Mobile)
- */
-document.addEventListener('DOMContentLoaded', function() {
-    const sidebar = document.getElementById('sidebar');
-    let touchStartX = 0;
-    let touchEndX = 0;
-
-    sidebar.addEventListener('touchstart', function(e) {
-        touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    sidebar.addEventListener('touchend', function(e) {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSwipe();
-    }, { passive: true });
-
-    function handleSwipe() {
-        // Swipe left untuk close sidebar
-        if (touchStartX - touchEndX > 50 && sidebar.classList.contains('show')) {
+    // Swipe to close (mobile)
+    let startX = 0;
+    sidebar.addEventListener('touchstart', e => startX = e.touches[0].clientX, {passive: true});
+    sidebar.addEventListener('touchend', e => {
+        const endX = e.changedTouches[0].clientX;
+        if (startX - endX > 70 && sidebar.classList.contains('show')) {
             toggleSidebar();
         }
-    }
+    }, {passive: true});
 });
 </script>
