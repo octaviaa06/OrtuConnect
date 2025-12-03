@@ -11,7 +11,12 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
     exit;
 }
 
-// 2. Fungsi Helper untuk Fetch API
+// === DETEKSI BASE URL OTOMATIS (INI YANG MEMBUAT TAMPILAN SAMA DI LOKAL & HOSTING) ===
+$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443 ? "https://" : "http://";
+$base_url = $protocol . $_SERVER['HTTP_HOST'] . dirname($_SERVER['SCRIPT_NAME']) . '/';
+
+
+// Fungsi callAPI
 function callAPI($url) {
     $ch = curl_init();
     curl_setopt_array($ch, [
@@ -24,35 +29,25 @@ function callAPI($url) {
         CURLOPT_FORBID_REUSE => true
     ]);
     $response = curl_exec($ch);
-    
     if (curl_errno($ch)) {
         error_log("CURL Error: " . curl_error($ch));
         return false;
     }
-    
     curl_close($ch);
     return json_decode($response, true);
 }
 
-// Fungsi fetchApiData yang konsisten
 function fetchApiData($url) {
     return callAPI($url);
 }
 
-// 3. Pengambilan Data Dashboard dari API
+// Ambil data dashboard
 $api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/dashboard_admin.php?t=" . time();
 $data = fetchApiData($api_url) ?: [];
-
-// Inisialisasi variabel untuk menghindari error
 $siswa = $data['siswa'] ?? 0;
 
-// Ambil data izin LANGSUNG dari API perizinan dengan filter status Menunggu
+// Ambil data izin menunggu
 $izin_response = fetchApiData("https://ortuconnect.pbltifnganjuk.com/api/perizinan.php?t=" . time());
-
-// Debug: Log response untuk cek struktur data
-error_log("Izin Response: " . print_r($izin_response, true));
-
-// Ambil izin dengan status Menunggu saja
 $izin = [];
 if (isset($izin_response['data']) && is_array($izin_response['data'])) {
     foreach ($izin_response['data'] as $item) {
@@ -61,50 +56,39 @@ if (isset($izin_response['data']) && is_array($izin_response['data'])) {
             $izin[] = $item;
         }
     }
-} elseif (isset($izin_response['izin_menunggu']) && is_array($izin_response['izin_menunggu'])) {
-    // Jika API mengembalikan key 'izin_menunggu' langsung
+} elseif (isset($izin_response['izin_menunggu'])) {
     $izin = $izin_response['izin_menunggu'];
-} elseif (isset($data['izin_menunggu']) && is_array($data['izin_menunggu'])) {
-    // Fallback ke dashboard API
+} elseif (isset($data['izin_menunggu'])) {
     $izin = $data['izin_menunggu'];
 }
-
-// Ambil data kelas
-$kelas_data = fetchApiData("https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php?mode=kelas");
-$kelas_list = $kelas_data['data'] ?? [];
 
 // Hitung siswa masuk hari ini
 $siswa_masuk_hari_ini = 0;
 $today = date('Y-m-d');
+$kelas_data = fetchApiData("https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php?mode=kelas");
+$kelas_list = $kelas_data['data'] ?? [];
 
 foreach ($kelas_list as $kelas) {
-    $absensi_data = fetchApiData(
-        "https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php?kelas=" . 
-        urlencode($kelas) . "&tanggal=" . urlencode($today)
-    ) ?: [];
-    
+    $absensi_data = fetchApiData("https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php?kelas=" . urlencode($kelas) . "&tanggal=" . urlencode($today)) ?: [];
     foreach ($absensi_data['data'] ?? [] as $abs) {
         if (!empty($abs['status_absensi']) && $abs['status_absensi'] === 'Hadir') {
             $siswa_masuk_hari_ini++;
         }
     }
 }
-
 $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
 
-// 4. Ambil data AGENDA dari endpoint khusus
+// Ambil agenda terdekat (7 hari ke depan)
 $current_month = date('m');
 $current_year = date('Y');
 $agenda_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/agenda.php?month={$current_month}&year={$current_year}";
 $agenda_data = fetchApiData($agenda_url) ?: [];
 $all_agenda = $agenda_data['data'] ?? [];
 
-// 5. Filter agenda: hanya yang tanggalnya >= hari ini, maks 7 hari ke depan
 $today_datetime = new DateTime();
 $upcoming_agenda = array_filter($all_agenda, function($item) use ($today_datetime) {
     $tgl_str = $item['tanggal'] ?? '';
     if (!$tgl_str) return false;
-    
     try {
         $tgl = new DateTime($tgl_str);
         $diff = $today_datetime->diff($tgl);
@@ -114,13 +98,9 @@ $upcoming_agenda = array_filter($all_agenda, function($item) use ($today_datetim
         return false;
     }
 });
-
-// Urutkan berdasarkan tanggal ascending
 usort($upcoming_agenda, function($a, $b) {
     return strcmp($a['tanggal'] ?? '', $b['tanggal'] ?? '');
 });
-
-// Ambil maksimal 5 agenda terdekat
 $agenda = array_slice($upcoming_agenda, 0, 5);
 
 ob_end_flush();
@@ -131,11 +111,27 @@ ob_end_flush();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Guru | OrtuConnect</title>
+    
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="guru.css">
-    <link rel="stylesheet" href="../profil/profil.css">
-    <link rel="stylesheet" href="../guru/sidebar.css">
+    
+    <!-- CSS dengan base_url otomatis (INI YANG MEMBUAT TAMPILAN SAMA DI SEMUA HOSTING) -->
+    <link rel="stylesheet" href="<?= $base_url ?>guru.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="<?= $base_url ?>../profil/profil.css?v=<?= time() ?>">
+    <link rel="stylesheet" href="<?= $base_url ?>../guru/sidebar.css?v=<?= time() ?>">
+    
+    <!-- Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    
+    <style>
+        /* Background dashboard */
+        .main-content {
+            background-image: url('<?= $base_url ?>../assets/background/Dashboard Admin.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+    </style>
 </head>
 <body>
     <!-- Toast Notification -->
@@ -144,7 +140,7 @@ ob_end_flush();
     <div class="d-flex">
         <?php include '../guru/sidebar.php'; ?>
 
-        <div class="flex-grow-1 main-content" style="background-image: url('../assets/background/Dashboard Admin.png'); background-size: cover; background-position: center;">
+        <div class="flex-grow-1 main-content">
             <div class="container-fluid py-3">
                 <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
                     <h4 class="fw-bold text-primary m-0">Dashboard Guru</h4>
@@ -158,10 +154,7 @@ ob_end_flush();
                             <div class="card-body stat-card-body p-4">
                                 <p class="stat-label">Jumlah Siswa</p>
                                 <p class="stat-value"><?= htmlspecialchars((string)$siswa) ?></p>
-                                <div class="stat-change">
-                                    <span>↑</span>
-                                    <span>Total</span>
-                                </div>
+                                <div class="stat-change"><span>↑</span> <span>Total</span></div>
                             </div>
                         </div>
                     </div>
@@ -170,10 +163,7 @@ ob_end_flush();
                             <div class="card-body stat-card-body p-4">
                                 <p class="stat-label">Izin Menunggu</p>
                                 <p class="stat-value"><?= count($izin) ?></p>
-                                <div class="stat-change">
-                                    <span>↑</span>
-                                    <span>Proses</span>
-                                </div>
+                                <div class="stat-change"><span>↑</span> <span>Proses</span></div>
                             </div>
                         </div>
                     </div>
@@ -194,8 +184,8 @@ ob_end_flush();
                     <div class="col-6 col-md-4">
                         <a href="../guru absensi/absensi_siswa.php" class="text-decoration-none">
                             <div class="card access-card shadow-sm h-100">
-                                <div class="card-body d-flex flex-column justify-content-center align-items-center text-center w-100">
-                                    <img src="../assets/Absensi Biru.png" class="access-icon mb-2" alt="Absensi">
+                                <div class="card-body d-flex flex-column justify-content-center align-items-center text-center">
+                                    <img src="<?= $base_url ?>../assets/Absensi Biru.png" class="access-icon mb-2" alt="Absensi">
                                     <p class="access-text">Kelola Absensi</p>
                                 </div>
                             </div>
@@ -204,8 +194,8 @@ ob_end_flush();
                     <div class="col-6 col-md-4">
                         <a href="../guru perizinan/perizinan.php" class="text-decoration-none">
                             <div class="card access-card shadow-sm h-100">
-                                <div class="card-body d-flex flex-column justify-content-center align-items-center text-center w-100">
-                                    <img src="../assets/Perizinan Biru.png" class="access-icon mb-2" alt="Perizinan">
+                                <div class="card-body d-flex flex-column justify-content-center align-items-center text-center">
+                                    <img src="<?= $base_url ?>../assets/Perizinan Biru.png" class="access-icon mb-2" alt="Perizinan">
                                     <p class="access-text">Proses Perizinan</p>
                                 </div>
                             </div>
@@ -214,8 +204,8 @@ ob_end_flush();
                     <div class="col-12 col-md-4">
                         <a href="../guru kalender/kalender.php" class="text-decoration-none">
                             <div class="card access-card shadow-sm h-100">
-                                <div class="card-body d-flex flex-column justify-content-center align-items-center text-center w-100">
-                                    <img src="../assets/Kalender_Biru.png" class="access-icon mb-2" alt="Kalender">
+                                <div class="card-body d-flex flex-column justify-content-center align-items-center text-center">
+                                    <img src="<?= $base_url ?>../assets/Kalender_Biru.png" class="access-icon mb-2" alt="Kalender">
                                     <p class="access-text">Lihat Kalender</p>
                                 </div>
                             </div>
@@ -229,7 +219,7 @@ ob_end_flush();
                         <div class="card border-primary shadow-sm h-100">
                             <div class="card-body">
                                 <h6 class="text-primary d-flex align-items-center gap-2 mb-3">
-                                    <img src="../assets/Pesan.png" width="22" alt="Izin"> 
+                                    <img src="<?= $base_url ?>../assets/Pesan.png" width="22" alt="Izin"> 
                                     Izin Menunggu 
                                     <span class="badge bg-primary"><?= count($izin) ?></span>
                                 </h6>
@@ -239,23 +229,13 @@ ob_end_flush();
                                     <?php else: ?>
                                         <?php foreach ($izin as $i): ?>
                                             <?php
-                                            // Deteksi ID izin dari berbagai kemungkinan field
                                             $id_izin = $i['id_izin'] ?? $i['id'] ?? $i['id_perizinan'] ?? 0;
-                                            
-                                            // Deteksi field nama siswa
                                             $nama_siswa = $i['nama_siswa'] ?? $i['nama'] ?? $i['nama_lengkap'] ?? 'N/A';
-                                            
-                                            // Deteksi field tanggal
-                                            $tanggal_mulai = $i['tanggal_mulai'] ?? $i['tanggal'] ?? $i['tanggal_izin'] ?? '';
+                                            $tanggal_mulai = $i['tanggal_mulai'] ?? $i['tanggal'] ?? '';
                                             $tanggal_selesai = $i['tanggal_selesai'] ?? $i['tanggal_akhir'] ?? '';
-                                            
-                                            // Format tanggal range
-                                            $tanggal_display = '';
-                                            if (!empty($tanggal_mulai)) {
-                                                $tanggal_display = date('d/m/Y', strtotime($tanggal_mulai));
-                                                if (!empty($tanggal_selesai) && $tanggal_selesai !== $tanggal_mulai) {
-                                                    $tanggal_display .= ' - ' . date('d/m/Y', strtotime($tanggal_selesai));
-                                                }
+                                            $tanggal_display = !empty($tanggal_mulai) ? date('d/m/Y', strtotime($tanggal_mulai)) : '';
+                                            if (!empty($tanggal_selesai) && $tanggal_selesai !== $tanggal_mulai) {
+                                                $tanggal_display .= ' - ' . date('d/m/Y', strtotime($tanggal_selesai));
                                             }
                                             ?>
                                             <div class="mb-3 pb-2 border-bottom izin-item" data-id="<?= (int)$id_izin ?>">
@@ -267,25 +247,15 @@ ob_end_flush();
                                                     <br>
                                                     <span class="text-muted">
                                                         <?= htmlspecialchars($i['jenis_izin'] ?? 'Izin') ?>
-                                                        <?php if ($tanggal_display): ?>
-                                                            • <?= $tanggal_display ?>
-                                                        <?php endif; ?>
+                                                        <?php if ($tanggal_display): ?> • <?= $tanggal_display ?><?php endif; ?>
                                                     </span>
                                                 </p>
                                                 <?php if (!empty($i['keterangan'])): ?>
                                                     <p class="mb-2 small text-muted fst-italic">"<?= htmlspecialchars(substr($i['keterangan'], 0, 50)) ?><?= strlen($i['keterangan']) > 50 ? '...' : '' ?>"</p>
                                                 <?php endif; ?>
                                                 <div class="d-flex gap-1">
-                                                    <button class="btn btn-success btn-sm flex-fill btn-setujui" 
-                                                            data-id="<?= (int)$id_izin ?>"
-                                                            data-nama="<?= htmlspecialchars($nama_siswa) ?>">
-                                                        ✔ Setujui
-                                                    </button>
-                                                    <button class="btn btn-danger btn-sm flex-fill btn-tolak" 
-                                                            data-id="<?= (int)$id_izin ?>"
-                                                            data-nama="<?= htmlspecialchars($nama_siswa) ?>">
-                                                        ✘ Tolak
-                                                    </button>
+                                                    <button class="btn btn-success btn-sm flex-fill btn-setujui" data-id="<?= (int)$id_izin ?>" data-nama="<?= htmlspecialchars($nama_siswa) ?>">Setujui</button>
+                                                    <button class="btn btn-danger btn-sm flex-fill btn-tolak" data-id="<?= (int)$id_izin ?>" data-nama="<?= htmlspecialchars($nama_siswa) ?>">Tolak</button>
                                                 </div>
                                             </div>
                                         <?php endforeach; ?>
@@ -299,7 +269,7 @@ ob_end_flush();
                         <div class="card border-primary shadow-sm h-100">
                             <div class="card-body">
                                 <h6 class="text-primary d-flex align-items-center gap-2 mb-3">
-                                    <img src="../assets/Kalender_Biru.png" width="22" alt="Agenda"> Agenda Terdekat
+                                    <img src="<?= $base_url ?>../assets/Kalender_Biru.png" width="22" alt="Agenda"> Agenda Terdekat
                                 </h6>
                                 <div class="agenda-simple">
                                     <?php if (empty($agenda)): ?>
@@ -310,21 +280,12 @@ ob_end_flush();
                                         <?php foreach ($agenda as $a): ?>
                                             <div class="agenda-item-simple">
                                                 <div class="agenda-date-simple">
-                                                    <?php 
-                                                    if (!empty($a['tanggal'])) {
-                                                        $date = date('d M', strtotime($a['tanggal']));
-                                                        echo $date;
-                                                    } else {
-                                                        echo '-- ---';
-                                                    }
-                                                    ?>
+                                                    <?= !empty($a['tanggal']) ? date('d M', strtotime($a['tanggal'])) : '-- ---' ?>
                                                 </div>
                                                 <div class="agenda-content-simple">
                                                     <strong class="agenda-title-simple"><?= htmlspecialchars($a['nama_kegiatan'] ?? '—') ?></strong>
                                                     <?php if (!empty($a['waktu_mulai'])): ?>
-                                                        <span class="agenda-time-simple">
-                                                            • <?= date('H:i', strtotime($a['waktu_mulai'])) ?>
-                                                        </span>
+                                                        <span class="agenda-time-simple">• <?= date('H:i', strtotime($a['waktu_mulai'])) ?></span>
                                                     <?php endif; ?>
                                                 </div>
                                             </div>
@@ -339,8 +300,8 @@ ob_end_flush();
         </div>
     </div>
 
-    <!-- Modal Konfirmasi Persetujuan -->
-    <div class="modal fade" id="modalKonfirmasiSetujui" tabindex="-1" aria-hidden="true">
+    <!-- Modal Setujui & Tolak (sama seperti sebelumnya) -->
+    <div class="modal fade" id="modalKonfirmasiSetujui" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
@@ -348,16 +309,9 @@ ob_end_flush();
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="alert alert-warning small mb-3">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Apakah Anda yakin ingin menyetujui izin ini?</strong>
-                    </div>
-                    <div class="alert alert-info small">
-                        <strong id="namaSiswaSetujui"></strong>
-                    </div>
-                    <p class="small text-muted mb-0">
-                        Setelah disetujui, izin tidak dapat dibatalkan. Pastikan data sudah benar.
-                    </p>
+                    <div class="alert alert-warning small mb-3">Apakah Anda yakin ingin menyetujui izin ini?</div>
+                    <div class="alert alert-info small"><strong id="namaSiswaSetujui"></strong></div>
+                    <p class="small text-muted mb-0">Setelah disetujui, izin tidak dapat dibatalkan.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -367,8 +321,7 @@ ob_end_flush();
         </div>
     </div>
 
-    <!-- Modal Alasan Penolakan -->
-    <div class="modal fade" id="modalAlasanTolak" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="modalAlasanTolak" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-danger text-white">
@@ -376,15 +329,13 @@ ob_end_flush();
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="alert alert-info small mb-3">
-                        <strong id="namaSiswaTolak"></strong>
-                    </div>
+                    <div class="alert alert-info small mb-3"><strong id="namaSiswaTolak"></strong></div>
                     <form id="formAlasanTolak">
-                        <input type="hidden" id="id_izin_tolak" value="">
+                        <input type="hidden" id="id_izin_tolak">
                         <div class="mb-3">
-                            <label for="alasanTolak" class="form-label">Masukkan Alasan Penolakan <span class="text-danger">*</span></label>
-                            <textarea class="form-control" id="alasanTolak" name="alasan" rows="4" placeholder="Contoh: Dokumen tidak lengkap, format tidak sesuai, dll..." required></textarea>
-                            <small class="text-muted d-block mt-2">Alasan ini akan dikirimkan ke orang tua siswa</small>
+                            <label for="alasanTolak" class="form-label">Alasan Penolakan <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="alasanTolak" rows="4" required placeholder="Contoh: Dokumen tidak lengkap..."></textarea>
+                            <small class="text-muted d-block mt-2">Alasan ini akan dikirim ke orang tua</small>
                         </div>
                     </form>
                 </div>
@@ -400,276 +351,113 @@ ob_end_flush();
     <script>
         const API_PERIZINAN = "https://ortuconnect.pbltifnganjuk.com/api/perizinan.php";
         const USER_ID = <?= isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0 ?>;
-        
         let currentIdIzin = null;
-        const modalKonfirmasiSetujui = new bootstrap.Modal(document.getElementById('modalKonfirmasiSetujui'));
-        const modalAlasanTolak = new bootstrap.Modal(document.getElementById('modalAlasanTolak'));
+        const modalSetujui = new bootstrap.Modal('#modalKonfirmasiSetujui');
+        const modalTolak = new bootstrap.Modal('#modalAlasanTolak');
 
-        // ========== TOAST NOTIFICATION ==========
-        function showToast(message, isSuccess = true) {
-            const toast = document.getElementById('toast');
-            if (!toast) return;
-            
-            toast.textContent = message;
-            toast.className = isSuccess ? 'success' : 'error';
-            toast.classList.add('show');
-            
-            setTimeout(() => toast.classList.remove('show'), 3000);
+        function showToast(msg, success = true) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = success ? 'success' : 'error';
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        // ========== BUTTON SETUJUI - Buka Modal Konfirmasi ==========
-        document.addEventListener("click", function(e) {
-            if (e.target.classList.contains("btn-setujui")) {
-                const id_izin = e.target.getAttribute("data-id");
-                const nama = e.target.getAttribute("data-nama");
-                
-                if (!id_izin) {
-                    showToast("Error: ID izin tidak ditemukan", false);
-                    return;
-                }
-                
-                currentIdIzin = id_izin;
-                document.getElementById('namaSiswaSetujui').textContent = `Menyetujui izin dari: ${nama}`;
-                modalKonfirmasiSetujui.show();
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn-setujui')) {
+                currentIdIzin = e.target.dataset.id;
+                document.getElementById('namaSiswaSetujui').textContent = 'Menyetujui izin dari: ' + e.target.dataset.nama;
+                modalSetujui.show();
             }
-        });
-
-        // ========== KONFIRMASI SETUJUI ==========
-        document.getElementById('btnKonfirmasiSetujui').addEventListener("click", function() {
-            if (!currentIdIzin) {
-                showToast("Error: ID izin tidak ditemukan", false);
-                return;
-            }
-            
-            modalKonfirmasiSetujui.hide();
-            updateStatusIzin(currentIdIzin, "Disetujui", null, null);
-            currentIdIzin = null;
-        });
-
-        // ========== BUTTON TOLAK - Buka Modal ==========
-        document.addEventListener("click", function(e) {
-            if (e.target.classList.contains("btn-tolak")) {
-                const id_izin = e.target.getAttribute("data-id");
-                const nama = e.target.getAttribute("data-nama");
-                
-                if (!id_izin) {
-                    showToast("Error: ID izin tidak ditemukan", false);
-                    return;
-                }
-                
-                currentIdIzin = id_izin;
+            if (e.target.classList.contains('btn-tolak')) {
+                currentIdIzin = e.target.dataset.id;
+                document.getElementById('namaSiswaTolak').textContent = 'Menolak izin dari: ' + e.target.dataset.nama;
                 document.getElementById('alasanTolak').value = '';
-                document.getElementById('namaSiswaTolak').textContent = `Menolak izin dari: ${nama}`;
-                modalAlasanTolak.show();
+                modalTolak.show();
             }
         });
 
-        // ========== KONFIRMASI TOLAK ==========
-        document.getElementById('btnKonfirmasiTolak').addEventListener("click", function() {
+        document.getElementById('btnKonfirmasiSetujui').onclick = () => {
+            modalSetujui.hide();
+            updateStatusIzin(currentIdIzin, "Disetujui");
+        };
+
+        document.getElementById('btnKonfirmasiTolak').onclick = () => {
             const alasan = document.getElementById('alasanTolak').value.trim();
-            
-            if (!alasan) {
-                showToast("⚠ Alasan penolakan harus diisi!", false);
-                return;
-            }
-            
-            if (!currentIdIzin) {
-                showToast("Error: ID izin tidak ditemukan", false);
-                return;
-            }
-            
-            modalAlasanTolak.hide();
-            updateStatusIzin(currentIdIzin, "Ditolak", alasan, null);
-            currentIdIzin = null;
-        });
+            if (!alasan) return showToast("Alasan harus diisi!", false);
+            modalTolak.hide();
+            updateStatusIzin(currentIdIzin, "Ditolak", alasan);
+        };
 
-        // ========== UPDATE STATUS IZIN ==========
-        function updateStatusIzin(id_izin, status, alasan, buttonClicked) {
-            const item = document.querySelector(`.izin-item[data-id="${id_izin}"]`);
-            if (!item) {
-                showToast("Error: Item izin tidak ditemukan", false);
-                return;
-            }
-
-            // Disable buttons & show loading
+        function updateStatusIzin(id, status, alasan = null) {
+            const item = document.querySelector(`.izin-item[data-id="${id}"]`);
             const buttons = item.querySelectorAll('button');
-            buttons.forEach(btn => {
-                btn.disabled = true;
-                btn.style.opacity = '0.6';
-                btn.style.cursor = 'not-allowed';
-            });
-
-            if (status === 'Disetujui') {
-                buttons[0].innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span>Memproses...`;
-            } else {
-                buttons[1].innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span>Memproses...`;
-            }
-
-            const payload = {
-                id_izin: parseInt(id_izin),
-                status: status,
-                id_guru_verifikasi: USER_ID
-            };
-
-            if (alasan) {
-                payload.alasan_penolakan = alasan;
-            }
-
-            console.log('Mengirim payload:', payload);
+            buttons.forEach(b => b.disabled = true);
 
             fetch(API_PERIZINAN, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify(payload)
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id_izin: parseInt(id),
+                    status: status,
+                    id_guru_verifikasi: USER_ID,
+                    alasan_penolakan: alasan
+                })
             })
-            .then(response => {
-                console.log('Response status:', response.status);
-                if (!response.ok) {
-                    throw new Error(`HTTP Error: ${response.status}`);
-                }
-                return response.json();
-            })
+            .then(r => r.json())
             .then(data => {
-                console.log('Response dari API:', data);
-
                 if (data.success || data.status === 'success') {
-                    const pesan = status === 'Disetujui' ? '✓ Izin berhasil disetujui!' : '✗ Izin berhasil ditolak!';
-                    showToast(pesan, true);
-                    
-                    // Hapus item dengan animasi
-                    item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                    showToast(status === 'Disetujui' ? 'Izin disetujui!' : 'Izin ditolak!');
                     item.style.opacity = '0';
                     item.style.transform = 'translateX(-20px)';
-                    
                     setTimeout(() => {
                         item.remove();
-                        
-                        // Cek apakah masih ada izin menunggu
-                        const container = document.getElementById('izinContainer');
-                        const remainingItems = container.querySelectorAll('.izin-item');
-                        
-                        if (remainingItems.length === 0) {
-                            container.innerHTML = '<p class="text-muted small mb-0">Tidak ada izin menunggu</p>';
+                        if (!document.querySelector('.izin-item')) {
+                            document.getElementById('izinContainer').innerHTML = '<p class="text-muted small mb-0">Tidak ada izin menunggu</p>';
                         }
-                        
-                        // Update badge counter
-                        updateBadgeCount();
+                        document.querySelector('.badge.bg-primary').textContent = document.querySelectorAll('.izin-item').length;
                     }, 300);
                 } else {
-                    showToast("❌ " + (data.message || "Gagal memperbarui status"), false);
-                    resetButtons(buttons);
+                    showToast("Gagal: " + (data.message || "Unknown error"), false);
+                    buttons.forEach(b => b.disabled = false);
                 }
             })
-            .catch(error => {
-                console.error("Error:", error);
-                showToast("❌ Gagal menghubungi server: " + error.message, false);
-                resetButtons(buttons);
+            .catch(() => {
+                showToast("Gagal koneksi ke server", false);
+                buttons.forEach(b => b.disabled = false);
             });
         }
 
-        // ========== UPDATE BADGE COUNT ==========
-        function updateBadgeCount() {
-            const container = document.getElementById('izinContainer');
-            const count = container.querySelectorAll('.izin-item').length;
-            const badge = document.querySelector('.badge.bg-primary');
-            if (badge) {
-                badge.textContent = count;
-            }
-        }
-
-        // ========== RESET BUTTON STATE ==========
-        function resetButtons(buttons) {
-            buttons[0].innerHTML = '✔ Setujui';
-            buttons[0].disabled = false;
-            buttons[0].style.opacity = '1';
-            buttons[0].style.cursor = 'pointer';
-            
-            buttons[1].innerHTML = '✘ Tolak';
-            buttons[1].disabled = false;
-            buttons[1].style.opacity = '1';
-            buttons[1].style.cursor = 'pointer';
-        }
-
-        // ========== AUTO REFRESH IZIN ==========
-        function autoRefreshIzin() {
-            setInterval(async () => {
-                try {
-                    const response = await fetch(API_PERIZINAN + '?t=' + Date.now());
-                    const data = await response.json();
-                    
-                    let izinBaru = [];
-                    if (data.data && Array.isArray(data.data)) {
-                        izinBaru = data.data.filter(item => {
-                            const status = (item.status || '').toLowerCase();
-                            return status === 'menunggu' || status === 'pending';
-                        });
-                    }
-                    
-                    const currentCount = document.querySelectorAll('.izin-item').length;
-                    if (izinBaru.length > currentCount) {
-                        console.log('Ada izin baru!', izinBaru.length);
-                        showToast('📬 Ada izin baru yang perlu diproses!', true);
-                        // Optional: bisa auto reload atau update UI
-                    }
-                } catch (error) {
-                    console.error('Error auto refresh:', error);
-                }
-            }, 30000); // 30 detik
-        }
-
-        // ========== CHART.JS - ATTENDANCE DOUGHNUT ==========
-        document.addEventListener('DOMContentLoaded', function() {
-            // Chart
+        // Chart
+        document.addEventListener('DOMContentLoaded', () => {
             const ctx = document.getElementById('attendanceChart');
             if (ctx) {
-                const masuk = <?= $siswa_masuk_hari_ini ?>;
-                const tidakMasuk = <?= $siswa_tidak_masuk ?>;
-                const total = <?= $siswa ?>;
-
                 new Chart(ctx, {
                     type: 'doughnut',
                     data: {
                         labels: ['Masuk', 'Tidak Masuk'],
                         datasets: [{
-                            data: [masuk, tidakMasuk],
+                            data: [<?= $siswa_masuk_hari_ini ?>, <?= $siswa_tidak_masuk ?>],
                             backgroundColor: ['#0d6efd', '#e9ecef'],
-                            borderColor: ['#0d6efd', '#e9ecef'],
                             borderWidth: 2,
                             cutout: '70%'
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } }
-                    },
+                    options: { responsive: true, plugins: { legend: { display: false } } },
                     plugins: [{
-                        id: 'textCenter',
+                        id: 'centerText',
                         beforeDatasetsDraw(chart) {
-                            const {width, height, ctx} = chart;
-                            ctx.restore();
-                            ctx.font = `bold ${(height / 200).toFixed(2)}em sans-serif`;
-                            ctx.textBaseline = "middle";
-                            ctx.fillStyle = '#0d6efd';
-                            
-                            const text = `${masuk}/${total}`;
-                            const textX = Math.round((width - ctx.measureText(text).width) / 2);
-                            const textY = height / 2;
-                            ctx.fillText(text, textX, textY);
+                            const { ctx, width, height } = chart;
                             ctx.save();
+                            ctx.font = 'bold 1.8em sans-serif';
+                            ctx.fillStyle = '#0d6efd';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'middle';
+                            ctx.fillText('<?= $siswa_masuk_hari_ini ?>/<?= $siswa ?>', width/2, height/2);
                         }
                     }]
                 });
             }
-
-            // Jalankan auto refresh
-            autoRefreshIzin();
-            
-            // Debug: Tampilkan jumlah izin yang berhasil dimuat
-            console.log('Total izin menunggu:', document.querySelectorAll('.izin-item').length);
         });
     </script>
 </body>

@@ -1,7 +1,4 @@
-
-/* ====== STRUKTUR UMUM (TETAP SAMA) ====== */
-/* ======================================= */
-
+/* ====== STRUKTUR UMUM ====== */
 body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
@@ -19,7 +16,6 @@ body {
   min-height: 100vh;
 }
 
-/* === NAIKKAN JARAK HEADER === */
 .main-content .container-fluid {
   padding-top: 5px !important;
   padding-bottom: 20px;
@@ -70,9 +66,7 @@ body {
   z-index: 1000;
 }
 
-.profile-card.show {
-  display: block;
-}
+.profile-card.show { display: block; }
 
 .logout-btn {
   color: #d9534f;
@@ -83,16 +77,14 @@ body {
   text-decoration: none;
 }
 
-.logout-btn img {
-  width: 20px;
-}
+.logout-btn img { width: 20px; }
 
 /* ===== CARD STATISTIK ===== */
 .stat-card {
   border: none !important;
   border-radius: 12px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  background: white;
   position: relative;
   overflow: hidden;
 }
@@ -109,7 +101,7 @@ body {
   right: 0;
   width: 100px;
   height: 100px;
-  background: rgba(0, 0, 0, 0.03);
+  background: rgba(13, 110, 253, 0.05);
   border-radius: 50%;
   transform: translate(30%, -30%);
 }
@@ -156,12 +148,27 @@ body {
   margin-bottom: 12px;
 }
 
+/* ===== CHART CONTAINER - DIPERBAIKI SUPAYA TIDAK MEMBENGKAK (INI SATU-SATUNYA YANG DIRUBAH) ===== */
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 180px;           /* dari 250px → 180px biar tidak buwesar */
+  max-width: 260px;        /* batas lebar supaya tidak melebar */
+  margin: 20px auto;       /* tengah + jarak atas */
+}
+
+/* Pastikan canvas tidak membesar sendiri */
+.chart-container canvas {
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
 /* ===== AKSES CEPAT CARD ===== */
 .access-card {
   border: 1px solid #e9ecef !important;
   border-radius: 12px;
   transition: all 0.3s ease;
-  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  background: white;
   cursor: pointer;
   text-decoration: none !important;
   display: flex;
@@ -174,7 +181,6 @@ body {
   border-color: #0d6efd !important;
   box-shadow: 0 8px 24px rgba(13, 110, 253, 0.15) !important;
   transform: translateY(-5px);
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
 }
 
 .access-icon {
@@ -185,23 +191,13 @@ body {
   transition: transform 0.3s ease;
 }
 
-.access-card:hover .access-icon {
-  transform: scale(1.1);
-}
+.access-card:hover .access-icon { transform: scale(1.1); }
 
 .access-text {
   font-size: 0.95rem;
   font-weight: 600;
   color: #212529;
   text-align: center;
-}
-
-/* ===== CHART CONTAINER ===== */
-.chart-container {
-  position: relative;
-  width: 100%;
-  height: 250px;
-  margin-top: 20px;
 }
 
 /* ===== CARD DASHBOARD ===== */
@@ -213,87 +209,235 @@ body {
   background: white;
 }
 
+/* ===== AGENDA STYLING - ENHANCED ===== */
+.agenda-simple {
+  padding: 0;
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.agenda-simple::-webkit-scrollbar { width: 6px; }
+.agenda-simple::-webkit-scrollbar-track { background: #f8f9fa; border-radius: 10px; }
+.agenda-simple::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 10px; }
+.agenda-simple::-webkit-scrollbar-thumb:hover { background: #adb5bd; }
+
+.agenda-item-simple {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 14px;
+  margin-bottom: 10px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+  border-left: 3px solid #0d6efd;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+.agenda-item-simple:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.12);
+  border-left-color: #0a58ca;
+  background: #f8f9ff;
+}
+
+.agenda-date-simple {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #0d6efd;
+  color: white;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-align: center;
+  line-height: 1.3;
+  box-shadow: 0 3px 8px rgba(13, 110, 253, 0.25);
+}
+
+.agenda-content-simple {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-top: 2px;
+}
+
+.agenda-title-simple {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: #212529;
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.agenda-item-simple:hover .agenda-title-simple { color: #0d6efd; }
+
+.agenda-time-simple {
+  font-size: 0.84rem;
+  color: #6c757d;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.agenda-time-simple::before { content: 'Clock'; font-size: 0.9rem; }
+
+/* ===== IZIN STYLING - ENHANCED ===== */
+#izinContainer {
+  padding-right: 4px;
+}
+
+#izinContainer::-webkit-scrollbar { width: 6px; }
+#izinContainer::-webkit-scrollbar-track { background: #f8f9fa; border-radius: 10px; }
+#izinContainer::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 10px; }
+#izinContainer::-webkit-scrollbar-thumb:hover { background: #adb5bd; }
+
+.izin-item {
+  margin-bottom: 12px;
+  padding: 14px;
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e9ecef;
+  border-left: 3px solid #ffc107;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+.izin-item:hover {
+  transform: translateX(3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-left-color: #ff9800;
+}
+
+.izin-item .btn-sm {
+  border-radius: 7px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 7px 12px;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.izin-item .btn-success {
+  background: #28a745;
+  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.25);
+}
+
+.izin-item .btn-success:hover {
+  background: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(40, 167, 69, 0.35);
+}
+
+.izin-item .btn-danger {
+  background: #dc3545;
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.25);
+}
+
+.izin-item .btn-danger:hover {
+  background: #c82333;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(220, 53, 69, 0.35);
+}
+
+.izin-item .badge {
+  font-weight: 600;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+}
+
+/* ===== TOAST NOTIFICATION ===== */
+#toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 14px 20px;
+  border-radius: 10px;
+  color: white;
+  font-weight: 600;
+  font-size: 0.92rem;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+  z-index: 9999;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  max-width: 400px;
+}
+
+#toast.show { opacity: 1; transform: translateY(0); }
+#toast.success { background: #28a745; }
+#toast.error { background: #dc3545; }
+
+/* ===== CARD HEADER ICONS ===== */
+.card-body h6.text-primary {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.card-body h6.text-primary img {
+  filter: brightness(0) saturate(100%) invert(36%) sepia(92%) saturate(2615%) hue-rotate(203deg) brightness(97%) contrast(101%);
+}
+
 /* ===== RESPONSIVE - TABLET ===== */
 @media (max-width: 768px) {
-  .main-content {
-    margin-left: 0 !important;
-    padding: 15px !important;
-  }
-
-  .header-fixed {
-    margin-bottom: 20px;
-  }
-
-  .dashboard-card {
-    padding: 15px;
-    min-height: 120px;
-  }
-
-  .stat-card {
-    padding: 20px;
-  }
-
-  .stat-value {
-    font-size: 2rem;
-  }
-
-  .access-card {
-    min-height: 120px;
-  }
-
-  .chart-container {
-    height: 200px;
-  }
+  .main-content { margin-left: 0 !important; padding: 15px !important; }
+  .header-fixed { margin-bottom: 20px; }
+  .dashboard-card { padding: 15px; min-height: 120px; }
+  .stat-card { padding: 20px; }
+  .stat-value { font-size: 2rem; }
+  .access-card { min-height: 120px; }
+  
+  /* Chart lebih kecil di tablet */
+  .chart-container { height: 160px; max-width: 240px; }
 }
 
 /* ===== RESPONSIVE - MOBILE ===== */
 @media (max-width: 576px) {
-  .main-content {
-    padding: 5px 12px !important;
-    margin-left: 0 !important;
-  }
+  .main-content { padding: 5px 12px !important; margin-left: 0 !important; }
+  .header-fixed { margin-bottom: 12px; }
+  .dashboard-card { min-height: 110px; padding: 12px !important; }
+  .stat-card { padding: 15px !important; }
+  .stat-value { font-size: 1.8rem; }
+  .access-card { padding: 12px 6px !important; min-height: 100px; }
+  .profile-avatar { width: 36px; height: 36px; font-size: 15px; }
+  .icon-stat { width: 40px; height: 40px; font-size: 1.5rem; }
+  .access-text { font-size: 0.85rem; }
+  
+  /* Chart paling kecil di HP */
+  .chart-container { height: 140px; max-width: 200px; margin: 10px auto; }
+  
+  .agenda-item-simple { gap: 10px; padding: 12px 10px; margin-bottom: 8px; }
+  .agenda-date-simple { width: 48px; height: 48px; font-size: 0.74rem; }
+  .agenda-title-simple { font-size: 0.88rem; }
+  .agenda-time-simple { font-size: 0.78rem; }
+  .izin-item { padding: 12px; }
+  .izin-item .btn-sm { font-size: 0.8rem; padding: 6px 10px; }
+  #toast { right: 10px; top: 10px; padding: 12px 16px; font-size: 0.85rem; max-width: calc(100vw - 20px); }
+}
 
-  .header-fixed {
-    margin-top: 0;
-    margin-bottom: 12px;
-  }
-
-  .dashboard-card {
-    min-height: 110px;
-    padding: 12px !important;
-  }
-
-  .stat-card {
-    padding: 15px !important;
-  }
-
-  .stat-value {
-    font-size: 1.8rem;
-  }
-
-  .access-card {
-    padding: 12px 6px !important;
-    min-height: 100px;
-  }
-
-  .profile-avatar {
-    width: 36px;
-    height: 36px;
-    font-size: 15px;
-  }
-
-  .icon-stat {
-    width: 40px;
-    height: 40px;
-    font-size: 1.5rem;
-  }
-
-  .chart-container {
-    height: 180px;
-    margin-top: 10px;
-  }
-
-  .access-text {
-    font-size: 0.85rem;
-  }
+/* ===== ADDITIONAL POLISH ===== */
+.border-primary { border-color: #0d6efd !important; }
+.card.border-primary { border-width: 1px !important; }
+.text-primary { color: #0d6efd !important; }
+.badge.bg-primary {
+  background-color: #0d6efd !important;
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
 }

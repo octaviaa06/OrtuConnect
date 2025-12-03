@@ -261,3 +261,60 @@
         margin: 20px 10px;
     }
 }
+
+        /* Notifikasi */
+        .notif {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            color: white;
+            font-weight: 500;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 9999;
+            display: none;
+            transition: all 0.4s ease;
+            max-width: 350px;
+        }
+        
+        /* Warna status absensi */
+        .status-hadir { background-color: #d1e7dd !important; border-color: #badbcc !important; }
+        .status-izin { background-color: #fff3cd !important; border-color: #ffecb5 !important; }
+        .status-sakit { background-color: #cff4fc !important; border-color: #b6effb !important; }
+        .status-alpa { background-color: #f8d7da !important; border-color: #f5c2c7 !important; }
+        
+        /* Info kelas guru */
+        .kelas-info-badge {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        /* Responsif */
+        @media (max-width: 768px) {
+            .flex-wrap {
+                gap: 10px !important;
+            }
+            .form-control, .form-select {
+                max-width: 100% !important;
+            }
+        }
+        
+        /* Style untuk select yang disabled */
+        .form-select:disabled {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+        
+        /* Badge status */
+        .status-badge {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+        }
