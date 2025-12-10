@@ -1,5 +1,4 @@
 <?php 
-// ==== AUTO BASE URL — ini yang bikin 100% sama di hosting ====
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || $_SERVER['SERVER_PORT'] == 443 ? "https://" : "http://";
@@ -82,7 +81,7 @@ function asset_url($path = '') {
 <link rel="stylesheet" href="<?= asset_url('../admin/sidebar.css?v=1.5') ?>">
 
 <script>
-// ==== SEMUA JAVASCRIPT SUDAH DIPERBAIKI & AMAN DI HOSTING ==== 
+
 document.addEventListener('DOMContentLoaded', function() {
     const sidebar       = document.getElementById('sidebar');
     const overlay       = document.getElementById('sidebarOverlay');

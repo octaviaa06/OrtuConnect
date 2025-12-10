@@ -312,7 +312,6 @@ $perizinanList = $data['data'] ?? [];
             updateStatusIzin(currentIdIzin, "Ditolak", alasan);
             currentIdIzin = null;
         });
-
         // ============ UPDATE STATUS IZIN ============
         function updateStatusIzin(id_izin, status, alasan) {
             const payload = {

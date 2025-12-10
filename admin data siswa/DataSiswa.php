@@ -34,6 +34,9 @@ if ($selected_kelas) {
 
 $from_param = 'data';
 $_GET['from'] = $from_param;
+
+// Get today's date for max attribute
+$today = date('Y-m-d');
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -46,6 +49,7 @@ $_GET['from'] = $from_param;
   <link rel="stylesheet" href="../profil/profil.css">
   <link rel="stylesheet" href="../admin/sidebar.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 </head>
 <body>
 <div class="d-flex">
@@ -58,15 +62,14 @@ $_GET['from'] = $from_param;
     <div class="container-fluid py-3">
 
       <!-- HEADER -->
- <div class="d-flex justify-content-between align-items-center mb-4">
-  <div class="d-flex align-items-center gap-3">
-    
-    <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
-        <h4 class="fw-bold text-primary m-0">Data Murid</h4>
-    </div>
-   
-  </div>
-       <?php include '../profil/profil.php'; ?>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center gap-3">
+          <div class="header-icon-wrapper">
+            <img src="../assets/data_siswa_biru.png" alt="Students Icon" class="header-icon">
+          </div>
+          <h4 class="fw-bold text-primary m-0">Data Murid</h4>
+        </div>
+        <?php include '../profil/profil.php'; ?>
       </div>
 
       <!-- HEADER TAMBAH, PENCARIAN & FILTER KELAS -->
@@ -74,11 +77,11 @@ $_GET['from'] = $from_param;
         <div class="d-flex align-items-center gap-3 flex-wrap">
           <!-- Pencarian -->
           <div class="search-container position-relative">
-            <img src="../assets/cari.png" alt="Cari" class="search-icon">
+            <i class="bi bi-search search-icon"></i>
             <input type="text" id="searchInput" class="form-control search-input" placeholder="Cari murid berdasarkan nama...">
           </div>
 
-          <!-- Filter Kelas - Dipindahkan ke samping pencarian -->
+          <!-- Filter Kelas -->
           <div class="filter-kelas-container">
             <select id="filterKelas" class="form-select filter-select" onchange="filterByKelas()">
               <option value="">Semua Kelas</option>
@@ -88,8 +91,9 @@ $_GET['from'] = $from_param;
           </div>
         </div>
 
-        <button class="btn btn-primary rounded-3 px-4" id="btnTambahSiswa">
-          <span style="font-weight:600;">+ Tambah Murid</span>
+        <button class="btn btn-primary btn-add-student rounded-3 px-4" id="btnTambahSiswa">
+          <i class="bi bi-plus-circle me-2"></i>
+          <span style="font-weight:600;">Tambah Murid</span>
         </button>
       </div>
 
@@ -97,9 +101,11 @@ $_GET['from'] = $from_param;
       <div class="row g-3" id="siswaContainer">
         <?php if (empty($siswaList)): ?>
           <div class="col-12">
-            <div class="text-center text-muted p-5">
-              <img src="../assets/empty-data.png" alt="Data kosong" width="100" class="mb-3 opacity-50">
-              <p class="mb-0"><?= $selected_kelas ? "Tidak ada data siswa di $selected_kelas" : "Tidak ada data murid." ?></p>
+            <div class="empty-state text-center text-muted p-5">
+              <div class="empty-icon-wrapper mb-3">
+                <i class="bi bi-inbox display-1 opacity-50"></i>
+              </div>
+              <p class="mb-0 fs-5"><?= $selected_kelas ? "Tidak ada data siswa di $selected_kelas" : "Tidak ada data murid." ?></p>
             </div>
           </div>
         <?php else: ?>
@@ -111,34 +117,35 @@ $_GET['from'] = $from_param;
               : strtoupper(substr($kata[0], 0, 2));
           ?>
             <div class="col-md-4 mb-3 siswa-item" data-kelas="<?= htmlspecialchars($siswa['kelas']) ?>">
-              <div class="card shadow-sm border-0 p-3 d-flex flex-column justify-content-between" style="border-radius:16px;">
+              <div class="card card-student shadow-sm border-0 p-3 d-flex flex-column justify-content-between">
                 <div class="d-flex align-items-center mb-3">
-                  <div class="avatar-inisial bg-primary text-white me-3" 
-                       style="width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;">
+                  <div class="avatar-inisial bg-gradient-primary text-white me-3">
                     <?= $inisial ?>
                   </div>
                   <div>
-                    <h5 class="card-title mb-0"><?= $nama ?></h5>
-                    <small class="badge bg-secondary"><?= htmlspecialchars($siswa['kelas']); ?></small>
+                    <h5 class="card-title mb-1"><?= $nama ?></h5>
+                    <span class="badge badge-class"><?= htmlspecialchars($siswa['kelas']); ?></span>
                   </div>
                 </div>
                 <div class="card-body pt-0 pb-2 px-0">
-                  <p class="mb-1"><strong>Jenis Kelamin:</strong> <?= htmlspecialchars($siswa['gender']); ?></p>
-                  <p class="mb-1"><strong>Orang Tua:</strong> <?= htmlspecialchars($siswa['nama_ortu']); ?></p>
-                  <p class="mb-1"><strong>No. Telp:</strong> <?= htmlspecialchars($siswa['no_telp_ortu']); ?></p>
-                  <p class="mb-0"><strong>Alamat:</strong> <?= nl2br(htmlspecialchars($siswa['alamat'])); ?></p>
+                  <p class="mb-2 info-item"><i class="bi bi-gender-ambiguous me-2 text-primary"></i><strong>Jenis Kelamin:</strong> <?= htmlspecialchars($siswa['gender']); ?></p>
+                  <p class="mb-2 info-item"><i class="bi bi-person-heart me-2 text-primary"></i><strong>Orang Tua:</strong> <?= htmlspecialchars($siswa['nama_ortu']); ?></p>
+                  <p class="mb-2 info-item"><i class="bi bi-telephone me-2 text-primary"></i><strong>No. Telp:</strong> <?= htmlspecialchars($siswa['no_telp_ortu']); ?></p>
+                  <p class="mb-0 info-item"><i class="bi bi-geo-alt me-2 text-primary"></i><strong>Alamat:</strong> <?= nl2br(htmlspecialchars($siswa['alamat'])); ?></p>
                 </div>
 
-                <div class="d-flex justify-content-between mt-3">
-                  <button class="btn btn-primary rounded-3 px-4" onclick="generateAkun('<?= $siswa['id_siswa'] ?>')">
-                    <span style="font-weight:600;">Buat Akun</span>
+                <div class="d-flex justify-content-between mt-3 card-actions">
+                  <button class="btn btn-primary btn-generate rounded-pill px-4" onclick="generateAkun('<?= $siswa['id_siswa'] ?>')">
+                    <i class="bi bi-person-plus-fill me-2"></i>
+                    <span style="font-weight:600;">
+                      Lihat Akun</span>
                   </button>
-                  <div>
-                    <button class="btn btn-light border-0 p-1" onclick="editSiswa('<?= $siswa['id_siswa'] ?>')">
-                      <img src="../assets/edit.png" alt="Edit" width="22">
+                  <div class="action-buttons">
+                    <button class="btn btn-action btn-edit" onclick="editSiswa('<?= $siswa['id_siswa'] ?>')" title="Edit">
+                      <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button class="btn btn-light border-0 p-1" onclick="hapusSiswa('<?= $siswa['id_siswa'] ?>')">
-                      <img src="../assets/Hapus.png" alt="Hapus" width="22">
+                    <button class="btn btn-action btn-delete" onclick="hapusSiswa('<?= $siswa['id_siswa'] ?>')" title="Hapus">
+                      <i class="bi bi-trash3"></i>
                     </button>
                   </div>
                 </div>
@@ -151,24 +158,27 @@ $_GET['from'] = $from_param;
   </div>
 </div>
 
-<!-- TAMBAH/EDIT -->
+<!-- TAMBAH/EDIT MODAL -->
 <div class="modal fade" id="modalSiswa" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-3 custom-modal">
-      <div class="modal-header border-0">
-        <h5 class="modal-title fw-bold text-primary" id="judulModalSiswa">Tambah Murid Baru</h5>
+    <div class="modal-content custom-modal">
+      <div class="modal-header">
+        <h5 class="modal-title" id="judulModalSiswa">
+          <i class="bi bi-person-plus-fill me-2"></i>Tambah Murid Baru
+        </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <form id="formSiswa">
         <input type="hidden" name="id_siswa" id="id_siswa">
         <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
+          <div class="mb-3 form-group">
+            <label class="form-label"><i class="bi bi-person me-2"></i>Nama Lengkap <span class="text-danger">*</span></label>
             <input type="text" name="nama_siswa" id="nama_siswa" class="form-control custom-input" required>
             <div class="invalid-feedback">Nama lengkap harus diisi</div>
           </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Kelas <span class="text-danger">*</span></label>
+          
+          <div class="mb-3 form-group">
+            <label class="form-label"><i class="bi bi-door-open me-2"></i>Kelas <span class="text-danger">*</span></label>
             <select name="kelas" id="kelas" class="form-select custom-input" required>
               <option value="">-- Pilih Kelas --</option>
               <option value="Kelas A">Kelas A</option>
@@ -176,13 +186,16 @@ $_GET['from'] = $from_param;
             </select>
             <div class="invalid-feedback">Kelas harus dipilih</div>
           </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Tanggal Lahir <span class="text-danger">*</span></label>
-            <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control custom-input" required>
+          
+          <div class="mb-3 form-group">
+            <label class="form-label"><i class="bi bi-calendar-event me-2"></i>Tanggal Lahir <span class="text-danger">*</span></label>
+            <input type="date" name="tanggal_lahir" id="tanggal_lahir" class="form-control custom-input" max="<?= $today ?>" required>
+            <small class="text-muted"><i class="bi bi-info-circle me-1"></i>Tanggal tidak boleh melebihi hari ini</small>
             <div class="invalid-feedback">Tanggal lahir harus diisi</div>
           </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Jenis Kelamin <span class="text-danger">*</span></label>
+          
+          <div class="mb-3 form-group">
+            <label class="form-label"><i class="bi bi-gender-ambiguous me-2"></i>Jenis Kelamin <span class="text-danger">*</span></label>
             <select name="gender" id="gender" class="form-select custom-input" required>
               <option value="">-- Jenis Kelamin --</option>
               <option value="Laki-Laki">Laki-Laki</option>
@@ -190,49 +203,70 @@ $_GET['from'] = $from_param;
             </select>
             <div class="invalid-feedback">Jenis kelamin harus dipilih</div>
           </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Nama Orang Tua <span class="text-danger">*</span></label>
+          
+          <div class="mb-3 form-group">
+            <label class="form-label"><i class="bi bi-person-heart me-2"></i>Nama Orang Tua <span class="text-danger">*</span></label>
             <input type="text" name="nama_ortu" id="nama_ortu" class="form-control custom-input" required>
             <div class="invalid-feedback">Nama orang tua harus diisi</div>
           </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">No. Telp Orang Tua <span class="text-danger">*</span></label>
+          
+          <div class="mb-3 form-group">
+            <label class="form-label"><i class="bi bi-telephone me-2"></i>No. Telp Orang Tua <span class="text-danger">*</span></label>
             <input type="text" name="no_telp_ortu" id="no_telp_ortu" class="form-control custom-input" required maxlength="15">
-            <small class="text-muted d-block">Contoh: 081234567890</small>
+            <small class="text-muted"><i class="bi bi-info-circle me-1"></i>Contoh: 081234567890</small>
             <div class="invalid-feedback">Nomor telepon harus 10-15 digit angka saja</div>
           </div>
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Alamat</label>
+          
+          <div class="mb-3 form-group">
+            <label class="form-label"><i class="bi bi-geo-alt me-2"></i>Alamat</label>
             <textarea name="alamat" id="alamat" class="form-control custom-input" rows="3"></textarea>
           </div>
         </div>
-        <div class="modal-footer border-0">
-          <button type="button" class="btn btn-secondary custom-btn" data-bs-dismiss="modal">Batal</button>
-          <button type="submit" class="btn btn-primary custom-btn" id="btnSimpanSiswa">Simpan</button>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary custom-btn" data-bs-dismiss="modal">
+            <i class="bi bi-x-circle me-2"></i>Batal
+          </button>
+          <button type="submit" class="btn btn-primary custom-btn" id="btnSimpanSiswa">
+            <i class="bi bi-check-circle me-2"></i>Simpan
+          </button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
-<!-- AKUN -->
+<!-- MODAL AKUN -->
 <div class="modal fade" id="modalAkun" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content custom-modal">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">Akun OrangTua</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      <div class="modal-header bg-gradient-primary text-white">
+        <h5 class="modal-title"><i class="bi bi-key-fill me-2"></i>Akun OrangTua</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body">
-        <table class="table table-borderless">
-          <tr><th>Nama</th><td id="akunNama"></td></tr>
-          <tr><th>Username</th><td id="akunUsername"></td></tr>
-          <tr><th>Password</th><td id="akunPassword"></td></tr>
-          <tr><th>Role</th><td id="akunRole"></td></tr>
-        </table>
+        <div class="account-info">
+          <div class="info-row">
+            <div class="info-label"><i class="bi bi-person me-2"></i>Nama</div>
+            <div class="info-value" id="akunNama"></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label"><i class="bi bi-person-badge me-2"></i>Username</div>
+            <div class="info-value" id="akunUsername"></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label"><i class="bi bi-shield-lock me-2"></i>Password</div>
+            <div class="info-value" id="akunPassword"></div>
+          </div>
+          <div class="info-row">
+            <div class="info-label"><i class="bi bi-award me-2"></i>Role</div>
+            <div class="info-value" id="akunRole"></div>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary custom-btn" data-bs-dismiss="modal">Tutup</button>
+        <button class="btn btn-secondary custom-btn" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-2"></i>Tutup
+        </button>
       </div>
     </div>
   </div>
@@ -241,6 +275,30 @@ $_GET['from'] = $from_param;
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+// Set max date untuk tanggal lahir
+document.addEventListener('DOMContentLoaded', function() {
+  const tanggalLahirInput = document.getElementById('tanggal_lahir');
+  const today = new Date().toISOString().split('T')[0];
+  tanggalLahirInput.setAttribute('max', today);
+  
+  // Validasi tambahan saat input berubah
+  tanggalLahirInput.addEventListener('change', function() {
+    const selectedDate = new Date(this.value);
+    const todayDate = new Date(today);
+    
+    if (selectedDate > todayDate) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Tanggal Tidak Valid',
+        text: 'Tanggal lahir tidak boleh melebihi hari ini!',
+        confirmButtonColor: '#3085d6'
+      });
+      this.value = '';
+      this.classList.add('is-invalid');
+    }
+  });
+});
+
 // Filter berdasarkan kelas
 function filterByKelas() {
     const selectedKelas = document.getElementById('filterKelas').value;
@@ -257,8 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const idSiswa = document.getElementById('id_siswa');
   const apiURL = "https://ortuconnect.pbltifnganjuk.com/api/admin/data_siswa.php";
 
-  // ====== VALIDASI NOMOR TELEPON ======
-  // Validasi Nomor Telepon – hanya angka
+  // Validasi Nomor Telepon
   document.getElementById("no_telp_ortu").addEventListener("input", function () {
       this.value = this.value.replace(/\D/g, "");
   });
@@ -283,14 +340,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Tambah siswa
   document.getElementById('btnTambahSiswa').addEventListener('click', () => {
-    document.getElementById('judulModalSiswa').textContent = "Tambah Murid Baru";
+    document.getElementById('judulModalSiswa').innerHTML = '<i class="bi bi-person-plus-fill me-2"></i>Tambah Murid Baru';
     formSiswa.reset();
     idSiswa.value = "";
     inputs.forEach(input => input.classList.remove('is-invalid'));
     modalSiswa.show();
   });
 
-  // Simpan data siswa (POST/PUT)
+  // Simpan data siswa
   formSiswa.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -301,7 +358,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Validasi tambahan untuk nomor telepon
+    // Validasi nomor telepon
     const noTelp = document.getElementById('no_telp_ortu').value.trim();
     if (!/^\d{10,15}$/.test(noTelp)) {
       Swal.fire({
@@ -384,7 +441,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById('nama_ortu').value = s.nama_ortu;
       document.getElementById('no_telp_ortu').value = s.no_telp_ortu;
       document.getElementById('alamat').value = s.alamat;
-      document.getElementById('judulModalSiswa').textContent = "Edit Data Murid";
+      document.getElementById('judulModalSiswa').innerHTML = '<i class="bi bi-pencil-square me-2"></i>Edit Data Murid';
       
       inputs.forEach(input => input.classList.remove('is-invalid'));
       modalSiswa.show();
@@ -456,7 +513,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } else {
         Swal.fire({
           icon: 'error',
-          title: 'Gagal Membuat Akun',
+          title: 'Gagal Melihat Akun',
           text: data.message,
           confirmButtonColor: '#3085d6'
         });
@@ -493,526 +550,6 @@ if (searchInput && siswaContainer) {
     }
   });
 }
-// ========== ANIMASI INTERAKTIF TAMBAHAN ==========
-
-// Animasi saat halaman selesai loading
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Data Siswa page loaded with animations');
-    
-    // Delay untuk animasi entrance
-    setTimeout(() => {
-        document.body.classList.add('page-loaded');
-    }, 100);
-    
-    // Tambah efek ripple ke tombol utama
-    const primaryButtons = document.querySelectorAll('.btn-primary');
-    primaryButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            if (this.disabled || this.classList.contains('disabled')) return;
-            
-            const rect = this.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const ripple = document.createElement('span');
-            ripple.style.cssText = `
-                position: absolute;
-                border-radius: 50%;
-                background: rgba(255, 255, 255, 0.7);
-                transform: scale(0);
-                animation: ripple 0.6s linear;
-                width: 100px;
-                height: 100px;
-                top: ${y - 50}px;
-                left: ${x - 50}px;
-                pointer-events: none;
-                z-index: 1;
-            `;
-            
-            this.appendChild(ripple);
-            setTimeout(() => ripple.remove(), 600);
-        });
-    });
-    
-    // Animasi real-time search dengan highlight
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        let searchTimeout;
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                highlightSearchResults(this.value.toLowerCase());
-            }, 300);
-        });
-    }
-    
-    // Hover effect untuk card siswa
-    const siswaCards = document.querySelectorAll('.card');
-    siswaCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-8px) scale(1.02)';
-            this.style.boxShadow = '0 12px 35px rgba(0, 0, 0, 0.2)';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0) scale(1)';
-            this.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.1)';
-        });
-    });
-    
-    // Animasi tombol edit/hapus
-    const actionButtons = document.querySelectorAll('.btn-light.border-0');
-    actionButtons.forEach(btn => {
-        btn.addEventListener('mouseenter', function() {
-            const img = this.querySelector('img');
-            if (img) {
-                img.style.transform = 'scale(1.15) rotate(5deg)';
-                img.style.transition = 'transform 0.2s ease';
-            }
-        });
-        
-        btn.addEventListener('mouseleave', function() {
-            const img = this.querySelector('img');
-            if (img) {
-                img.style.transform = 'scale(1) rotate(0)';
-            }
-        });
-    });
-    
-    // Scroll reveal animation
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    }, observerOptions);
-    
-    // Observe semua card siswa untuk lazy loading
-    document.querySelectorAll('.siswa-item').forEach(item => {
-        observer.observe(item);
-    });
-    
-    // Tambah scroll indicator
-    createScrollIndicator();
-    
-    // Animasi filter select
-    const filterSelect = document.getElementById('filterKelas');
-    if (filterSelect) {
-        filterSelect.addEventListener('change', function() {
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                this.style.transform = 'scale(1)';
-            }, 150);
-        });
-    }
-    
-    // Validasi form dengan animasi
-    setupFormValidationAnimations();
-});
-
-// Fungsi highlight hasil pencarian
-function highlightSearchResults(searchTerm) {
-    if (!searchTerm) {
-        // Hapus highlight jika tidak ada pencarian
-        document.querySelectorAll('.search-highlight').forEach(el => {
-            const parent = el.parentNode;
-            parent.replaceChild(document.createTextNode(el.textContent), el);
-            parent.normalize();
-        });
-        return;
-    }
-    
-    const siswaItems = document.querySelectorAll('.siswa-item');
-    siswaItems.forEach(item => {
-        const textElements = item.querySelectorAll('.card-title, .card-body p, .badge');
-        textElements.forEach(element => {
-            const originalHTML = element.innerHTML;
-            const regex = new RegExp(`(${searchTerm})`, 'gi');
-            
-            if (regex.test(element.textContent)) {
-                const highlighted = element.textContent.replace(
-                    regex, 
-                    '<span class="search-highlight">$1</span>'
-                );
-                element.innerHTML = highlighted;
-                
-                // Animasi untuk highlighted elements
-                const highlights = element.querySelectorAll('.search-highlight');
-                highlights.forEach(highlight => {
-                    highlight.style.animation = 'highlightFlash 0.5s ease';
-                });
-            }
-        });
-    });
-}
-
-// Fungsi untuk menampilkan toast notification
-function showToast(message, type = 'success') {
-    // Hapus toast sebelumnya jika ada
-    const existingToast = document.querySelector('.toast-notification');
-    if (existingToast) existingToast.remove();
-    
-    const toast = document.createElement('div');
-    toast.className = `toast-notification ${type}`;
-    toast.innerHTML = `
-        <div class="d-flex align-items-center">
-            <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
-            <span>${message}</span>
-        </div>
-    `;
-    
-    document.body.appendChild(toast);
-    
-    // Auto remove setelah 3 detik
-    setTimeout(() => {
-        if (toast.parentNode) {
-            toast.style.animation = 'fadeOutUp 0.3s ease forwards';
-            setTimeout(() => toast.remove(), 300);
-        }
-    }, 3000);
-}
-
-// Fungsi untuk menampilkan loading overlay
-function showLoading(message = 'Memproses...') {
-    const overlay = document.createElement('div');
-    overlay.className = 'loading-overlay';
-    overlay.innerHTML = `
-        <div class="text-center">
-            <div class="loading-spinner mb-3"></div>
-            <p class="text-primary fw-semibold">${message}</p>
-        </div>
-    `;
-    
-    document.body.appendChild(overlay);
-    return overlay;
-}
-
-function hideLoading(overlay) {
-    if (overlay && overlay.parentNode) {
-        overlay.style.opacity = '0';
-        overlay.style.transition = 'opacity 0.3s ease';
-        setTimeout(() => overlay.remove(), 300);
-    }
-}
-
-// Fungsi untuk membuat scroll indicator
-function createScrollIndicator() {
-    const indicator = document.createElement('div');
-    indicator.className = 'scroll-indicator';
-    indicator.innerHTML = '<i class="bi bi-chevron-up"></i>';
-    indicator.style.cssText = `
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        width: 50px;
-        height: 50px;
-        background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 20px;
-        cursor: pointer;
-        opacity: 0;
-        transform: translateY(20px);
-        transition: all 0.3s ease;
-        box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
-        z-index: 1000;
-    `;
-    
-    document.body.appendChild(indicator);
-    
-    // Tampilkan indicator saat scroll
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 300) {
-            indicator.classList.add('visible');
-        } else {
-            indicator.classList.remove('visible');
-        }
-    });
-    
-    // Scroll to top saat diklik
-    indicator.addEventListener('click', () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const iconWrapper = document.querySelector('.header-icon-wrapper');
-    if (iconWrapper) {
-        for (let i = 0; i < 3; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            iconWrapper.appendChild(particle);
-        }
-    }
-});
-
-
-// Setup form validation animations
-function setupFormValidationAnimations() {
-    const form = document.getElementById('formSiswa');
-    if (!form) return;
-    
-    const inputs = form.querySelectorAll('input, select, textarea');
-    
-    inputs.forEach(input => {
-        // Validasi real-time
-        input.addEventListener('blur', function() {
-            validateWithAnimation(this);
-        });
-        
-        // Animasi saat fokus
-        input.addEventListener('focus', function() {
-            this.style.transform = 'scale(1.02)';
-            this.style.transition = 'transform 0.2s ease';
-        });
-        
-        input.addEventListener('blur', function() {
-            this.style.transform = 'scale(1)';
-        });
-        
-        // Animasi untuk select
-        if (input.tagName === 'SELECT') {
-            input.addEventListener('change', function() {
-                if (this.value) {
-                    this.classList.add('is-valid');
-                    this.classList.remove('is-invalid');
-                    
-                    // Animasi perubahan
-                    this.style.transform = 'scale(1.05)';
-                    setTimeout(() => {
-                        this.style.transform = 'scale(1)';
-                    }, 200);
-                }
-            });
-        }
-    });
-}
-
-function validateWithAnimation(field) {
-    if (!field.value.trim() && field.hasAttribute('required')) {
-        field.classList.add('is-invalid');
-        field.classList.remove('is-valid');
-        
-        // Shake animation
-        field.style.animation = 'shake 0.5s ease';
-        setTimeout(() => {
-            field.style.animation = '';
-        }, 500);
-        
-        return false;
-    } else {
-        field.classList.remove('is-invalid');
-        field.classList.add('is-valid');
-        return true;
-    }
-}
-
-// Enhanced filter function dengan animasi
-function filterByKelas() {
-    const selectedKelas = document.getElementById('filterKelas').value;
-    const siswaItems = document.querySelectorAll('.siswa-item');
-    
-    // Animasi filter
-    const filterSelect = document.getElementById('filterKelas');
-    filterSelect.style.transform = 'scale(0.95)';
-    setTimeout(() => {
-        filterSelect.style.transform = 'scale(1)';
-    }, 150);
-    
-    // Jika filter kosong, reload page
-    if (!selectedKelas) {
-        window.location.href = '?';
-        return;
-    }
-    
-    // Tampilkan loading
-    const loading = showLoading('Memfilter data...');
-    
-    // Filter dengan animasi
-    let visibleCount = 0;
-    siswaItems.forEach((item, index) => {
-        const kelas = item.getAttribute('data-kelas');
-        
-        if (kelas === selectedKelas) {
-            item.style.display = '';
-            item.style.animation = `cardSlideIn 0.5s ease ${index * 0.1}s forwards`;
-            visibleCount++;
-        } else {
-            item.style.animation = 'cardSlideOut 0.5s ease forwards';
-            setTimeout(() => {
-                item.style.display = 'none';
-            }, 500);
-        }
-    });
-    
-    // Hide loading
-    setTimeout(() => {
-        hideLoading(loading);
-        
-        // Tampilkan toast jika tidak ada hasil
-        if (visibleCount === 0) {
-            showToast(`Tidak ditemukan siswa di kelas ${selectedKelas}`, 'warning');
-        } else {
-            showToast(`Menampilkan ${visibleCount} siswa di kelas ${selectedKelas}`, 'success');
-        }
-        
-        // Update URL tanpa reload page
-        const url = new URL(window.location);
-        url.searchParams.set('kelas_filter', selectedKelas);
-        window.history.pushState({}, '', url);
-    }, 500);
-}
-
-// Animasi untuk SweetAlert2
-const Toast = Swal.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-        toast.addEventListener('mouseenter', Swal.stopTimer);
-        toast.addEventListener('mouseleave', Swal.resumeTimer);
-    }
-});
-
-// Override SweetAlert dengan animasi custom
-function showSuccessAlert(title, text) {
-    Swal.fire({
-        icon: 'success',
-        title: title,
-        text: text,
-        showClass: {
-            popup: 'animate__animated animate__fadeInDown'
-        },
-        hideClass: {
-            popup: 'animate__animated animate__fadeOutUp'
-        }
-    });
-}
-
-function showErrorAlert(title, text) {
-    Swal.fire({
-        icon: 'error',
-        title: title,
-        text: text,
-        showClass: {
-            popup: 'animate__animated animate__headShake'
-        },
-        hideClass: {
-            popup: 'animate__animated animate__fadeOut'
-        }
-    });
-}
-
-// Animate card saat ditambah/dihapus
-function animateCardRemoval(cardElement) {
-    cardElement.style.animation = 'cardSlideOut 0.5s ease forwards';
-    setTimeout(() => {
-        if (cardElement.parentNode) {
-            cardElement.remove();
-            showToast('Data siswa berhasil dihapus', 'success');
-        }
-    }, 500);
-}
-
-function animateCardAddition(cardData) {
-    // Implementasi untuk menambah card baru dengan animasi
-    const container = document.getElementById('siswaContainer');
-    const newCard = createCardElement(cardData);
-    
-    newCard.style.opacity = '0';
-    newCard.style.transform = 'translateX(-100px) scale(0.8)';
-    container.prepend(newCard);
-    
-    // Trigger reflow
-    newCard.offsetHeight;
-    
-    newCard.style.transition = 'all 0.5s ease';
-    newCard.style.opacity = '1';
-    newCard.style.transform = 'translateX(0) scale(1)';
-    
-    showToast('Data siswa berhasil ditambahkan', 'success');
-}
-
-// Helper function untuk membuat card element
-function createCardElement(siswa) {
-    const nama = siswa.nama_siswa;
-    const kata = nama.split(' ');
-    const inisial = kata.length >= 2 
-        ? (kata[0][0] + kata[1][0]).toUpperCase()
-        : nama.substring(0, 2).toUpperCase();
-    
-    const card = document.createElement('div');
-    card.className = 'col-md-4 mb-3 siswa-item';
-    card.setAttribute('data-kelas', siswa.kelas);
-    card.innerHTML = `
-        <div class="card shadow-sm border-0 p-3 d-flex flex-column justify-content-between" style="border-radius:16px;">
-            <div class="d-flex align-items-center mb-3">
-                <div class="avatar-inisial bg-primary text-white me-3" 
-                     style="width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;">
-                    ${inisial}
-                </div>
-                <div>
-                    <h5 class="card-title mb-0">${nama}</h5>
-                    <small class="badge bg-secondary">${siswa.kelas}</small>
-                </div>
-            </div>
-            <div class="card-body pt-0 pb-2 px-0">
-                <p class="mb-1"><strong>Jenis Kelamin:</strong> ${siswa.gender}</p>
-                <p class="mb-1"><strong>Orang Tua:</strong> ${siswa.nama_ortu}</p>
-                <p class="mb-1"><strong>No. Telp:</strong> ${siswa.no_telp_ortu}</p>
-                <p class="mb-0"><strong>Alamat:</strong> ${siswa.alamat ? siswa.alamat.replace(/\n/g, '<br>') : ''}</p>
-            </div>
-            <div class="d-flex justify-content-between mt-3">
-                <button class="btn btn-primary rounded-3 px-4" onclick="generateAkun('${siswa.id_siswa}')">
-                    <span style="font-weight:600;">Buat Akun</span>
-                </button>
-                <div>
-                    <button class="btn btn-light border-0 p-1" onclick="editSiswa('${siswa.id_siswa}')">
-                        <img src="../assets/edit.png" alt="Edit" width="22">
-                    </button>
-                    <button class="btn btn-light border-0 p-1" onclick="hapusSiswa('${siswa.id_siswa}')">
-                        <img src="../assets/Hapus.png" alt="Hapus" width="22">
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-    
-    return card;
-}
-
-// Event listener untuk data refresh
-document.addEventListener('dataRefresh', function() {
-    const container = document.getElementById('siswaContainer');
-    container.style.opacity = '0.5';
-    container.style.transition = 'opacity 0.3s ease';
-    
-    setTimeout(() => {
-        container.style.opacity = '1';
-    }, 300);
-});
-
-// Tambahkan FontAwesome icons untuk toast
-const fontAwesomeLink = document.createElement('link');
-fontAwesomeLink.rel = 'stylesheet';
-fontAwesomeLink.href = 'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css';
-document.head.appendChild(fontAwesomeLink);
 </script>
 </body>
 </html>

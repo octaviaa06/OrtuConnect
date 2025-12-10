@@ -32,7 +32,7 @@ $today = date('Y-m-d');
 $min_date = date('Y-m-d', strtotime('-5 days'));
 $max_date = $today;
 
-// === Fungsi ambil daftar kelas dari API ===
+// Fungsi ambil daftar kelas dari API 
 function getDaftarKelas() {
     $api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php?mode=kelas";
     $ch = curl_init();

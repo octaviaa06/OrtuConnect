@@ -600,7 +600,7 @@ async function exportPDF() {
     
     // Validasi di modal export
     if (!kelas) {
-        showNotif('⚠ Harap pilih kelas di modal export!', false);
+        showNotif('⚠ Harap pilih kelas terlebih dahulu!', false);
         return;
     }
     
@@ -614,10 +614,10 @@ async function exportPDF() {
     }
     
     if (!tanggal) {
-        showNotif('⚠ Harap pilih tanggal di modal export!', false);
+        showNotif('⚠ Harap pilih tanggal terlebih dahulu!', false);
         return;
     }
-
+    
     btn.disabled = true; 
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengunduh...';
 
