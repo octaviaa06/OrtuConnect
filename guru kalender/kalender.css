@@ -1,248 +1,239 @@
-/* ===================================================== */
-/* KALENDER GURU – STYLE (MOBILE-FRIENDLY + SIDEBAR FULL) */
-/* VERSI LENGKAP + JUDUL MODAL & SILANG HITAM             */
-/* ===================================================== */
-
-.kalender-bg {
-    background-image: url('../background/Data Guru(1).png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+/* ============================================================
+   GENERAL & LAYOUT
+   ============================================================ */
+:root {
+    --primary-color: #0d6efd;
+    --sunday-color: #dc3545;
+    --bg-body: #f4f7fa;
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    --radius-custom: 15px;
 }
 
-/* Header tetap transparan */
-.header-fixed {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    padding: 16px 16px !important;
-    margin: -20px -16px 24px -16px !important;
+body {
+    background-color: var(--bg-body);
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Kalender */
-.kalender-container {
-    border-radius: 18px;
+.wrapper-container {
+    min-height: 100vh;
 }
 
-.kalender-nav-buttons {
-    display: flex;
-    gap: 8px;
+/* Memastikan konten tidak tertutup sidebar pada desktop */
+.main-content {
+    padding: 20px;
+    transition: all 0.3s ease;
 }
 
-.nav-arrow {
-    display: flex;
+/* ============================================================
+   HEADER & PROFIL SECTION
+   ============================================================ */
+.header-fixed-custom {
+    background: #ffffff;
+    padding: 15px 25px;
+    border-radius: var(--radius-custom);
+    box-shadow: var(--card-shadow);
+    border: 1px solid rgba(0,0,0,0.02);
+}
+
+/* Perbaikan profil di Mobile agar tidak tumpang tindih */
+@media (max-width: 768px) {
+    .header-fixed-custom {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+        padding: 20px 15px;
+    }
+    
+    .profile-section-mobile {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+}
+
+/* ============================================================
+   KALENDER CARD & NAVIGATION
+   ============================================================ */
+.kalender-card-container {
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: var(--card-shadow);
+}
+
+.kalender-nav-buttons .nav-arrow {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: #e9ecef;
-    color: #495057;
+    width: 40px;
+    height: 40px;
+    background: #f0f7ff;
+    color: var(--primary-color);
+    border-radius: 10px;
     text-decoration: none;
-    font-weight: bold;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    font-size: 1.2rem;
 }
 
-.nav-arrow:hover {
-    background: #0d6efd;
-    color: white;
+.kalender-nav-buttons .nav-arrow:hover {
+    background: var(--primary-color);
+    color: #ffffff;
+    transform: translateY(-2px);
 }
 
+/* ============================================================
+   GRID KALENDER (INTI RESPONSIVE)
+   ============================================================ */
 .kalender-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
+    grid-template-columns: repeat(7, 1fr); /* Selalu 7 kolom */
+    gap: 10px;
 }
 
 .hari-header {
     text-align: center;
-    padding: 10px 0;
-    font-weight: 600;
-    color: #6c757d;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #adb5bd;
+    padding-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .hari-header.minggu {
-    color: #dc3545;
+    color: var(--sunday-color);
 }
 
-.tanggal-kosong {
-    padding: 12px 0;
-}
-
-.tanggal-item {
+/* Item Tanggal */
+.tanggal-item, .tanggal-kosong {
+    aspect-ratio: 1 / 1; /* Kunci agar tetap kotak di HP */
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 68px;
-    border-radius: 10px;
+    border-radius: 12px;
+    font-weight: 600;
     text-decoration: none;
-    color: #333;
+    color: #495057;
+    font-size: 1rem;
+    transition: all 0.2s ease;
     position: relative;
-    font-weight: 500;
-    transition: all 0.2s;
+    border: 1px solid #f1f3f5;
 }
 
 .tanggal-item:hover {
-    background-color: #f1f8ff;
+    background: #f8f9fa;
+    color: var(--primary-color);
+    border-color: var(--primary-color);
 }
 
 .tanggal-item.minggu {
-    color: #dc3545;
+    color: var(--sunday-color);
 }
 
 .tanggal-item.today {
-    background-color: #e3f2fd;
-    border: 2px solid #0d6efd;
+    background: #f0f7ff;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
 }
 
 .tanggal-item.selected-day {
-    background-color: #d1e7ff;
-    border: 2px solid #0d6efd;
-    font-weight: bold;
+    background: var(--primary-color) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
 }
 
-.tanggal-item.has-agenda::after {
+/* Indikator Titik Agenda */
+.has-agenda::after {
     content: '';
     position: absolute;
     bottom: 6px;
-    width: 6px;
-    height: 6px;
-    background: #28a745;
+    width: 5px;
+    height: 5px;
+    background: #ffc107;
     border-radius: 50%;
 }
 
-/* Daftar Kegiatan */
+/* ============================================================
+   DAFTAR AGENDA (SEBELAH KANAN)
+   ============================================================ */
 .daftar-kegiatan-container {
-    border-radius: 18px;
+    border-radius: 20px;
+    background: #ffffff;
+    height: 100%;
 }
 
 .kegiatan-item {
-    transition: all 0.2s;
+    background: #ffffff;
+    border: 1px solid #eee;
+    transition: all 0.3s ease;
+    border-left: 5px solid var(--primary-color) !important;
 }
 
 .kegiatan-item:hover {
-    background-color: #f8f9fa;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 
-/* ===================== */
-/* MODAL STYLING – GRADIENT BIRU + JUDUL & SILANG HITAM */
-/* ===================== */
-
-.modal-content {
-    background: linear-gradient(135deg, #ffffff, #eef5ff, #d7e7ff);
-    border-radius: 20px;
-    border: none;
-    color: #1a2b4c;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    animation: popupFade 0.3s ease;
-}
-
-.modal-header {
-    background: linear-gradient(135deg, #e8f1ff, #d0e2ff);
-    border-bottom: none;
-    border-radius: 20px 20px 0 0;
-    color: #0d47a1;
-    font-weight: 600;
-}
-
-.modal-footer {
-    background: linear-gradient(135deg, #f4f8ff, #e1ecff);
-    border-top: none;
-    border-radius: 0 0 20px 20px;
-}
-
-/* JUDUL MODAL = HITAM PEKAT */
-.modal-title {
-    color: #1e1e1e !important;
-    font-weight: 700;
-}
-
-/* TOMBOL CLOSE (×) = HITAM JELAS */
-.modal-header .btn-close {
-    background: transparent;
-    opacity: 1;
-    filter: none !important;
-    box-shadow: none;
-    padding: 0.5rem;
-    width: 2rem;
-    height: 2rem;
-    position: relative;
-}
-
-/* Membuat tanda × manual berwarna hitam */
-.modal-header .btn-close::before,
-.modal-header .btn-close::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20px;
-    height: 3px;
-    background-color: #212529;
-    border-radius: 2px;
-}
-
-.modal-header .btn-close::before {
-    transform: translate(-50%, -50%) rotate(45deg);
-}
-
-.modal-header .btn-close::after {
-    transform: translate(-50%, -50%) rotate(-45deg);
-}
-
-.modal-header .btn-close:hover {
-    background-color: rgba(0,0,0,0.08);
-    opacity: 0.8;
-}
-
-/* Animasi muncul modal */
-@keyframes popupFade {
-    from {
-        opacity: 0;
-        transform: scale(0.96);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* ===================== */
-/* RESPONSIVE & MOBILE FIX */
-/* ===================== */
-
+/* ============================================================
+   MEDIA QUERIES (OPTIMASI HP)
+   ============================================================ */
 @media (max-width: 992px) {
-    .modal-backdrop {
-        display: none !important;
-    }
-}
-
-@media (max-width: 576px) {
-    .modal-dialog {
-        margin: 1rem;
-        max-width: 95%;
-    }
-    .modal-content {
-        border-radius: 16px;
-    }
-    .modal-header,
-    .modal-body {
-        padding: 1rem 1.5rem;
+    .kalender-grid {
+        gap: 6px; /* Perkecil jarak antar tanggal di tablet */
     }
 }
 
 @media (max-width: 768px) {
+    .main-content {
+        padding: 10px; /* Perkecil padding di HP */
+    }
+
     .kalender-grid {
-        gap: 4px;
+        gap: 4px; /* Jarak sangat kecil agar muat di layar HP sempit */
+    }
+
+    .hari-header {
+        font-size: 0.7rem; /* Kecilkan teks hari (Sen, Sel, dst) */
+    }
+
+    .tanggal-item {
+        font-size: 0.85rem;
+        border-radius: 8px; /* Sudut lebih tajam agar hemat ruang */
+    }
+
+    .card-kalender-container, .daftar-kegiatan-container {
+        padding: 15px !important;
+    }
+
+    /* Memastikan tombol "Lihat" mudah ditekan jari */
+    .btn-sm {
+        padding: 8px 15px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Layar sangat kecil (iPhone SE / HP kecil) */
+@media (max-width: 380px) {
+    .kalender-grid {
+        gap: 2px;
     }
     .tanggal-item {
-        height: 56px;
-        font-size: 0.9rem;
+        font-size: 0.75rem;
     }
-    .header-fixed h4 {
-        font-size: 1.3rem;
-    }
+}
+
+/* ============================================================
+   MODAL STYLING
+   ============================================================ */
+.modal-content {
+    border-radius: 20px;
+    border: none;
+}
+
+.modal-header {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.modal-body {
+    padding-top: 10px;
 }

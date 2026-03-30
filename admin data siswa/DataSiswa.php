@@ -1,6 +1,7 @@
 <?php
-session_name('SESS_ADMIN');
 session_start();
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
   header("Location: ../login/index.php?error=Harap login sebagai admin!");
@@ -65,7 +66,7 @@ $today = date('Y-m-d');
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center gap-3">
           <div class="header-icon-wrapper">
-            <img src="../assets/data_siswa_biru.png" alt="Students Icon" class="header-icon">
+            <img src="../assets/Data_Siswa_Biru.png" alt="Students Icon" class="header-icon">
           </div>
           <h4 class="fw-bold text-primary m-0">Data Murid</h4>
         </div>

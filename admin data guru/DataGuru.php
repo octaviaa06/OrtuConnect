@@ -1,6 +1,8 @@
 <?php
-session_name('SESS_ADMIN');
 session_start();
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+
 $active_page = 'DataGuru';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -42,65 +44,46 @@ $from_param = 'DataGuru';
 $_GET['from'] = $from_param;
 
 // Fungsi untuk mengatasi perbedaan path localhost vs hosting
-function getAssetPath($path) {
-    // Cek jika sedang di localhost atau hosting
-    $isLocalhost = (strpos($_SERVER['HTTP_HOST'], 'localhost') !== false) || 
-                   (strpos($_SERVER['HTTP_HOST'], '127.0.0.1') !== false);
-    
-    // Untuk localhost: path relatif
-    // Untuk hosting: path absolute dari root
-    if ($isLocalhost) {
-        return $path;
-    } else {
-        // Hapus ../ jika ada di awal
-        $cleanPath = ltrim($path, './');
-        $cleanPath = ltrim($cleanPath, '../');
-        return '/' . $cleanPath;
-    }
-}
+
 ?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Data Guru | OrtuConnect</title>
     
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Load CSS dengan path yang benar -->
-    <link rel="stylesheet" href="<?php echo getAssetPath('style.css'); ?>">
-    <link rel="stylesheet" href="<?php echo getAssetPath('notification.css'); ?>">
-    <link rel="stylesheet" href="<?php echo getAssetPath('../profil/profil.css'); ?>">
-    <link rel="stylesheet" href="<?php echo getAssetPath('../admin/sidebar.css'); ?>">
-    
-    <!-- CSS Khusus untuk Data Guru -->
-    <link rel="stylesheet" href="<?php echo getAssetPath('data_guru_style.css'); ?>">
-    
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../profil/profil.css">
+<link rel="stylesheet" href="../admin/sidebar.css">
+
 </head>
 <body>
 <div class="d-flex">
-    <?php include getAssetPath('../admin/sidebar.php'); ?>
+ <?php include '../admin/sidebar.php'; ?>
 
     <div class="flex-grow-1 main-content"
-         style="background-image:url('<?php echo getAssetPath('../background/Data Guru(1).png'); ?>'); background-size:cover; background-position:center; min-height:100vh;">
+        style="background-image:url('../background/Data Siswa(1).png'); background-size:cover; background-position:center;">
         <div class="container-fluid py-3">
             <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
                 <div class="d-flex align-items-center gap-3">
                     <!-- Icon Data Guru -->
                     <div class="header-icon-wrapper data-guru animated">
-                        <img src="<?php echo getAssetPath('../assets/Data_Guru.png'); ?>" alt="Data Guru" class="header-icon">
+                        <img src="../assets/Data_Guru.png" alt="Data Guru" class="header-icon">
                     </div>
                     <!-- Judul -->
                     <h4 class="fw-bold text-primary m-0">Data Guru</h4>
                 </div>
-                <?php include getAssetPath('../profil/profil.php'); ?>
+                <?php include '../profil/profil.php'; ?>
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
                 <div class="search-container position-relative">
-                    <img src="<?php echo getAssetPath('../assets/cari.png'); ?>" alt="Cari" class="search-icon">
+                    <img src="../assets/cari.png" alt="Cari" class="search-icon">
                     <input type="text" id="searchInput" class="form-control search-input"
                            placeholder="Cari guru berdasarkan nama, NIP, atau email...">
                 </div>
@@ -114,7 +97,7 @@ function getAssetPath($path) {
                     <div class="col-12">
                         <div class="empty-state text-center">
                             <div class="empty-icon-wrapper mb-4">
-                                <img src="<?php echo getAssetPath('../assets/Data_Guru.png'); ?>" alt="No Data" width="120" style="opacity: 0.5;">
+                                <img src="../assets/Data_Guru.png" alt="No Data" width="120" style="opacity: 0.5;">
                             </div>
                             <h5 class="text-muted mb-2">Tidak ada data guru</h5>
                             <p class="text-muted small">Silakan tambahkan data guru baru</p>
@@ -127,7 +110,7 @@ function getAssetPath($path) {
                         $inisial = (count($kata) >= 2)
                             ? strtoupper(substr($kata[0], 0, 1) . substr($kata[1], 0, 1))
                             : strtoupper(substr($kata[0], 0, 2));
-                        ?>
+                    ?>
                         <div class="col-md-4 mb-3 guru-item" data-id="<?= $guru['id_guru'] ?>">
                             <div class="card card-guru shadow-sm border-0 p-3 d-flex flex-column justify-content-between h-100">
                                 <div class="d-flex align-items-center mb-3">
@@ -169,11 +152,11 @@ function getAssetPath($path) {
                                     <div class="d-flex gap-2">
                                         <button class="btn btn-action btn-edit" onclick="editGuru('<?= $guru['id_guru'] ?>')"
                                                 title="Edit">
-                                            <img src="<?php echo getAssetPath('../assets/edit.png'); ?>" alt="Edit" width="20">
+                                            <img src="../assets/edit.png" alt="Edit" width="20">
                                         </button>
                                         <button class="btn btn-action btn-delete"
                                                 onclick="hapusGuru('<?= $guru['id_guru'] ?>')" title="Hapus">
-                                            <img src="<?php echo getAssetPath('../assets/Hapus.png'); ?>" alt="Hapus" width="20">
+                                            <img src="../assets/Hapus.png" alt="Hapus" width="20">
                                         </button>
                                     </div>
                                 </div>
@@ -320,7 +303,7 @@ function getAssetPath($path) {
         <div class="modal-content custom-modal">
             <div class="modal-header bg-gradient-primary">
                 <h5 class="modal-title">
-                    <img src="<?php echo getAssetPath('../assets/Hapus.png'); ?>" alt="Hapus" width="24" class="me-2"
+                    <img src="../assets/Hapus.png" alt="Hapus" width="24" class="me-2"
                          style="filter: brightness(0) invert(1);">
                     Konfirmasi Hapus
                 </h5>
@@ -976,6 +959,5 @@ function getAssetPath($path) {
     `;
     document.head.appendChild(style);
 </script>
-
 </body>
 </html>
