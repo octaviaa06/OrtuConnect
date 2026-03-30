@@ -1,318 +1,489 @@
 /* ===================================================== */
-/* KALENDER GURU – STYLE (MOBILE-FRIENDLY + SIDEBAR FULL) */
+/* KALENDER ADMIN - STYLE ESTETIK BIRU PREMIUM */
 /* ===================================================== */
 
-/* Background kalender */
-.kalender-bg {
-    background-image: url('../background/Data Guru(1).png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+/* Background utama dengan overlay */
+.main-content {
+    background-image: url('../background/Data Guru(1).png') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: fixed !important;
+    position: relative;
+    min-height: 100vh;
 }
 
-/* Header tetap transparan */
-.header-fixed {
-    position: sticky;
+.main-content::before {
+    content: '';
+    position: absolute;
     top: 0;
-    z-index: 100;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(13, 110, 253, 0.02) 0%, rgba(255, 255, 255, 0.98) 100%);
+    z-index: 0;
+}
+
+.container-fluid {
+    position: relative;
+    z-index: 1;
+}
+
+/* Header CLEAN tanpa background - KEMBALI KE SETELAN AWAL */
+.header-fixed {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
     padding: 16px 16px !important;
     margin: -20px -16px 24px -16px !important;
 }
 
-/* Kalender */
-.kalender-container {
-    border-radius: 18px;
+/* Button Tambah Agenda Premium */
+.btn-tambah-agenda {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+    border: none;
+    border-radius: 16px;
+    padding: 1.25rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 20px rgba(30, 64, 175, 0.25);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 2rem !important;
+    color: white;
 }
+
+.btn-tambah-agenda:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(30, 64, 175, 0.35);
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+    color: white;
+}
+
+.btn-tambah-agenda:active {
+    transform: translateY(-1px);
+}
+
+.btn-tambah-agenda::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+}
+
+.btn-tambah-agenda:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(40, 40);
+        opacity: 0;
+    }
+}
+
+/* Card Kalender */
+.kalender-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 24px !important;
+    border: 1px solid rgba(13, 110, 253, 0.1);
+    box-shadow: 0 8px 32px rgba(30, 64, 175, 0.1);
+    padding: 1.5rem !important;
+    transition: all 0.3s ease;
+}
+
+.kalender-container:hover {
+    box-shadow: 0 12px 40px rgba(30, 64, 175, 0.15);
+}
+
+.kalender-container h5 {
+    color: #1e40af;
+    font-weight: 700;
+    font-size: 1.4rem;
+}
+
+/* Navigasi Kalender */
 .kalender-nav-buttons {
     display: flex;
-    gap: 8px;
+    gap: 12px;
 }
+
 .nav-arrow {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: #e9ecef;
-    color: #495057;
+    background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+    color: #1e40af;
     text-decoration: none;
-    font-weight: bold;
-    transition: all 0.2s;
-}
-.nav-arrow:hover {
-    background: #0d6efd;
-    color: white;
+    font-weight: 800;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    border: 2px solid #bfdbfe;
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.1);
 }
 
+.nav-arrow:hover {
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    color: white;
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(30, 64, 175, 0.2);
+}
+
+/* Grid Kalender */
 .kalender-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 6px;
+    gap: 8px;
+    margin-top: 1.5rem;
 }
+
 .hari-header {
     text-align: center;
-    padding: 10px 0;
-    font-weight: 600;
-    color: #6c757d;
-}
-.hari-header.minggu {
-    color: #dc3545;
-}
-.tanggal-kosong {
     padding: 12px 0;
+    font-weight: 700;
+    color: #4b5563;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e5e7eb;
 }
+
+.hari-header.minggu {
+    color: #dc2626;
+}
+
+.tanggal-kosong {
+    padding: 0;
+}
+
 .tanggal-item {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 68px;
-    border-radius: 10px;
+    aspect-ratio: 1;
+    border-radius: 16px;
     text-decoration: none;
-    color: #333;
+    color: #374151;
     position: relative;
-    font-weight: 500;
-    transition: all 0.2s;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: rgba(255, 255, 255, 0.8);
+    border: 2px solid transparent;
 }
+
 .tanggal-item:hover {
-    background-color: #f1f8ff;
+    background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+    border-color: #93c5fd;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15);
 }
+
 .tanggal-item.minggu {
-    color: #dc3545;
+    color: #dc2626;
+    background: rgba(254, 226, 226, 0.3);
 }
+
+.tanggal-item.minggu:hover {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-color: #fca5a5;
+}
+
 .tanggal-item.today {
-    background-color: #e3f2fd;
-    border: 2px solid #0d6efd;
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    color: white !important;
+    border-color: #3b82f6;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
 }
+
+.tanggal-item.today:hover {
+    background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+    box-shadow: 0 6px 20px rgba(30, 64, 175, 0.5);
+}
+
 .tanggal-item.selected-day {
-    background-color: #d1e7ff;
-    border: 2px solid #0d6efd;
-    font-weight: bold;
+    background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+    color: white !important;
+    border-color: #60a5fa;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    font-weight: 700;
 }
+
+.tanggal-item.selected-day:hover {
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+}
+
 .tanggal-item.has-agenda::after {
     content: '';
     position: absolute;
-    bottom: 6px;
-    width: 6px;
-    height: 6px;
-    background: #28a745;
+    bottom: 8px;
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
     border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
 }
 
-/* Daftar Kegiatan */
+/* Card Daftar Kegiatan */
 .daftar-kegiatan-container {
-    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 24px !important;
+    border: 1px solid rgba(13, 110, 253, 0.1);
+    box-shadow: 0 8px 32px rgba(30, 64, 175, 0.1);
+    padding: 1.5rem !important;
+    height: 100%;
 }
+
+.daftar-kegiatan-container h5 {
+    color: #1e40af;
+    font-weight: 700;
+    font-size: 1.4rem;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.daftar-kegiatan-container .text-muted {
+    color: #6b7280 !important;
+    font-size: 0.95rem;
+}
+
+.daftar-kegiatan-container .text-muted b {
+    color: #1e40af;
+}
+
+/* Item Kegiatan */
 .kegiatan-item {
-    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 1.25rem !important;
+    margin-bottom: 1rem !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
 }
+
 .kegiatan-item:hover {
-    background-color: #f8f9fa;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(30, 64, 175, 0.15);
+    border-color: #93c5fd;
+    background: linear-gradient(135deg, #f0f9ff 0%, #eff6ff 100%);
+}
+
+.kegiatan-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: linear-gradient(to bottom, #3b82f6, #60a5fa);
+    border-radius: 4px 0 0 4px;
+}
+
+.kegiatan-item .fw-semibold {
+    color: #1e40af;
+    font-weight: 700 !important;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.kegiatan-item small {
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+/* Action Buttons */
+.action-buttons .btn {
+    border-radius: 12px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.action-buttons .btn-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-color: #10b981;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.action-buttons .btn-success:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    border-color: #059669;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
 }
 
-/* ===================== */
-/* MODAL BACKDROP FIX — HILANGKAN DI MOBILE */
-/* ===================== */
+.action-buttons .btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border-color: #ef4444;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
 
+.action-buttons .btn-danger:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    border-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.3);
+}
+
+/* Alert ketika tidak ada agenda */
+.alert-info {
+    background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
+    border: 1px solid #93c5fd;
+    color: #1e40af;
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.alert-info .bi {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #3b82f6;
+}
+
+/* Responsive Design */
 @media (max-width: 992px) {
-    .modal-backdrop {
-        display: none !important;
+    .kalender-grid {
+        gap: 6px;
+    }
+    
+    .tanggal-item {
+        aspect-ratio: 1;
+        font-size: 1rem;
+        border-radius: 12px;
+    }
+    
+    .nav-arrow {
+        width: 40px;
+        height: 40px;
     }
 }
 
-@media (max-width: 576px) {
-    .modal-dialog {
-        margin: 1rem;
-        max-width: 95%;
-    }
-    .modal-content {
-        border-radius: 16px;
-    }
-    .modal-header {
-        padding: 1rem 1.5rem;
-    }
-    .modal-body {
-        padding: 1.5rem;
-    }
-}
-
-/* RESPONSIVE MOBILE */
 @media (max-width: 768px) {
     .kalender-grid {
         gap: 4px;
     }
+    
     .tanggal-item {
-        height: 56px;
         font-size: 0.9rem;
+        border-radius: 10px;
     }
-    .header-fixed h4 {
-        font-size: 1.3rem;
+    
+    .hari-header {
+        font-size: 0.85rem;
+        padding: 10px 0;
     }
-}
-
-/* ===================================================== */
-/* MODAL GRADIENT STYLE – SENADA DENGAN TEMA BIRU APLIKASI */
-/* ===================================================== */
-
-.modal-content {
-    background: linear-gradient(135deg, #ffffff, #eef5ff, #d7e7ff);
-    border-radius: 20px;
-    border: none;
-    color: #1a2b4c;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    animation: popupFade 0.3s ease;
-}
-
-/* Header sedikit lebih bold agar jelas */
-.modal-header {
-    background: linear-gradient(135deg, #e8f1ff, #d0e2ff);
-    border-bottom: none;
-    border-radius: 20px 20px 0 0;
-    color: #0d47a1;
-    font-weight: 600;
-}
-
-/* Footer light tone */
-.modal-footer {
-    background: linear-gradient(135deg, #f4f8ff, #e1ecff);
-    border-top: none;
-    border-radius: 0 0 20px 20px;
-}
-
-/* Smooth muncul */
-@keyframes popupFade {
-    from {
-        opacity: 0;
-        transform: scale(0.96);
+    
+    .btn-tambah-agenda {
+        padding: 1rem;
+        font-size: 1rem;
     }
-    to {
-        opacity: 1;
-        transform: scale(1);
+    
+    .kegiatan-item {
+        padding: 1rem !important;
+    }
+    
+    .action-buttons .btn {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
     }
 }
 
-/* ===================================================== */
-/* SUCCESS MODAL - STYLE SESUAI GAMBAR */
-/* ===================================================== */
-
-.success-modal-content {
-    background: linear-gradient(135deg, #ffffff, #f8fffe, #e8f9f8);
-    border-radius: 20px;
-    border: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    animation: successPopup 0.4s ease-out;
-    position: relative;
-}
-
-/* Success Checkmark Animation */
-.success-checkmark {
-    display: inline-block;
-    animation: scaleIn 0.5s ease-out;
-}
-
-.checkmark-circle {
-    stroke-dasharray: 240;
-    stroke-dashoffset: 240;
-    animation: drawCircle 0.8s ease-out forwards;
-}
-
-.checkmark-check {
-    stroke-dasharray: 60;
-    stroke-dashoffset: 60;
-    animation: drawCheck 0.6s 0.4s ease-out forwards;
-}
-
-@keyframes successPopup {
-    from {
-        opacity: 0;
-        transform: scale(0.8) translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
-}
-
-@keyframes scaleIn {
-    from {
-        transform: scale(0);
-    }
-    to {
-        transform: scale(1);
-    }
-}
-
-@keyframes drawCircle {
-    to {
-        stroke-dashoffset: 0;
-    }
-}
-
-@keyframes drawCheck {
-    to {
-        stroke-dashoffset: 0;
-    }
-}
-
-/* Success Modal Body */
-.success-modal-content .modal-body h5 {
-    color: #4a4a4a;
-    font-weight: 700;
-    font-size: 1.25rem;
-}
-
-.success-modal-content .modal-body p {
-    color: #6c757d;
-    font-size: 0.95rem;
-}
-
-.success-modal-content .btn-primary {
-    background: linear-gradient(135deg, #007bff, #0056b3);
-    border: none;
-    border-radius: 10px;
-    padding: 10px 30px;
-    font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-    transition: all 0.3s;
-}
-
-.success-modal-content .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
-}
-
-/* Mobile Responsive */
 @media (max-width: 576px) {
-    .success-modal-content .modal-body {
-        padding: 2rem 1.5rem;
+    .kalender-container,
+    .daftar-kegiatan-container {
+        padding: 1rem !important;
     }
     
-    .success-checkmark svg {
-        width: 70px;
-        height: 70px;
+    .kalender-grid {
+        gap: 3px;
     }
     
-    .success-modal-content .modal-body h5 {
-        font-size: 1.1rem;
+    .tanggal-item {
+        font-size: 0.85rem;
+        border-radius: 8px;
+    }
+    
+    .action-buttons .btn span.d-md-inline {
+        display: none !important;
+    }
+    
+    .action-buttons .btn {
+        min-width: 40px;
     }
 }
 
-/* Button Tambah Agenda */
-.btn-tambah-agenda {
-    background: linear-gradient(135deg, #0d6efd, #0b5ed7);
-    border: none;
-    border-radius: 12px;
-    padding: 12px 20px;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+/* Animasi loading kalender */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.btn-tambah-agenda:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
-    background: linear-gradient(135deg, #0b5ed7, #0a58ca);
+.kalender-container,
+.daftar-kegiatan-container {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Scrollbar estetik */
+.daftar-kegiatan-container {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.daftar-kegiatan-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.daftar-kegiatan-container::-webkit-scrollbar-track {
+    background: rgba(219, 234, 254, 0.3);
+    border-radius: 10px;
+}
+
+.daftar-kegiatan-container::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+    border-radius: 10px;
+}
+
+.daftar-kegiatan-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+}
+
+/* Modal backdrop fix untuk mobile - tetap ada */
+@media (max-width: 992px) {
+    .modal-backdrop {
+        display: none !important;
+    }
 }

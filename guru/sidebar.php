@@ -64,7 +64,7 @@ function asset_url($path = '') {
             </a>
         </li>
         <li class="nav-item">
-            <a href="<?= asset_url('../guru kalender/Kalender.php') ?>" class="nav-link">
+            <a href="<?= asset_url('../guru kalender/kalender.php') ?>" class="nav-link">
                 <img src="<?= asset_url('../assets/Kalender.png') ?>" class="icon" alt="Kalender">
                 <span class="menu-text">Kalender</span>
             </a>

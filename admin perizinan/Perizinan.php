@@ -1,6 +1,7 @@
 <?php 
-session_name('SESS_ADMIN'); 
 session_start(); 
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
 $active_page = 'perizinan';
 
 // Set timezone Indonesia
@@ -312,7 +313,6 @@ $perizinanList = $data['data'] ?? [];
             updateStatusIzin(currentIdIzin, "Ditolak", alasan);
             currentIdIzin = null;
         });
-
         // ============ UPDATE STATUS IZIN ============
         function updateStatusIzin(id_izin, status, alasan) {
             const payload = {

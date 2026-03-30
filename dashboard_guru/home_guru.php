@@ -1,7 +1,8 @@
 <?php
 ob_start();
-session_name('SESS_GURU');
 session_start();
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
 $active_page = 'dashboard guru';
 
 date_default_timezone_set('Asia/Jakarta');
@@ -350,7 +351,7 @@ ob_end_flush();
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const API_PERIZINAN = "https://ortuconnect.pbltifnganjuk.com/api/perizinan.php";
-        const USER_ID = <?= isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0 ?>;
+        const USER_ID = <?= isset($_SESSION['id_akun']) ? $_SESSION['id_akun'] : 0 ?>;
         let currentIdIzin = null;
         const modalSetujui = new bootstrap.Modal('#modalKonfirmasiSetujui');
         const modalTolak = new bootstrap.Modal('#modalAlasanTolak');

@@ -1,7 +1,8 @@
 <?php
-// MULAI SESSION UNTUK GURU
-session_name('SESS_GURU');
 session_start();
+
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
 $active_page = 'kalender guru';
 
 // CEK APAKAH SUDAH LOGIN SEBAGAI GURU
@@ -10,8 +11,6 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
     exit;
 }
 
-// ====== LOGIKA KALENDER ======
-// AMBIL BULAN DAN TAHUN SAAT INI ATAU DARI URL
 $current_month = $_GET['month'] ?? date('n');
 $current_year = $_GET['year'] ?? date('Y');
 
@@ -67,7 +66,7 @@ if (curl_errno($ch)) {
         ]
     ]);
 }
-$ch = null;
+curl_close($ch);
 
 // PROSES DATA AGENDA
 $data = json_decode($response, true);
@@ -93,91 +92,80 @@ $_GET['from'] = $from_param;
 <html lang="id">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <title>Kalender | OrtuConnect</title>
-    <!-- LOAD BOOTSTRAP CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <!-- LOAD CUSTOM CSS -->
-    <link rel="stylesheet" href="kalender.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" />
+   <link rel="stylesheet" href="kalender.css?v=1.1">
     <link rel="stylesheet" href="../profil/profil.css" />
     <link rel="stylesheet" href="../guru/sidebar.css" />
 </head>
 
 <body>
-    <div class="d-flex">
-        <!-- SIDEBAR GURU -->
+    <div class="d-flex wrapper-container">
         <?php include '../guru/sidebar.php'; ?>
 
-        <!-- KONTEN UTAMA -->
         <div class="flex-grow-1 main-content kalender-bg">
             <div class="container-fluid py-3">
 
-                <!-- HEADER DENGAN PROFIL -->
-                <div class="d-flex justify-content-between align-items-center mb-4 header-fixed">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 header-fixed-custom">
                     <h4 class="fw-bold text-primary m-0">Kalender</h4>
-                    <?php include '../profil/profil.php'; ?>
+                    <div class="profile-section-mobile">
+                        <?php include '../profil/profil.php'; ?>
+                    </div>
                 </div>
 
-                <div class="mb-5"></div>
-
-                <!-- KONTEN KALENDER -->
-                <div class="row">
-                    <!-- KALENDER BULANAN -->
-                    <div class="col-md-6 mb-4">
-                        <div class="card shadow-sm border-0 p-4 kalender-container">
-                            <!-- HEADER KALENDER DENGAN NAVIGASI -->
-                            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="row g-4">
+                    <div class="col-xl-7 col-lg-12 mb-3">
+                        <div class="card shadow-sm border-0 p-3 p-md-4 kalender-card-container">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
                                 <h5 class="fw-bold m-0"><?= htmlspecialchars(date('F', $first_day_of_month), ENT_QUOTES) ?> <?= (int)$current_year ?></h5>
                                 <div class="kalender-nav-buttons">
-                                    <a href="kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=prev&day=<?= $selected_day ?>" class="nav-arrow me-2"><</a>
-                                    <a href="kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=next&day=<?= $selected_day ?>" class="nav-arrow">></a>
+                                    <a href="kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=prev&day=<?= $selected_day ?>" class="nav-arrow me-2"><i class="bi bi-chevron-left"></i></a>
+                                    <a href="kalender.php?month=<?= $current_month ?>&year=<?= $current_year ?>&nav=next&day=<?= $selected_day ?>" class="nav-arrow"><i class="bi bi-chevron-right"></i></a>
                                 </div>
                             </div>
 
-                            <!-- GRID KALENDER -->
                             <div class="kalender-grid">
-                                <!-- HEADER HARI -->
-                                <div class="hari-header minggu">Minggu</div>
-                                <div class="hari-header">Senin</div>
-                                <div class="hari-header">Selasa</div>
-                                <div class="hari-header">Rabu</div>
-                                <div class="hari-header">Kamis</div>
-                                <div class="hari-header">Jumat</div>
-                                <div class="hari-header">Sabtu</div>
+                                <div class="hari-header minggu">Min</div>
+                                <div class="hari-header">Sen</div>
+                                <div class="hari-header">Sel</div>
+                                <div class="hari-header">Rab</div>
+                                <div class="hari-header">Kam</div>
+                                <div class="hari-header">Jum</div>
+                                <div class="hari-header">Sab</div>
 
                                 <?php
-                                // TAMPILKAN TANGGAL KOSONG UNTUK HARI SEBELUM BULAN BERJALAN
+                                // TAMPILKAN TANGGAL KOSONG
                                 $day_counter = 1;
-                                for ($i = 0; $i < $day_of_week; $i++) echo "<div class='tanggal-kosong'></div>";
+                                for ($i = 0; $i < $day_of_week; $i++) {
+                                    echo "<div class='tanggal-kosong'></div>";
+                                    $day_counter++;
+                                }
 
-                                // TAMPILKAN SEMUA HARI DALAM BULAN
+                                // TAMPILKAN SEMUA HARI
                                 for ($day = 1; $day <= $number_of_days; $day++) {
                                     $date_string = date('Y-m-d', mktime(0, 0, 0, $current_month, $day, $current_year));
                                     $is_today = ($date_string == date('Y-m-d'));
                                     $is_selected = ($day == $selected_day);
                                     $has_agenda = isset($agendaByDate[$date_string]);
+                                    $is_minggu = (date('w', strtotime($date_string)) == 0);
 
-                                    // CEK APAKAH HARI MINGGU
-                                    $date_obj = new DateTime($date_string);
-                                    $day_of_week_num = (int)$date_obj->format('w'); // 0 = Minggu
-                                    $is_minggu = ($day_of_week_num === 0);
-
-                                    // TENTUKAN CLASS CSS
                                     $class = 'tanggal-item';
-                                    if ($is_minggu) $class .= ' minggu'; // WARNA BEDA UNTUK MINGGU
-                                    if ($is_today) $class .= ' today';   // HIGHLIGHT HARI INI
-                                    if ($is_selected) $class .= ' selected-day'; // HARI YANG DIPILIH
-                                    if ($has_agenda) $class .= ' has-agenda';    // ADA AGENDA
+                                    if ($is_minggu) $class .= ' minggu';
+                                    if ($is_today) $class .= ' today';
+                                    if ($is_selected) $class .= ' selected-day';
+                                    if ($has_agenda) $class .= ' has-agenda';
 
                                     $link = "kalender.php?month={$current_month}&year={$current_year}&day={$day}";
-                                    echo "<a href='{$link}' class='{$class}' data-date='{$date_string}'><span>{$day}</span></a>";
+                                    echo "<a href='{$link}' class='{$class}'><span>{$day}</span></a>";
 
                                     $day_counter++;
                                 }
 
-                                // TAMPILKAN TANGGAL KOSONG SETELAH BULAN BERAKHIR
+                                // TANGGAL KOSONG AKHIR
                                 while ($day_counter <= 42) {
-                                    if ($day_counter % 7 == 1) break;
+                                    if ($day_counter % 7 == 1 && $day_counter > $number_of_days + $day_of_week) break;
                                     echo "<div class='tanggal-kosong'></div>";
                                     $day_counter++;
                                 }
@@ -186,40 +174,29 @@ $_GET['from'] = $from_param;
                         </div>
                     </div>
 
-                    <!-- DAFTAR KEGIATAN UNTUK TANGGAL TERPILIH -->
-                    <div class="col-md-6">
+                    <div class="col-xl-5 col-lg-12">
                         <div class="card shadow-sm border-0 p-4 daftar-kegiatan-container">
                             <h5 class="fw-bold mb-3 text-primary">Daftar Kegiatan</h5>
-                            <p class="text-muted mb-4">Kegiatan untuk tanggal: <b><?= htmlspecialchars(date('j F Y', strtotime($selected_date_full)), ENT_QUOTES) ?></b></p>
+                            <p class="text-muted mb-4 small">Kegiatan pada: <b><?= htmlspecialchars(date('j F Y', strtotime($selected_date_full)), ENT_QUOTES) ?></b></p>
 
-                            <!-- KONTEN AGENDA -->
                             <div id="daftarAgendaContent">
                                 <?php if (empty($selected_agenda)): ?>
-                                    <div class="alert alert-info text-center">Tidak ada agenda pada tanggal ini.</div>
+                                    <div class="alert alert-light text-center border py-4">
+                                        <i class="bi bi-calendar-x text-muted mb-2 d-block fs-2"></i>
+                                        Tidak ada agenda.
+                                    </div>
                                 <?php else: ?>
                                     <?php foreach ($selected_agenda as $kegiatan): ?>
-                                        <div class="kegiatan-item d-flex justify-content-between align-items-center mb-3 p-3 border rounded">
+                                        <div class="kegiatan-item d-flex justify-content-between align-items-center mb-3 p-3 border rounded bg-white shadow-xs">
                                             <div>
-                                                <p class="fw-semibold m-0">
-                                                    <!-- LINK UNTUK MODAL DETAIL -->
-                                                    <a href="#" 
-                                                       class="text-decoration-none text-dark"
-                                                       data-bs-toggle="modal"
-                                                       data-bs-target="#detailModal"
-                                                       data-id="<?= (int)$kegiatan['id'] ?>"
-                                                       data-nama="<?= htmlspecialchars($kegiatan['nama_kegiatan'] ?? '-', ENT_QUOTES) ?>"
-                                                       data-tanggal="<?= htmlspecialchars($kegiatan['tanggal'] ?? '-', ENT_QUOTES) ?>"
-                                                       data-deskripsi="<?= htmlspecialchars($kegiatan['deskripsi'] ?? 'Tidak ada deskripsi.', ENT_QUOTES) ?>">
-                                                        <?= htmlspecialchars($kegiatan['nama_kegiatan'] ?? 'Kegiatan Tanpa Nama') ?>
-                                                    </a>
+                                                <p class="fw-semibold m-0 text-dark">
+                                                    <?= htmlspecialchars($kegiatan['nama_kegiatan'] ?? 'Tanpa Nama') ?>
                                                 </p>
-                                                <small class="text-muted"><?= date('j F Y', strtotime($kegiatan['tanggal'] ?? $selected_date_full)) ?></small>
+                                                <small class="text-muted"><?= date('j F Y', strtotime($kegiatan['tanggal'])) ?></small>
                                             </div>
-                                            <!-- TOMBOL LIHAT DETAIL -->
-                                            <button class="btn btn-sm btn-outline-primary"
+                                            <button class="btn btn-sm btn-outline-primary rounded-pill px-3"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#detailModal"
-                                                    data-id="<?= (int)$kegiatan['id'] ?>"
                                                     data-nama="<?= htmlspecialchars($kegiatan['nama_kegiatan'] ?? '-', ENT_QUOTES) ?>"
                                                     data-tanggal="<?= htmlspecialchars($kegiatan['tanggal'] ?? '-', ENT_QUOTES) ?>"
                                                     data-deskripsi="<?= htmlspecialchars($kegiatan['deskripsi'] ?? 'Tidak ada deskripsi.', ENT_QUOTES) ?>">
@@ -232,76 +209,48 @@ $_GET['from'] = $from_param;
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <!-- MODAL DETAIL KEGIATAN -->
-    <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content border-0 shadow">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="detailModalLabel">Detail Kegiatan</h5>
+                    <h5 class="modal-title fw-bold">Detail Kegiatan</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <h5 class="fw-bold" id="modal-nama">Nama Kegiatan</h5>
-                    <p class="text-muted mb-3" id="modal-tanggal">10 November 2025</p>
-                    <div>
-                        <label class="form-label fw-bold">Deskripsi</label>
-                        <p id="modal-deskripsi" class="mb-0">...</p>
+                    <p class="text-primary fw-semibold small mb-3" id="modal-tanggal"></p>
+                    <div class="bg-light p-3 rounded-3">
+                        <label class="form-label fw-bold small text-muted text-uppercase">Deskripsi</label>
+                        <p id="modal-deskripsi" class="mb-0 text-dark">...</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- LOAD BOOTSTRAP JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // ISI MODAL DENGAN DATA KEGIATAN
         document.querySelectorAll('[data-bs-toggle="modal"]').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
+            item.addEventListener('click', function() {
+                const nama = this.getAttribute('data-nama');
+                const tanggal = this.getAttribute('data-tanggal');
+                const deskripsi = this.getAttribute('data-deskripsi');
 
-                // AMBIL DATA DARI ATTRIBUTE
-                const nama = this.getAttribute('data-nama') || '—';
-                const tanggal = this.getAttribute('data-tanggal') || '—';
-                const deskripsi = this.getAttribute('data-deskripsi') || 'Tidak ada deskripsi.';
-
-                // ISI DATA KE MODAL
                 document.getElementById('modal-nama').textContent = nama;
-                if (tanggal !== '—') {
-                    const date = new Date(tanggal);
-                    document.getElementById('modal-tanggal').textContent = 
-                        date.toLocaleDateString('id-ID', {
-                            weekday: 'long',
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric'
-                        });
-                } else {
-                    document.getElementById('modal-tanggal').textContent = '—';
-                }
                 document.getElementById('modal-deskripsi').textContent = deskripsi;
+                
+                if (tanggal !== '-') {
+                    const date = new Date(tanggal);
+                    document.getElementById('modal-tanggal').innerHTML = '<i class="bi bi-calendar-event me-2"></i>' + date.toLocaleDateString('id-ID', {
+                        weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+                    });
+                }
             });
         });
-
-        // HANDLE SCROLL PADA MODAL UNTUK MOBILE
-        const detailModal = document.getElementById('detailModal');
-        if (detailModal) {
-            detailModal.addEventListener('show.bs.modal', function () {
-                if (window.innerWidth <= 992) {
-                    document.body.style.overflow = 'auto';
-                }
-            });
-            detailModal.addEventListener('hidden.bs.modal', function () {
-                if (window.innerWidth <= 992) {
-                    document.body.style.overflow = '';
-                }
-            });
-        }
     </script>
 </body>
 </html>

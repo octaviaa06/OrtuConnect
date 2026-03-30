@@ -1,6 +1,9 @@
 <?php
-session_name('SESS_GURU');
+
 session_start();
+
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
 
 // Verifikasi role guru
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'guru') {
@@ -24,7 +27,7 @@ $response = curl_exec($ch);
 if (curl_errno($ch)) {
     $response = json_encode(["data" => []]);
 }
-curl_close($ch); // diperbaiki
+curl_close($ch);
 
 $data = json_decode($response, true);
 $siswaList = $data['data'] ?? [];
@@ -45,10 +48,9 @@ $from_param = 'data_siswa';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Siswa | OrtuConnect</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-   
-    <link rel="stylesheet" href="data_siswa.css">
-    <link rel="stylesheet" href="../profil/profil.css">
-    <link rel="stylesheet" href="../guru/sidebar.css">
+    <link rel="stylesheet" href="data_siswa.css?v=1.1">
+<link rel="stylesheet" href="../profil/profil.css?v=1.1">
+<link rel="stylesheet" href="../guru/sidebar.css?v=1.1">
 </head>
 <body>
 
@@ -65,9 +67,10 @@ $from_param = 'data_siswa';
 
             <!-- HEADER -->
             <div class="d-flex justify-content-between align-items-center mb-4 page-header">
-
-                <h4 class="fw-bold text-primary m-0 page-title">Data Murid</h4>
-
+                <div class="d-flex align-items-center">
+                    <img src="../assets/Data_Siswa_Biru.png" alt="Data Siswa" class="header-icon">
+                    <h4 class="fw-bold text-primary m-0 page-title">Data Murid</h4>
+                </div>
                 <div class="profile-area">
                     <?php 
                     $_GET['from'] = $from_param;

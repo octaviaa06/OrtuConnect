@@ -1,6 +1,8 @@
 <?php
-session_name('SESS_GURU');
 session_start();
+
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
 $active_page = 'absensi_siswa';
 
 // Verifikasi role guru
@@ -32,7 +34,7 @@ $today = date('Y-m-d');
 $min_date = date('Y-m-d', strtotime('-5 days'));
 $max_date = $today;
 
-// === Fungsi ambil daftar kelas dari API ===
+// Fungsi ambil daftar kelas dari API 
 function getDaftarKelas() {
     $api_url = "https://ortuconnect.pbltifnganjuk.com/api/admin/absensi.php?mode=kelas";
     $ch = curl_init();

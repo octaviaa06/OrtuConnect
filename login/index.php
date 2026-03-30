@@ -1,6 +1,6 @@
 <?php
 // ======== SESSION & ERROR HANDLING ========
-session_name("SESS_LOGIN");
+session_start();
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

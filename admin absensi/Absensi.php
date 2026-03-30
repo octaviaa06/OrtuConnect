@@ -1,6 +1,10 @@
 <?php
-session_name('SESS_ADMIN');
+
 session_start();
+
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+
 $active_page = 'absensi';
 
 // Verifikasi role guru
@@ -600,7 +604,7 @@ async function exportPDF() {
     
     // Validasi di modal export
     if (!kelas) {
-        showNotif('⚠ Harap pilih kelas di modal export!', false);
+        showNotif('⚠ Harap pilih kelas terlebih dahulu!', false);
         return;
     }
     
@@ -614,10 +618,10 @@ async function exportPDF() {
     }
     
     if (!tanggal) {
-        showNotif('⚠ Harap pilih tanggal di modal export!', false);
+        showNotif('⚠ Harap pilih tanggal terlebih dahulu!', false);
         return;
     }
-
+    
     btn.disabled = true; 
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengunduh...';
 

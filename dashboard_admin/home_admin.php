@@ -1,6 +1,8 @@
 <?php
-session_name('SESS_ADMIN');
+ob_start();
 session_start();
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
 $active_page = 'dashboard';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -187,7 +189,6 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
           <?php endforeach; ?>
         </div>
 
-        <!-- IZIN & AGENDA -->
    <!-- IZIN & AGENDA -->
 <div class="row g-3">
   <div class="col-md-6">
@@ -356,7 +357,9 @@ $siswa_tidak_masuk = $siswa - $siswa_masuk_hari_ini;
       </div>
     </div>
   </div>
-
+<form action="../logout/logout.php" method="GET">
+    <button type="submit" class="btn btn-danger">Logout</button>
+</form>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     
